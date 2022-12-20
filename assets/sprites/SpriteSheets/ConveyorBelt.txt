@@ -1,0 +1,40 @@
+ConveyorBelt.png
+size: 320, 32
+format: RGBA8888
+reject: Nearest,Nearest
+repeat: none
+LeftPart-MoveLeft
+  rotate: false
+  xy: 0, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+LeftPart-MoveRight
+  rotate: false
+  xy: 64, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+MiddlePart
+  rotate: false
+  xy: 128, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+RightPart-MoveLeft
+  rotate: false
+  xy: 192, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+RightPart-MoveRight
+  rotate: false
+  xy: 256, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1

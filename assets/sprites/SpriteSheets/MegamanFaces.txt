@@ -1,0 +1,68 @@
+MegamanFaces.png
+size: 108, 108
+format: RGBA8888
+reject: Nearest,Nearest
+repeat: none
+BOTTOM_CENTER
+  rotate: false
+  xy: 0, 0
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+BOTTOM_LEFT
+  rotate: false
+  xy: 36, 0
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+BOTTOM_RIGHT
+  rotate: false
+  xy: 72, 0
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+CENTER
+  rotate: false
+  xy: 0, 36
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+CENTER_LEFT
+  rotate: false
+  xy: 36, 36
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+CENTER_RIGHT
+  rotate: false
+  xy: 72, 36
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+TOP_CENTER
+  rotate: false
+  xy: 0, 72
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+TOP_LEFT
+  rotate: false
+  xy: 36, 72
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+TOP_RIGHT
+  rotate: false
+  xy: 72, 72
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1

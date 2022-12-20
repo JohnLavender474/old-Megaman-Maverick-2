@@ -1,0 +1,64 @@
+buildscript {
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        google()
+    }
+    dependencies {
+        classpath 'org.wisepersist:gwt-gradle-plugin:1.1.16'
+        classpath 'org.gretty:gretty:3.0.7'
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    version = '1.0'
+    ext {
+        appName = "MegamanMaverick"
+        gdxVersion = '1.11.0'
+        roboVMVersion = '2.3.16'
+        gdxControllersVersion = '2.2.1'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        gradlePluginPortal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
+    }
+}
+
+project(":desktop") {
+    apply plugin: "java-library"
+    apply plugin: "war"
+
+    dependencies {
+        implementation project(":core")
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+        providedCompile "org.projectlombok:lombok:1.16.6"
+        annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    }
+}
+
+project(":core") {
+    apply plugin: "java-library"
+    apply plugin: "war"
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:1.11.0"
+        api "com.badlogicgames.gdx:gdx-tools:1.6.3"
+        providedCompile "org.projectlombok:lombok:1.16.6"
+        annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    }
+}
