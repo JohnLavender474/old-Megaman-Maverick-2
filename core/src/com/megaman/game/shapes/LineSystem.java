@@ -1,34 +1,27 @@
 package com.megaman.game.shapes;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.utils.objs.Pair;
 import lombok.Setter;
 
-import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
+import java.util.Map;
+import java.util.Queue;
 
 public class LineSystem extends System {
 
-    private final ShapeRenderer shapeRenderer;
-
     @Setter
-    private Camera gameCam;
+    private Map<ShapeRenderer.ShapeType, Queue<RenderableShape>> shapeRenderQs;
 
-    public LineSystem(ShapeRenderer shapeRenderer) {
+    public LineSystem() {
         super(LineComponent.class);
-        this.shapeRenderer = shapeRenderer;
     }
 
     @Override
     protected void preProcess(float delta) {
-        if (gameCam == null) {
-            throw new IllegalStateException("Must first set game gameCam");
+        if (shapeRenderQs == null) {
+            throw new IllegalStateException("Must first set shape render queues");
         }
-        shapeRenderer.setProjectionMatrix(gameCam.combined);
-        shapeRenderer.begin(Line);
     }
 
     @Override
@@ -38,17 +31,9 @@ public class LineSystem extends System {
             if (!h.doRender()) {
                 continue;
             }
-            shapeRenderer.setColor(h.getColor());
-            shapeRenderer.set(h.getShapeType());
-            float thickness = h.getThickness();
-            Pair<Vector2> line = h.getLine();
-            shapeRenderer.rectLine(line.getFirst(), line.getSecond(), thickness);
+            Queue<RenderableShape> q = shapeRenderQs.get(h.getShapeType());
+            q.add(h);
         }
-    }
-
-    @Override
-    protected void postProcess(float delta) {
-        shapeRenderer.end();
     }
 
 }

@@ -1,9 +1,12 @@
 package com.megaman.game.shapes;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Shape2D;
+import com.badlogic.gdx.math.*;
+import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Updatable;
+import com.megaman.game.utils.objs.Pair;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,26 +19,13 @@ import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ShapeHandle implements Comparable<ShapeHandle> {
+public class ShapeHandle implements RenderableShape {
 
-    private Updatable updatable = null;
-    private Supplier<Color> colorSupplier = () -> RED;
-    private Supplier<Integer> prioritySupplier = () -> 0;
-    private Supplier<Shape2D> shapeSupplier = () -> null;
-    private Supplier<Boolean> doRenderSupplier = () -> true;
-    private Supplier<ShapeType> shapeTypeSupplier = () -> Line;
-
-    public ShapeHandle(Shape2D shape) {
-        setShapeSupplier(() -> shape);
-    }
-
-    public void copyOf(ShapeHandle shapeHandle) {
-        setUpdatable(shapeHandle.getUpdatable());
-        setColorSupplier(shapeHandle.getColorSupplier());
-        setShapeSupplier(shapeHandle.getShapeSupplier());
-        setDoRenderSupplier(shapeHandle.getDoRenderSupplier());
-        setShapeTypeSupplier(shapeHandle.getShapeTypeSupplier());
-    }
+    public Updatable updatable = null;
+    public Supplier<Color> colorSupplier = () -> RED;
+    public Supplier<Shape2D> shapeSupplier = () -> null;
+    public Supplier<Boolean> doRenderSupplier = () -> true;
+    public Supplier<ShapeType> shapeTypeSupplier = () -> Line;
 
     public Color getColor() {
         return colorSupplier.get();
@@ -53,13 +43,18 @@ public class ShapeHandle implements Comparable<ShapeHandle> {
         return shapeTypeSupplier.get();
     }
 
-    public int getPriority() {
-        return prioritySupplier.get();
-    }
-
     @Override
-    public int compareTo(ShapeHandle o) {
-        return Integer.compare(getPriority(), o.getPriority());
+    public void render(ShapeRenderer renderer) {
+        renderer.setColor(getColor());
+        Shape2D s = getShape();
+        if (s instanceof Rectangle rectangle) {
+            renderer.rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        } else if (s instanceof Circle circle) {
+            renderer.circle(circle.x, circle.y, circle.radius);
+        } else if (s instanceof Polyline line) {
+            Pair<Vector2> l = ShapeUtils.polylineToPointPair(line);
+            renderer.line(l.getFirst(), l.getSecond());
+        }
     }
 
 }

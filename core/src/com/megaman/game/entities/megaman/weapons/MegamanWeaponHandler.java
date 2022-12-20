@@ -83,7 +83,7 @@ public class MegamanWeaponHandler {
         }
         int cost = weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (chargeStatus) {
             case FULLY_CHARGED -> weapon.fullyChargedCost;
-            case HALFWAY_CHARGED -> weapon.halfChargedCost;
+            case HALF_CHARGED -> weapon.halfChargedCost;
             case NOT_CHARGED -> weapon.cost;
         };
         if (cost > getAmmo(weapon)) {
@@ -127,7 +127,7 @@ public class MegamanWeaponHandler {
                 data.put(ConstKeys.TRAJECTORY, trajectory);
                 yield (Bullet) factories.fetch(EntityType.PROJECTILE, "Bullet");
             }
-            case HALFWAY_CHARGED, FULLY_CHARGED -> {
+            case HALF_CHARGED, FULLY_CHARGED -> {
                 data.put(ConstKeys.OWNER, megaman);
                 data.put(ConstKeys.TRAJECTORY, trajectory);
                 data.put(ConstKeys.BOOL, chargeStatus == MegaChargeStatus.FULLY_CHARGED);

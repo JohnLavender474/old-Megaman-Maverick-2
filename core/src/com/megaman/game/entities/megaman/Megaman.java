@@ -22,11 +22,12 @@ import com.megaman.game.controllers.ControllerAdapter;
 import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.entities.*;
-import com.megaman.game.entities.explosions.impl.ExplosionOrb;
 import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
+import com.megaman.game.entities.megaman.weapons.MegaChargeStatus;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
 import com.megaman.game.events.Event;
+import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.sprites.SpriteComponent;
@@ -47,7 +48,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional {
+public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
 
     public static final float CLAMP_X = 20f;
     public static final float CLAMP_Y = 35f;
@@ -133,7 +134,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
-
+        body.setPos(spawn, Position.BOTTOM_CENTER);
     }
 
     @Override
@@ -146,13 +147,25 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
         DamageNegotiation damageNegotiation = dmgNegs.get(damager.getClass());
         dmgTimer.reset();
         damageNegotiation.runOnDamage();
-        translateHealth(-damageNegotiation.getDamage(damager));
+        healthHandler.removeHealth(damageNegotiation.getDamage(damager));
         request(SoundAsset.MEGAMAN_DAMAGE_SOUND);
     }
 
     @Override
     public Vector2 getPos() {
         return ShapeUtils.getBottomCenterPoint(body.bounds);
+    }
+
+    @Override
+    public void listenForEvent(Event event) {
+        switch (event.eventType) {
+            case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
+                body.velocity.set(Vector2.Zero);
+                Vector2 pos = event.getInfo(ConstKeys.POS, Vector2.class);
+                body.setPos(pos, Position.BOTTOM_CENTER);
+            }
+            case GATE_INIT_OPENING -> body.velocity.set(Vector2.Zero);
+        }
     }
 
     public int getHealth() {
@@ -166,6 +179,21 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
 
     public boolean isShooting() {
         return !shootAnimTimer.isFinished();
+    }
+
+    public boolean shoot() {
+        boolean shot = weaponHandler.fireWeapon(currentWeapon, getChargeStatus());
+        if (shot) {
+            shootAnimTimer.reset();
+        }
+        return shot;
+    }
+
+    public MegaChargeStatus getChargeStatus() {
+        if (isChargingFully()) {
+            return MegaChargeStatus.FULLY_CHARGED;
+        }
+        return isCharging() ? MegaChargeStatus.HALF_CHARGED : MegaChargeStatus.NOT_CHARGED;
     }
 
     public boolean isChargingFully() {
@@ -198,15 +226,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
 
     public void stopLoop(SoundAsset s) {
         getComponent(SoundComponent.class).stopLoop(s);
-    }
-
-    public void translateHealth(int delta) {
-        getComponent(HealthComponent.class).translateHealth(delta);
-    }
-
-    private boolean shoot() {
-        // TODO: Implement shooting
-        return false;
     }
 
     private ControllerComponent controllerComponent() {
@@ -380,7 +399,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
                 add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
             }};
             for (Vector2 traj : trajs) {
-                game.getGameEngine().spawnEntity(new ExplosionOrb(game, body, traj));
+                // game.getGameEngine().spawnEntity(new ExplosionOrb(game, body, traj));
             }
             game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_DEAD));
         });

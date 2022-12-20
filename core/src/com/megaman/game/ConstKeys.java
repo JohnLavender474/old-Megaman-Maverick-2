@@ -8,6 +8,7 @@ public class ConstKeys {
 
     public static final String RUN = "run";
     public static final String VAL = "val";
+    public static final String NAME = "name";
     public static final String STAT = "stat";
     public static final String MASK = "mask";
 
@@ -21,6 +22,8 @@ public class ConstKeys {
 
     public static final String TRAJECTORY = "trajectory";
     public static final String SPAWN = "init";
+    public static final String ROOM = "room";
     public static final String RECT = "rect";
+    public static final String POS = "pos";
 
 }

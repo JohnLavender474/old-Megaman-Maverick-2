@@ -13,48 +13,63 @@ import java.util.Queue;
 
 public class SoundSystem extends System {
 
-    private final AudioManager audioManager;
-    private final AssetsManager assetsManager;
-    private final Map<SoundAsset, Sound> loopingSounds = new EnumMap<>(SoundAsset.class);
+    private final AssetsManager assMan;
+    private final AudioManager audioMan;
+    private final Map<SoundAsset, Sound> loops = new EnumMap<>(SoundAsset.class);
 
-    public boolean stopAllLoopingSounds;
+    private boolean reqStopLoops;
 
-    public SoundSystem(AssetsManager assetsManager, AudioManager audioManager) {
+    public SoundSystem(AssetsManager assMan, AudioManager audioMan) {
         super(SoundComponent.class);
-        this.assetsManager = assetsManager;
-        this.audioManager = audioManager;
+        this.assMan = assMan;
+        this.audioMan = audioMan;
+    }
+
+    public void reqStopAllLoops() {
+        if (updating) {
+            reqStopLoops = true;
+            return;
+        }
+        stopAllLoops();
+    }
+
+    private void stopAllLoops() {
+        loops.values().forEach(Sound::stop);
+        loops.clear();
+        reqStopLoops = false;
+    }
+
+    @Override
+    protected void preProcess(float delta) {
+        if (reqStopLoops) {
+            stopAllLoops();
+        }
     }
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        SoundComponent soundComponent = e.getComponent(SoundComponent.class);
-        Updatable updatable = soundComponent.updatable;
-        if (updatable != null) {
-            updatable.update(delta);
+        SoundComponent c = e.getComponent(SoundComponent.class);
+        Updatable u = c.updatable;
+        if (u != null) {
+            u.update(delta);
         }
-        Queue<SoundRequest> soundRequests = soundComponent.sReqs;
-        while (!soundRequests.isEmpty()) {
-            SoundRequest soundRequest = soundRequests.poll();
-            Sound sound = assetsManager.getAsset(soundRequest.sAss.getSrc(), Sound.class);
-            if (soundRequest.loop && !loopingSounds.containsKey(soundRequest.sAss)) {
-                audioManager.playSound(sound, true);
-                loopingSounds.put(soundRequest.sAss, sound);
+        Queue<SoundRequest> reqQ = c.sReqs;
+        while (!reqQ.isEmpty()) {
+            SoundRequest req = reqQ.poll();
+            Sound s = assMan.getAsset(req.sAss.getSrc(), Sound.class);
+            if (req.loop && !loops.containsKey(req.sAss)) {
+                audioMan.playSound(s, true);
+                loops.put(req.sAss, s);
             } else {
-                audioManager.playSound(sound, false);
+                audioMan.playSound(s, false);
             }
         }
-        Queue<SoundAsset> stopLoopingSoundRequests = soundComponent.loopsToStop;
-        while (!stopLoopingSoundRequests.isEmpty()) {
-            SoundAsset stopLoopingSoundRequest = stopLoopingSoundRequests.poll();
-            Sound sound = loopingSounds.remove(stopLoopingSoundRequest);
-            if (sound != null) {
-                sound.stop();
+        while (!c.loopsToStop.isEmpty()) {
+            SoundAsset stopLoopReq = c.loopsToStop.poll();
+            Sound s = loops.remove(stopLoopReq);
+            if (s != null) {
+                s.stop();
             }
-        }
-        if (stopAllLoopingSounds) {
-            loopingSounds.values().forEach(Sound::stop);
-            loopingSounds.clear();
-            stopAllLoopingSounds = false;
         }
     }
 

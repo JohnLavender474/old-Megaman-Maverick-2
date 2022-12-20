@@ -1,9 +1,9 @@
 package com.megaman.game.sprites;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
+import com.megaman.game.utils.interfaces.Drawable;
 import lombok.Setter;
 
 import java.util.PriorityQueue;
@@ -11,21 +11,25 @@ import java.util.Queue;
 
 public class SpriteSystem extends System {
 
-    private final SpriteBatch batch;
-    private final Queue<SpriteHandle> q = new PriorityQueue<>();
-
-    @Setter
     private Camera gameCam;
+    private PriorityQueue<SpriteHandle> gameSpritesQ;
 
-    public SpriteSystem(SpriteBatch batch) {
+    public SpriteSystem() {
         super(SpriteComponent.class);
-        this.batch = batch;
+    }
+
+    public void set(Camera gameCam, PriorityQueue<SpriteHandle> gameSpritesQ) {
+        this.gameCam = gameCam;
+        this.gameSpritesQ = gameSpritesQ;
     }
 
     @Override
     protected void preProcess(float delta) {
         if (gameCam == null) {
-            throw new IllegalStateException("Must first set game gameCam");
+            throw new IllegalStateException("Must first set game cam");
+        }
+        if (gameSpritesQ == null) {
+            throw new IllegalStateException("Must first set game sprites queue");
         }
     }
 
@@ -37,18 +41,8 @@ public class SpriteSystem extends System {
             if (h.hidden || !h.isInCamBounds(gameCam)) {
                 continue;
             }
-            q.add(h);
+            gameSpritesQ.add(h);
         }
-    }
-
-    @Override
-    protected void postProcess(float delta) {
-        batch.setProjectionMatrix(gameCam.combined);
-        batch.begin();
-        while (!q.isEmpty()) {
-            q.poll().draw(batch);
-        }
-        batch.end();
     }
 
 }

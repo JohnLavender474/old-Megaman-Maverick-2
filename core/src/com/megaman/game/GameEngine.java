@@ -3,14 +3,15 @@ package com.megaman.game;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class GameEngine implements Updatable, Resettable {
 
@@ -24,6 +25,16 @@ public class GameEngine implements Updatable, Resettable {
     public GameEngine(Iterable<System> systems) {
         for (System s : systems) {
             this.systems.put(s.getClass(), s);
+        }
+    }
+
+    @SafeVarargs
+    public final void setSystemsOn(boolean on, Class<? extends System>... sClasses) {
+        for (Class<? extends System> sClass : sClasses) {
+            if (!systems.containsKey(sClass)) {
+                continue;
+            }
+            getSystem(sClass).on = on;
         }
     }
 

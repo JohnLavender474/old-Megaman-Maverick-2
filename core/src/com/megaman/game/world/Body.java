@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Updatable;
 
 public class Body implements Updatable {
@@ -48,16 +49,16 @@ public class Body implements Updatable {
         return bounds.overlaps(body.bounds);
     }
 
+    public void setPos(Vector2 pos, Position position) {
+        ShapeUtils.setToPoint(bounds, pos, position);
+    }
+
     public void setPrevPos(Vector2 prevPos) {
         this.prevPos.set(prevPos);
     }
 
     public Vector2 getPosDelta() {
         return new Vector2(bounds.x, bounds.y).sub(prevPos);
-    }
-
-    public Vector2 getPos() {
-        return new Vector2(bounds.x, bounds.y);
     }
 
     public Vector2 getCenter() {

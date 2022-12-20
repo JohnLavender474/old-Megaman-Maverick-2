@@ -1,6 +1,5 @@
 package com.megaman.game.entities.megaman.health;
 
-import com.megaman.game.components.ComponentType;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.health.HealthVals;
@@ -14,7 +13,7 @@ public class MegamanHealthHandler {
     private final boolean[] hasHealthTank = new boolean[MegamanHealthTank.values().length];
 
     public MegamanHealthHandler(Megaman megaman) {
-        this.megamanHealth = (HealthComponent) megaman.getComponent(ComponentType.HEALTH);
+        this.megamanHealth = megaman.getComponent(HealthComponent.class);
     }
 
     public void putHealthTank(MegamanHealthTank healthTank) {

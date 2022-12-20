@@ -2,19 +2,28 @@ package com.megaman.game.screens.levels;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.ViewVals;
 import com.megaman.game.assets.MusicAsset;
+import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.audio.SoundSystem;
+import com.megaman.game.backgrounds.Background;
+import com.megaman.game.behaviors.BehaviorSystem;
 import com.megaman.game.controllers.ControllerBtn;
+import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactories;
@@ -22,7 +31,9 @@ import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
+import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
+import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.screens.levels.camera.LevelCamManager;
 import com.megaman.game.screens.levels.map.LevelMapLayer;
 import com.megaman.game.screens.levels.map.LevelMapManager;
@@ -30,20 +41,26 @@ import com.megaman.game.screens.levels.map.LevelMapObjParser;
 import com.megaman.game.screens.levels.spawns.LevelSpawn;
 import com.megaman.game.screens.levels.spawns.LevelSpawnManager;
 import com.megaman.game.shapes.LineSystem;
+import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
+import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.ui.MainBitsBarUi;
+import com.megaman.game.ui.TextHandle;
+import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
-import com.megaman.game.ViewVals;
+import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.WorldConstVals;
 import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
 
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class LevelScreen extends ScreenAdapter implements EventListener {
+
+    private static final float ON_PLAYER_DEATH_DELAY = 4f;
 
     private final MegamanGame game;
     private final LevelSpawnManager spawnMan;
@@ -55,6 +72,19 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final Viewport gameViewport;
     private final Viewport uiViewport;
 
+    private final Sound playerDeathSound;
+    private final Timer playerDeathDelayTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
+
+    private final Array<Background> backgrounds = new Array<>();
+    private final PriorityQueue<SpriteHandle> gameSpritesQ = new PriorityQueue<>();
+    private final Map<ShapeRenderer.ShapeType, Queue<RenderableShape>> shapeRenderQs =
+            new EnumMap<>(ShapeRenderer.ShapeType.class) {{
+                for (ShapeRenderer.ShapeType s : ShapeRenderer.ShapeType.values()) {
+                    put(s, new LinkedList<>());
+                }
+            }};
+
+    private final Queue<TextHandle> uiText = new LinkedList<>();
     private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables = new Array<>();
 
     public Music music;
@@ -81,14 +111,16 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 game.getAssMan().getTextureRegion(TextureAsset.BITS, "StandardBit"),
                 game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "Black"));
         addUiDrawable(healthBar);
+        // sounds
+        playerDeathSound = game.getAssMan().getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
-    public void set(String tmxFile, MusicAsset musicAsset) {
+    public void set(String tmxFile) {
         // set game cam for systems
         GameEngine engine = game.getGameEngine();
-        engine.getSystem(LineSystem.class).setGameCam(gameCam);
-        engine.getSystem(ShapeSystem.class).setGameCam(gameCam);
-        engine.getSystem(SpriteSystem.class).setGameCam(gameCam);
+        engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
+        engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
+        engine.getSystem(ShapeSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         // set map, fetch layer data
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
@@ -128,16 +160,66 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             }
         }
         spawnMan.set(enemySpawns, playerSpawns);
-        // set music
-        setMusic(musicAsset);
+        // set player death delay timer to end
+        playerDeathDelayTimer.setToEnd();
         // level screen is now set
         set = true;
     }
 
+    public void setMusic(MusicAsset m) {
+        if (music != null) {
+            music.stop();
+        }
+        music = game.getAssMan().getMusic(m);
+    }
+
+    public void playMusic(boolean loop) {
+        if (music.isPlaying()) {
+            music.stop();
+        }
+        game.getAudioMan().playMusic(music, loop);
+    }
+
+    public void pauseMusic() {
+        music.pause();
+    }
+
+    public void stopMusic() {
+        music.stop();
+    }
+
+    @Override
+    public void listenForEvent(Event event) {
+        GameEngine engine = game.getGameEngine();
+        switch (event.eventType) {
+            case GAME_PAUSE -> pause();
+            case GAME_RESUME -> resume();
+            case PLAYER_DEAD -> {
+                playerDeathDelayTimer.reset();
+                engine.getSystem(SoundSystem.class).reqStopAllLoops();
+                game.getAudioMan().playSound(playerDeathSound, false);
+                stopMusic();
+            }
+            case GATE_INIT_OPENING -> {
+                engine.setSystemsOn(false,
+                        ControllerSystem.class,
+                        TrajectorySystem.class,
+                        BehaviorSystem.class,
+                        WorldSystem.class);
+                engine.getSystem(SoundSystem.class).reqStopAllLoops();
+            }
+            case NEXT_GAME_ROOM_REQ -> {
+                String n = event.getInfo(ConstKeys.ROOM, RectangleMapObject.class).getName();
+                levelCamMan.transToRoom(n);
+            }
+            case ENTER_BOSS_ROOM -> {
+            }
+        }
+    }
+
     @Override
     public void show() {
-        music.play();
-        spawnPlayer();
+        spawnMegaman();
         paused = false;
         game.getEventMan().add(this);
     }
@@ -150,34 +232,95 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         super.render(delta);
         // TODO: render
         if (game.getCtrlMan().isJustPressed(ControllerBtn.START)) {
-
-            // TODO: pause/resume
-
+            if (paused) {
+                resume();
+            } else {
+                pause();
+            }
         }
         if (!paused) {
-
-            // TODO: while not paused
-
+            GameEngine engine = game.getGameEngine();
+            EventManager eventMan = game.getEventMan();
+            levelCamMan.update(delta);
+            if (levelCamMan.getTransState() == null) {
+                spawnMan.update(engine, gameCam);
+            } else {
+                switch (levelCamMan.getTransState()) {
+                    case BEGIN -> {
+                        engine.setSystemsOn(false,
+                                ControllerSystem.class,
+                                TrajectorySystem.class,
+                                UpdatableSystem.class,
+                                BehaviorSystem.class,
+                                WorldSystem.class,
+                                SoundSystem.class);
+                        engine.getSystem(SoundSystem.class).reqStopAllLoops();
+                        eventMan.dispatchEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                            put(ConstKeys.POS, levelCamMan.getTransInterpolation());
+                        }}));
+                    }
+                    case CONTINUE ->
+                            eventMan.dispatchEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                                put(ConstKeys.POS, levelCamMan.getTransInterpolation());
+                            }}));
+                    case END -> {
+                        engine.setSystemsOn(true,
+                                ControllerSystem.class,
+                                TrajectorySystem.class,
+                                UpdatableSystem.class,
+                                BehaviorSystem.class,
+                                WorldSystem.class,
+                                SoundSystem.class);
+                        eventMan.dispatchEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                            put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
+                        }}));
+                    }
+                }
+            }
+            playerDeathDelayTimer.update(delta);
+            if (playerDeathDelayTimer.isJustFinished()) {
+                spawnMegaman();
+            }
         }
-        SpriteBatch batch = game.getBatch();
-        // render backgrounds and map
-        batch.setProjectionMatrix(gameCam.combined);
-        batch.begin();
-
-        // TODO: render backgrounds
-
-        levelMapMan.draw();
-        batch.end();
         // update engine
         game.getGameEngine().update(delta);
-        // render ui
+        // level drawables
+        SpriteBatch batch = game.getBatch();
+        batch.setProjectionMatrix(gameCam.combined);
+        batch.begin();
+        for (Background b : backgrounds) {
+            b.update(delta);
+            b.draw(batch);
+        }
+        levelMapMan.draw();
+        while (!gameSpritesQ.isEmpty()) {
+            gameSpritesQ.poll().draw(batch);
+        }
+        batch.end();
+        // ui drawables
         batch.setProjectionMatrix(uiCam.combined);
         batch.begin();
-
-        // TODO: render ui
-
+        for (KeyValuePair<Supplier<Boolean>, Drawable> uiDrawable : uiDrawables) {
+            if (!uiDrawable.key().get()) {
+                continue;
+            }
+            uiDrawable.value().draw(batch);
+        }
+        while (!uiText.isEmpty()) {
+            uiText.poll().draw(batch);
+        }
         batch.end();
-        // apply viewports
+        // shape renderables
+        ShapeRenderer shapeRenderer = game.getShapeRenderer();
+        shapeRenderer.setProjectionMatrix(gameCam.combined);
+        for (Map.Entry<ShapeRenderer.ShapeType, Queue<RenderableShape>> e : shapeRenderQs.entrySet()) {
+            shapeRenderer.begin(e.getKey());
+            Queue<RenderableShape> q = e.getValue();
+            while (!q.isEmpty()) {
+                q.poll().render(shapeRenderer);
+            }
+            shapeRenderer.end();
+        }
         gameViewport.apply();
         uiViewport.apply();
     }
@@ -192,26 +335,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     public void resume() {
         paused = false;
         super.resume();
-    }
-
-    @Override
-    public void listenForEvent(Event event) {
-        switch (event.eventType) {
-            case GAME_PAUSE -> pause();
-            case GAME_RESUME -> resume();
-            case PLAYER_DEAD -> {
-                // TODO: on player dead
-            }
-            case GATE_INIT_OPENING -> {
-                // TODO: on gate init opening
-            }
-            case NEXT_GAME_ROOM_REQ -> {
-                // TODO: on next game room req
-            }
-            case ENTER_BOSS_ROOM -> {
-                // TODO: on enter boss room
-            }
-        }
     }
 
     @Override
@@ -231,18 +354,12 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         game.getEventMan().remove(this);
     }
 
-    private void spawnPlayer() {
+    private void spawnMegaman() {
         KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = spawnMan.getCurrPlayerCheckpoint();
         game.getGameEngine().spawnEntity(game.getMegaman(), spawn.key(), spawn.value());
-        game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_SPAWN));
-    }
-
-    private void setMusic(MusicAsset m) {
-        if (music != null) {
-            music.stop();
-        }
-        music = game.getAssMan().getMusic(m);
-        music.play();
+        game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_SPAWN, new ObjectMap<>() {{
+            put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
+        }}));
     }
 
     private void addUiDrawable(Drawable drawable) {

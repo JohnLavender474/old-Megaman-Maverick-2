@@ -25,7 +25,7 @@ public enum MusicAsset implements Asset {
     MMX_LEVEL_SELECT_SCREEN_MUSIC("MMX_LevelSelectScreen.ogg"),
     MM3_SNAKE_MAN_MUSIC("SnakeManMM3.mp3");
 
-    private static final String prefix = "music/";
+    private static final String prefix = "levelMusic/";
 
     private final String src;
 

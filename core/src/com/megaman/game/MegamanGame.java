@@ -29,12 +29,14 @@ import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
+import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import lombok.Getter;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Queue;
 
 @Getter
 public class MegamanGame extends Game {
@@ -55,12 +57,14 @@ public class MegamanGame extends Game {
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
 
+    private boolean debug;
+
     @Override
     public void create() {
+        debug = false;
         // renderers
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
-        shapeRenderer.setAutoShapeType(true);
         // managers
         ctrlMan = new ControllerManager();
         assMan = new AssetsManager();
@@ -89,9 +93,9 @@ public class MegamanGame extends Game {
             add(new UpdatableSystem());
             add(new BehaviorSystem());
             add(new AnimationSystem());
-            add(new SpriteSystem(batch));
-            add(new LineSystem(shapeRenderer));
-            add(new ShapeSystem(shapeRenderer));
+            add(new SpriteSystem());
+            add(new LineSystem());
+            add(new ShapeSystem());
             add(new SoundSystem(assMan, audioMan));
         }});
         // megaman
@@ -100,7 +104,7 @@ public class MegamanGame extends Game {
 
     public void setLevelScreen(Level level) {
         LevelScreen levelScreen = (LevelScreen) screens.get(ScreenEnum.LEVEL);
-        levelScreen.set(level.tmxFile, level.musicAsset);
+        levelScreen.set(level.tmxFile);
         setScreen(levelScreen);
     }
 

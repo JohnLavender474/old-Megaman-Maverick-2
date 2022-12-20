@@ -13,4 +13,8 @@ public class Event {
         this(eventType, new ObjectMap<>());
     }
 
+    public <T> T getInfo(String key, Class<T> tClass) {
+        return tClass.cast(info.get(key));
+    }
+
 }

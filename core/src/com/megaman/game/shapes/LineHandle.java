@@ -1,6 +1,7 @@
 package com.megaman.game.shapes;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.utils.objs.Pair;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ import static com.badlogic.gdx.math.Vector2.Y;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineHandle {
+public class LineHandle implements RenderableShape {
 
     private Supplier<Pair<Vector2>> lineSupplier = () -> Pair.of(X, Y);
     private Supplier<ShapeType> shapeTypeSupplier = () -> ShapeType.Line;
@@ -44,6 +45,14 @@ public class LineHandle {
 
     public boolean doRender() {
         return doRenderSupplier.get();
+    }
+
+    @Override
+    public void render(ShapeRenderer renderer) {
+        renderer.setColor(getColor());
+        Pair<Vector2> line = getLine();
+        float thickness = getThickness();
+        renderer.rectLine(line.getFirst(), line.getSecond(), thickness);
     }
 
 }

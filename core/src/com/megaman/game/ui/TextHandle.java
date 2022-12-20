@@ -24,6 +24,7 @@ public class TextHandle implements Drawable {
     private final GlyphLayout layout = new GlyphLayout();
 
     public final Vector2 center = new Vector2();
+
     public Supplier<String> textSupplier;
 
     public TextHandle(Vector2 center) {
@@ -45,7 +46,11 @@ public class TextHandle implements Drawable {
     }
 
     public void setText(String text) {
-        textSupplier = () -> text;
+        setTextSupplier(() -> text);
+    }
+
+    public void setTextSupplier(Supplier<String> textSupplier) {
+        this.textSupplier = textSupplier;
     }
 
     @Override
