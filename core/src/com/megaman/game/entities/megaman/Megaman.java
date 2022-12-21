@@ -90,6 +90,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float TIME_TO_FULLY_CHARGED = 1.25f;
 
     public static final float EXPLOSION_ORB_SPEED = 3.5f;
+    
+    public static final float CHARGING_ANIM_TIME = .125f;
 
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
 
@@ -97,32 +99,43 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public final MegamanWeaponHandler weaponHandler;
     public final MegamanHealthHandler healthHandler;
+    public final Sprite sprite;
+    public final Body body;
 
-    public final Sprite sprite = new Sprite();
-    public final Body body = new Body(BodyType.DYNAMIC);
+    private final Timer dmgTimer;
+    private final Timer airDashTimer;
+    private final Timer dmgRecovTimer;
+    private final Timer chargingTimer;
+    private final Timer wallJumpTimer;
+    private final Timer shootAnimTimer;
+    private final Timer groundSlideTimer;
+    private final Timer dmgRecovBlinkTimer;
 
-    private final Timer airDashTimer = new Timer(MAX_AIR_DASH_TIME);
-    private final Timer dmgTimer = new Timer(DAMAGE_DURATION, true);
-    private final Timer chargingTimer = new Timer(TIME_TO_FULLY_CHARGED);
-    private final Timer shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
-    private final Timer groundSlideTimer = new Timer(MAX_GROUND_SLIDE_TIME);
-    private final Timer dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
-    private final Timer wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
-    private final Timer dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
-
-    public boolean shooting;
-    public boolean recoveryBlink;
     public MegamanWeapon currentWeapon;
     public AButtonTask aButtonTask;
     @Getter
     @Setter
     public Facing facing;
 
+    private boolean recoveryBlink;
+
     public Megaman(MegamanGame game) {
         super(game, EntityType.MEGAMAN);
+        this.sprite = new Sprite();
+        this.body = new Body(BodyType.DYNAMIC);
+        this.airDashTimer = new Timer(MAX_AIR_DASH_TIME);
+        this.dmgTimer = new Timer(DAMAGE_DURATION, true);
+        this.shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
+        this.groundSlideTimer = new Timer(MAX_GROUND_SLIDE_TIME);
+        this.dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
+        this.wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
+        this.dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
         this.weaponHandler = new MegamanWeaponHandler(this, game.getGameEngine(), game.getEntityFactories());
+        this.weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER, true);
         this.healthHandler = new MegamanHealthHandler(this);
         this.currentWeapon = MegamanWeapon.MEGA_BUSTER;
+        this.chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
+                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
         addComponent(healthComponent());
         addComponent(updatableComponent());
         addComponent(bodyComponent());
@@ -132,8 +145,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         addComponent(new SoundComponent());
         addComponent(controllerComponent());
         addComponent(shapeComponent());
-        chargingTimer.tmRunnables.add(new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
-                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND)));
     }
 
     @Override
@@ -208,15 +219,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     public boolean isChargingFully() {
-        // TODO: Fix
-        // return stats.weaponsChargeable && chargingTimer.isFinished();
-        return false;
+        return weaponHandler.isChargeable(currentWeapon) && chargingTimer.isFinished();
     }
 
     public boolean isCharging() {
-        // TODO: Fix
-        // return stats.weaponsChargeable && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
-        return false;
+        return weaponHandler.isChargeable(currentWeapon) && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
     }
 
     public boolean is(BehaviorType behaviorType) {
@@ -313,22 +320,16 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     bc.set(BehaviorType.RUNNING, false);
                 }
             }
-
         });
         // x
         c.ctrlAdapters.put(ControllerBtn.X, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
-                // TODO: Fix
-                /*
-                if (!stats.weaponsChargeable) {
+                if (isDamaged() || !weaponHandler.isChargeable(currentWeapon)) {
+                    stopCharging();
                     return;
                 }
-                 */
                 chargingTimer.update(delta);
-                if (isDamaged()) {
-                    stopCharging();
-                }
             }
 
             @Override
@@ -338,7 +339,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 stopCharging();
             }
-
         });
         return c;
     }
@@ -426,6 +426,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
             }};
             for (Vector2 traj : trajs) {
+
                 // game.getGameEngine().spawnEntity(new ExplosionOrb(game, body, traj));
             }
             game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_DEAD));
@@ -447,182 +448,180 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     private AnimationComponent animationComponent() {
         Supplier<String> keySupplier = () -> {
+            String key;
             if (isDamaged()) {
-                return is(BehaviorType.GROUND_SLIDING) ? "LayDownDamaged" : "Damaged";
+                key = is(BehaviorType.GROUND_SLIDING) ? "LayDownDamaged" : "Damaged";
             } else if (is(BehaviorType.AIR_DASHING)) {
                 if (isChargingFully()) {
-                    return "AirDashCharging";
+                    key = "AirDashCharging";
                 } else if (isCharging()) {
-                    return "AirDashHalfCharging";
+                    key = "AirDashHalfCharging";
                 } else {
-                    return "AirDash";
+                    key = "AirDash";
                 }
             } else if (is(BehaviorType.GROUND_SLIDING)) {
                 if (isChargingFully()) {
-                    return "GroundSlideCharging";
+                    key = "GroundSlideCharging";
                 } else if (isCharging()) {
-                    return "GroundSlideHalfCharging";
+                    key = "GroundSlideHalfCharging";
                 } else {
-                    return "GroundSlide";
+                    key = "GroundSlide";
                 }
             } else if (is(BehaviorType.WALL_SLIDING)) {
                 if (isShooting()) {
-                    return "WallSlideShoot";
+                    key = "WallSlideShoot";
                 } else if (isChargingFully()) {
-                    return "WallSlideCharging";
+                    key = "WallSlideCharging";
                 } else if (isCharging()) {
-                    return "WallSlideHalfCharging";
+                    key = "WallSlideHalfCharging";
                 } else {
-                    return "WallSlide";
+                    key = "WallSlide";
                 }
             } else if (is(BehaviorType.SWIMMING)) {
                 if (isShooting()) {
-                    return "SwimShoot";
+                    key = "SwimShoot";
                 } else if (isChargingFully()) {
-                    return "SwimCharging";
+                    key = "SwimCharging";
                 } else if (isCharging()) {
-                    return "SwimHalfCharging";
+                    key = "SwimHalfCharging";
                 } else {
-                    return "Swim";
+                    key = "Swim";
                 }
             } else if (is(BehaviorType.JUMPING) || !is(BodySense.FEET_ON_GROUND)) {
                 if (isShooting()) {
-                    return "JumpShoot";
+                    key = "JumpShoot";
                 } else if (isChargingFully()) {
-                    return "JumpCharging";
+                    key = "JumpCharging";
                 } else if (isCharging()) {
-                    return "JumpHalfCharging";
+                    key = "JumpHalfCharging";
                 } else {
-                    return "Jump";
+                    key = "Jump";
                 }
             } else if (is(BodySense.FEET_ON_GROUND) && is(BehaviorType.RUNNING)) {
                 if (isShooting()) {
-                    return "RunShoot";
+                    key = "RunShoot";
                 } else if (isChargingFully()) {
-                    return "RunCharging";
+                    key = "RunCharging";
                 } else if (isCharging()) {
-                    return "RunHalfCharging";
+                    key = "RunHalfCharging";
                 } else {
-                    return "Run";
+                    key = "Run";
                 }
             } else if (is(BehaviorType.CLIMBING)) {
                 if (isShooting()) {
-                    return "ClimbShoot";
+                    key = "ClimbShoot";
                 } else if (isChargingFully()) {
-                    return "ClimbCharging";
+                    key = "ClimbCharging";
                 } else if (isCharging()) {
-                    return "ClimbHalfCharging";
+                    key = "ClimbHalfCharging";
                 } else {
-                    return "Climb";
+                    key = "Climb";
                 }
             } else if (is(BodySense.FEET_ON_GROUND) && Math.abs(body.velocity.x) > WorldVals.PPM / 8f) {
                 if (isShooting()) {
-                    return "SlipSlideShoot";
+                    key = "SlipSlideShoot";
                 } else if (isChargingFully()) {
-                    return "SlipSlideCharging";
+                    key = "SlipSlideCharging";
                 } else if (isCharging()) {
-                    return "SlipSlideHalfCharging";
+                    key = "SlipSlideHalfCharging";
                 } else {
-                    return "SlipSlide";
+                    key = "SlipSlide";
                 }
             } else {
                 if (isShooting()) {
-                    return "StandShoot";
+                    key = "StandShoot";
                 } else if (isChargingFully()) {
-                    return "StandCharging";
+                    key = "StandCharging";
                 } else if (isCharging()) {
-                    return "StandHalfCharging";
+                    key = "StandHalfCharging";
                 } else {
-                    return "Stand";
+                    key = "Stand";
                 }
             }
+            return currentWeapon.name() + key;
         };
-        Map<MegamanWeapon, Map<String, Animation>> weaponToAnimMap = new EnumMap<>(MegamanWeapon.class);
-        final float chargingAnimTime = .125f;
-        for (MegamanWeapon megamanWeapon : MegamanWeapon.values()) {
-
-            // TODO: Temporary, do not include any but mega buster
-            if (megamanWeapon != MegamanWeapon.MEGA_BUSTER) {
-                continue;
-            }
-
-            String textureAtlasKey;
-            switch (megamanWeapon) {
-                case MEGA_BUSTER -> textureAtlasKey = TextureAsset.MEGAMAN.getSrc();
-                case FLAME_TOSS -> textureAtlasKey = TextureAsset.MEGAMAN_FIRE.getSrc();
-                default -> throw new IllegalStateException();
-            }
+        ObjectMap<String, Animation> anims = new ObjectMap<>();
+        for (MegamanWeapon weapon : MegamanWeapon.values()) {
+            String textureAtlasKey = switch (weapon) {
+                case MEGA_BUSTER -> TextureAsset.MEGAMAN.getSrc();
+                // case FLAME_TOSS -> TextureAsset.MEGAMAN_FIRE.getSrc();
+                // TODO: replace with fire texture atlas src
+                case FLAME_TOSS -> TextureAsset.MEGAMAN.getSrc();
+            };
             TextureAtlas textureAtlas = game.getAssMan().getAsset(textureAtlasKey, TextureAtlas.class);
-            Map<String, Animation> animations = new HashMap<>();
+            ObjectMap<String, Animation> tempAnims = new ObjectMap<>();
             // climb
-            animations.put("Climb", new Animation(textureAtlas.findRegion("Climb"), 2, .125f));
-            animations.put("ClimbShoot", new Animation(textureAtlas.findRegion("ClimbShoot")));
-            animations.put("ClimbHalfCharging", new Animation(
-                    textureAtlas.findRegion("ClimbHalfCharging"), 2, chargingAnimTime));
-            animations.put("ClimbCharging", new Animation(
-                    textureAtlas.findRegion("ClimbCharging"), 2, chargingAnimTime));
+            tempAnims.put("Climb", new Animation(textureAtlas.findRegion("Climb"), 2, .125f));
+            tempAnims.put("ClimbShoot", new Animation(textureAtlas.findRegion("ClimbShoot")));
+            tempAnims.put("ClimbHalfCharging", new Animation(
+                    textureAtlas.findRegion("ClimbHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("ClimbCharging", new Animation(
+                    textureAtlas.findRegion("ClimbCharging"), 2, CHARGING_ANIM_TIME));
             // stand
-            animations.put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
-            animations.put("StandCharging", new Animation(
-                    textureAtlas.findRegion("StandCharging"), 2, chargingAnimTime));
-            animations.put("StandHalfCharging", new Animation(
-                    textureAtlas.findRegion("StandHalfCharging"), 2, chargingAnimTime));
-            animations.put("StandShoot", new Animation(textureAtlas.findRegion("StandShoot")));
+            tempAnims.put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
+            tempAnims.put("StandCharging", new Animation(
+                    textureAtlas.findRegion("StandCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("StandHalfCharging", new Animation(
+                    textureAtlas.findRegion("StandHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("StandShoot", new Animation(textureAtlas.findRegion("StandShoot")));
             // damaged
-            animations.put("Damaged", new Animation(textureAtlas.findRegion("Damaged"), 3, .05f));
-            animations.put("LayDownDamaged", new Animation(textureAtlas.findRegion("LayDownDamaged"), 3, .05f));
+            tempAnims.put("Damaged", new Animation(textureAtlas.findRegion("Damaged"), 3, .05f));
+            tempAnims.put("LayDownDamaged", new Animation(textureAtlas.findRegion("LayDownDamaged"), 3, .05f));
             // run
-            animations.put("Run", new Animation(textureAtlas.findRegion("Run"), 4, .125f));
-            animations.put("RunCharging", new Animation(textureAtlas
-                    .findRegion("RunCharging"), 4, chargingAnimTime));
-            animations.put("RunHalfCharging", new Animation(
-                    textureAtlas.findRegion("RunHalfCharging"), 4, chargingAnimTime));
-            animations.put("RunShoot", new Animation(textureAtlas.findRegion("RunShoot"), 4, .125f));
+            tempAnims.put("Run", new Animation(textureAtlas.findRegion("Run"), 4, .125f));
+            tempAnims.put("RunCharging", new Animation(textureAtlas
+                    .findRegion("RunCharging"), 4, CHARGING_ANIM_TIME));
+            tempAnims.put("RunHalfCharging", new Animation(
+                    textureAtlas.findRegion("RunHalfCharging"), 4, CHARGING_ANIM_TIME));
+            tempAnims.put("RunShoot", new Animation(textureAtlas.findRegion("RunShoot"), 4, .125f));
             // jump
-            animations.put("Jump", new Animation(textureAtlas.findRegion("Jump")));
-            animations.put("JumpCharging", new Animation(
-                    textureAtlas.findRegion("JumpCharging"), 2, chargingAnimTime));
-            animations.put("JumpHalfCharging", new Animation(
-                    textureAtlas.findRegion("JumpHalfCharging"), 2, chargingAnimTime));
-            animations.put("JumpShoot", new Animation(textureAtlas.findRegion("JumpShoot")));
+            tempAnims.put("Jump", new Animation(textureAtlas.findRegion("Jump")));
+            tempAnims.put("JumpCharging", new Animation(
+                    textureAtlas.findRegion("JumpCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("JumpHalfCharging", new Animation(
+                    textureAtlas.findRegion("JumpHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("JumpShoot", new Animation(textureAtlas.findRegion("JumpShoot")));
             // swim
-            animations.put("Swim", new Animation(textureAtlas.findRegion("Swim")));
-            animations.put("SwimAttack", new Animation(textureAtlas.findRegion("SwimAttack")));
-            animations.put("SwimCharging", new Animation(
-                    textureAtlas.findRegion("SwimCharging"), 2, chargingAnimTime));
-            animations.put("SwimHalfCharging", new Animation(
-                    textureAtlas.findRegion("SwimHalfCharging"), 2, chargingAnimTime));
-            animations.put("SwimShoot", new Animation(textureAtlas.findRegion("SwimShoot")));
+            tempAnims.put("Swim", new Animation(textureAtlas.findRegion("Swim")));
+            tempAnims.put("SwimAttack", new Animation(textureAtlas.findRegion("SwimAttack")));
+            tempAnims.put("SwimCharging", new Animation(
+                    textureAtlas.findRegion("SwimCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("SwimHalfCharging", new Animation(
+                    textureAtlas.findRegion("SwimHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("SwimShoot", new Animation(textureAtlas.findRegion("SwimShoot")));
             // wall slide
-            animations.put("WallSlide", new Animation(textureAtlas.findRegion("WallSlide")));
-            animations.put("WallSlideCharging", new Animation(
-                    textureAtlas.findRegion("WallSlideCharging"), 2, chargingAnimTime));
-            animations.put("WallSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("WallSlideHalfCharging"), 2, chargingAnimTime));
-            animations.put("WallSlideShoot", new Animation(textureAtlas.findRegion("WallSlideShoot")));
+            tempAnims.put("WallSlide", new Animation(textureAtlas.findRegion("WallSlide")));
+            tempAnims.put("WallSlideCharging", new Animation(
+                    textureAtlas.findRegion("WallSlideCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("WallSlideHalfCharging", new Animation(
+                    textureAtlas.findRegion("WallSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("WallSlideShoot", new Animation(textureAtlas.findRegion("WallSlideShoot")));
             // ground slide
-            animations.put("GroundSlide", new Animation(textureAtlas.findRegion("GroundSlide")));
-            animations.put("GroundSlideCharging", new Animation(
-                    textureAtlas.findRegion("GroundSlideCharging"), 2, chargingAnimTime));
-            animations.put("GroundSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("GroundSlideHalfCharging"), 2, chargingAnimTime));
+            tempAnims.put("GroundSlide", new Animation(textureAtlas.findRegion("GroundSlide")));
+            tempAnims.put("GroundSlideCharging", new Animation(
+                    textureAtlas.findRegion("GroundSlideCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("GroundSlideHalfCharging", new Animation(
+                    textureAtlas.findRegion("GroundSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
             // air dash
-            animations.put("AirDash", new Animation(textureAtlas.findRegion("AirDash")));
-            animations.put("AirDashCharging", new Animation(
-                    textureAtlas.findRegion("AirDashCharging"), 2, chargingAnimTime));
-            animations.put("AirDashHalfCharging", new Animation(
-                    textureAtlas.findRegion("AirDashHalfCharging"), 2, chargingAnimTime));
+            tempAnims.put("AirDash", new Animation(textureAtlas.findRegion("AirDash")));
+            tempAnims.put("AirDashCharging", new Animation(
+                    textureAtlas.findRegion("AirDashCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("AirDashHalfCharging", new Animation(
+                    textureAtlas.findRegion("AirDashHalfCharging"), 2, CHARGING_ANIM_TIME));
             // slip slide
-            animations.put("SlipSlide", new Animation(textureAtlas.findRegion("SlipSlide")));
-            animations.put("SlipSlideCharging", new Animation(
-                    textureAtlas.findRegion("SlipSlideCharging"), 2, chargingAnimTime));
-            animations.put("SlipSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("SlipSlideHalfCharging"), 2, chargingAnimTime));
-            animations.put("SlipSlideShoot", new Animation(textureAtlas.findRegion("SlipSlideShoot")));
-            weaponToAnimMap.put(megamanWeapon, animations);
+            tempAnims.put("SlipSlide", new Animation(textureAtlas.findRegion("SlipSlide")));
+            tempAnims.put("SlipSlideCharging", new Animation(
+                    textureAtlas.findRegion("SlipSlideCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("SlipSlideHalfCharging", new Animation(
+                    textureAtlas.findRegion("SlipSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
+            tempAnims.put("SlipSlideShoot", new Animation(textureAtlas.findRegion("SlipSlideShoot")));
+            // put anims
+            ObjectMap.Entries<String, Animation> entries = tempAnims.entries();
+            for (ObjectMap.Entry<String, Animation> e : entries) {
+                anims.put(currentWeapon.name() + e.key, e.value);
+            }
         }
-        Animator animator = new Animator(sprite, keySupplier, key -> weaponToAnimMap.get(currentWeapon).get(key));
-        return new AnimationComponent(animator);
+        return new AnimationComponent(new Animator(sprite, keySupplier, anims));
     }
 
     private BehaviorComponent behaviorComponent() {

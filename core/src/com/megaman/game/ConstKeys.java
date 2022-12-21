@@ -12,6 +12,7 @@ public class ConstKeys {
     public static final String STAT = "stat";
     public static final String MASK = "mask";
 
+    public static final String REFLECT = "reflect";
     public static final String DIR = "dir";
     public static final String UP = "up";
     public static final String DOWN = "down";

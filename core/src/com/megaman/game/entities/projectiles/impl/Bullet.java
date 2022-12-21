@@ -2,7 +2,6 @@ package com.megaman.game.entities.projectiles.impl;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
@@ -10,9 +9,9 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
-import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.sprites.SpriteComponent;
@@ -31,30 +30,28 @@ public class Bullet extends Projectile {
 
     private final Sprite sprite = new Sprite();
 
-    private Vector2 traj;
+    private Vector2 traj = new Vector2();
 
-    public Bullet(MegamanGame game, Entity owner) {
-        super(game, owner);
+    public Bullet(MegamanGame game) {
+        super(game);
         defineBody();
         addComponent(spriteComponent());
         addComponent(updatableComponent());
     }
 
     @Override
-    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
-        // trajectory
-        traj = (Vector2) data.get(ConstKeys.TRAJECTORY);
-        // spawn
-        Vector2 spawn = (Vector2) data.get(ConstKeys.SPAWN);
+    public void init(Vector2 spawn, ObjectMap<String, Object> data) {
+        super.init(spawn, data);
         body.bounds.setCenter(spawn);
+        traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
     }
 
     public void disintegrate() {
         dead = true;
         game.getGameEngine().spawnEntity(
-                game.getEntityFactories().fetch(EntityType.EXPLOSION, "ChargedShotExplosion"),
+                game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
                 ShapeUtils.getCenterPoint(body.bounds));
-        getComponent(SoundComponent.class).request(SoundAsset.THUMP_SOUND);
+        game.getAudioMan().playSound(game.getAssMan().getSound(SoundAsset.THUMP_SOUND), false);
     }
 
     @Override
@@ -90,7 +87,7 @@ public class Bullet extends Projectile {
     }
 
     private void defineBody() {
-        body.velClamp.set(CLAMP, CLAMP);
+        body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
         // projectile fixture
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, .2f * WorldVals.PPM);
         body.fixtures.add(projectileFixture);
@@ -103,9 +100,9 @@ public class Bullet extends Projectile {
         TextureRegion t = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
         sprite.setRegion(t);
         sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
-        SpriteHandle handle = new SpriteHandle(sprite, 4);
-        handle.runnable = () -> handle.setPosition(body.bounds, Position.CENTER);
-        return new SpriteComponent(handle);
+        SpriteHandle h = new SpriteHandle(sprite, 4);
+        h.runnable = () -> h.setPosition(body.bounds, Position.CENTER);
+        return new SpriteComponent(h);
     }
 
 }

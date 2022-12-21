@@ -15,7 +15,7 @@ public class SoundSystem extends System {
 
     private final AssetsManager assMan;
     private final AudioManager audioMan;
-    private final Map<SoundAsset, Sound> loops = new EnumMap<>(SoundAsset.class);
+    private final Map<SoundAsset, Sound> loops;
 
     private boolean reqStopLoops;
 
@@ -23,6 +23,7 @@ public class SoundSystem extends System {
         super(SoundComponent.class);
         this.assMan = assMan;
         this.audioMan = audioMan;
+        this.loops = new EnumMap<>(SoundAsset.class);
     }
 
     public void reqStopAllLoops() {
@@ -34,7 +35,9 @@ public class SoundSystem extends System {
     }
 
     private void stopAllLoops() {
-        loops.values().forEach(Sound::stop);
+        for (Sound s : loops.values()) {
+            s.stop();
+        }
         loops.clear();
         reqStopLoops = false;
     }

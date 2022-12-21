@@ -21,17 +21,17 @@ import com.megaman.game.world.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ChargedShotExplosion extends Entity implements Damager, Faceable {
 
     private static final float FULLY_CHARGED_DUR = .75f;
-    private static final float HALF_CHARGED_DUR = .15f;
+    private static final float HALF_CHARGED_DUR = .25f;
+    private static final float SOUND_INTERVAL = .1f;
 
-    private final Body body = new Body(BodyType.ABSTRACT);
-    private final Timer soundTimer = new Timer(.15f);
-    private final Sprite sprite = new Sprite();
+    private final Body body;
+    private final Sprite sprite;
+    private final Timer soundTimer;
 
     @Getter
     private Entity owner;
@@ -44,6 +44,9 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
 
     public ChargedShotExplosion(MegamanGame game) {
         super(game, EntityType.EXPLOSION);
+        this.body = new Body(BodyType.ABSTRACT);
+        this.soundTimer = new Timer(SOUND_INTERVAL);
+        this.sprite = new Sprite();
         addComponent(bodyComponent());
         addComponent(spriteComponent());
         addComponent(animationComponent());
@@ -71,11 +74,9 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
     private UpdatableComponent updatableComponent() {
         return new UpdatableComponent(delta -> {
             soundTimer.update(delta);
-            if (soundTimer.isJustFinished()) {
+            if (soundTimer.isFinished()) {
                 getComponent(SoundComponent.class).request(SoundAsset.ENEMY_DAMAGE_SOUND);
-                if (fullyCharged) {
-                    soundTimer.reset();
-                }
+                soundTimer.reset();
             }
             cullTimer.update(delta);
             if (cullTimer.isFinished()) {
@@ -109,8 +110,11 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
         Animation fullyChargedAnim = new Animation(fullyChargedRegion, 3, .05f);
         Animation halfChargedAnim = new Animation(halfChargedRegion, 3, .05f, false);
         Supplier<String> keySupplier = () -> fullyCharged ? "FullyCharged" : "HalfCharged";
-        Function<String, Animation> func = key -> key.equals("FullyCharged") ? fullyChargedAnim : halfChargedAnim;
-        return new AnimationComponent(sprite, keySupplier, func);
+        ObjectMap<String, Animation> anims = new ObjectMap<>() {{
+            put("FullyCharged", fullyChargedAnim);
+            put("HalfCharged", halfChargedAnim);
+        }};
+        return new AnimationComponent(sprite, keySupplier, anims);
     }
 
 }

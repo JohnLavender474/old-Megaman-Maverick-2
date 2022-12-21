@@ -7,7 +7,6 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
-import com.megaman.game.Component;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.sprites.SpriteComponent;
@@ -20,25 +19,23 @@ import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static com.megaman.game.assets.TextureAsset.DECORATIONS;
 
 @Getter
 @Setter
 public class Disintegration extends Entity {
 
-    public static final float DISINTEGRATION_DURATION = .1f;
+    public static final float CULL_DUR = .1f;
 
-    private final Map<Class<? extends Component>, Component> components = new HashMap<>();
-    private final Timer timer = new Timer(DISINTEGRATION_DURATION);
-
-    private final Body body = new Body(BodyType.ABSTRACT);
-    private final Sprite sprite = new Sprite();
+    private final Body body;
+    private final Sprite sprite;
+    private final Timer cullTimer;
 
     public Disintegration(MegamanGame game) {
         super(game, EntityType.EXPLOSION);
+        sprite = new Sprite();
+        cullTimer = new Timer(CULL_DUR);
+        body = new Body(BodyType.ABSTRACT);
         addComponent(spriteComponent());
         addComponent(updatableComponent());
         addComponent(animationComponent());
@@ -46,6 +43,7 @@ public class Disintegration extends Entity {
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
+        cullTimer.reset();
         sprite.setCenter(spawn.x, spawn.y);
     }
 
@@ -56,19 +54,17 @@ public class Disintegration extends Entity {
 
     private AnimationComponent animationComponent() {
         Animation anim = new Animation(game.getAssMan().getTextureRegion(DECORATIONS, "Disintegration"), 3, 0.005f);
-        Animator animator = new Animator(sprite, () -> "Disintegration", key -> anim);
+        Animator animator = new Animator(sprite, anim);
         return new AnimationComponent(animator);
     }
 
     private UpdatableComponent updatableComponent() {
-        UpdatableComponent c = new UpdatableComponent();
-        c.add(delta -> {
-            timer.update(delta);
-            if (timer.isFinished()) {
+        return new UpdatableComponent(delta -> {
+            cullTimer.update(delta);
+            if (cullTimer.isFinished()) {
                 dead = true;
             }
         });
-        return c;
     }
 
 }

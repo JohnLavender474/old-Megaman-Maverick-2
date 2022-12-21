@@ -18,7 +18,7 @@ public class Animation implements Updatable, Resettable {
     private final Array<TextureRegion> frames = new Array<>();
     private final Array<Float> frameTimes = new Array<>();
 
-    public TextureRegion currentRegion;
+    public TextureRegion currRegion;
     public boolean loop = true;
 
     private float animationDuration;
@@ -100,7 +100,7 @@ public class Animation implements Updatable, Resettable {
             currentLoopDuration -= frameTimes.get(index);
             index++;
         }
-        currentRegion = frames.get(index);
+        currRegion = frames.get(index);
     }
 
     @Override

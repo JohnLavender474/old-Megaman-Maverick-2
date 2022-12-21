@@ -14,28 +14,37 @@ public class Body implements Updatable {
     public static final float STANDARD_RESISTANCE_X = 1.035f;
     public static final float STANDARD_RESISTANCE_Y = 1.025f;
 
-    public static boolean intersect(Body b1, Body b2, Rectangle overlap) {
-        return Intersector.intersectRectangles(b1.bounds, b2.bounds, overlap);
-    }
-
+    public Rectangle bounds;
+    public boolean[] senses;
     public BodyType bodyType;
-    public Rectangle bounds = new Rectangle();
-    public Array<Fixture> fixtures = new Array<>();
-    public boolean[] senses = new boolean[BodySense.values().length];
+    public Array<Fixture> fixtures;
 
-    public Vector2 gravity = new Vector2();
-    public Vector2 velocity = new Vector2();
-    public Vector2 velClamp = new Vector2();
-    public Vector2 friction = new Vector2();
-    public Vector2 resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
+    public Vector2 gravity;
+    public Vector2 velocity;
+    public Vector2 friction;
+    public Vector2 velClamp;
+    public Vector2 resistance;
 
     public boolean gravityOn;
     public boolean affectedByResistance;
 
-    private final Vector2 prevPos = new Vector2();
+    private final Vector2 prevPos;
 
     public Body(BodyType bodyType) {
         this.bodyType = bodyType;
+        this.prevPos = new Vector2();
+        this.gravity = new Vector2();
+        this.bounds = new Rectangle();
+        this.fixtures = new Array<>();
+        this.velocity = new Vector2();
+        this.friction = new Vector2();
+        this.senses = new boolean[BodySense.values().length];
+        this.velClamp = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        this.resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
+    }
+
+    public static boolean intersect(Body b1, Body b2, Rectangle overlap) {
+        return Intersector.intersectRectangles(b1.bounds, b2.bounds, overlap);
     }
 
     public boolean is(BodySense sense) {

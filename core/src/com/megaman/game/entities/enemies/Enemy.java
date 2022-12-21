@@ -108,7 +108,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable, Updat
 
     protected boolean isPlayerShootingAtMe() {
         Megaman m = game.getMegaman();
-        if (!m.shooting) {
+        if (!m.isShooting()) {
             return false;
         }
         BodyComponent bc = getComponent(BodyComponent.class);

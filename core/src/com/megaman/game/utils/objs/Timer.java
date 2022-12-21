@@ -11,9 +11,8 @@ import java.util.Queue;
 @Getter
 public class Timer {
 
-    public Array<TimeMarkedRunnable> tmRunnables = new Array<>();
-
-    private final Queue<TimeMarkedRunnable> tmrQ = new PriorityQueue<>();
+    private final Array<TimeMarkedRunnable> tmRunnables;
+    private final Queue<TimeMarkedRunnable> tmrQ;
 
     private float time;
     private float duration;
@@ -24,6 +23,8 @@ public class Timer {
     }
 
     public Timer(Timer timer) {
+        tmRunnables = new Array<>();
+        tmrQ = new PriorityQueue<>();
         tmRunnables.addAll(timer.tmRunnables);
         tmrQ.addAll(timer.tmrQ);
         time = timer.time;
@@ -44,6 +45,8 @@ public class Timer {
     }
 
     public Timer(float duration, boolean setToEnd, Collection<TimeMarkedRunnable> tmRunnables) {
+        this.tmRunnables = new Array<>();
+        this.tmrQ = new PriorityQueue<>();
         setDuration(duration);
         for (TimeMarkedRunnable tmr : tmRunnables) {
             if (tmr.time() < 0f || tmr.time() > duration) {
@@ -100,13 +103,13 @@ public class Timer {
     }
 
     public boolean reset() {
-        boolean isFinished = isFinished();
+        boolean finished = isFinished();
         time = 0f;
         tmrQ.clear();
         for (TimeMarkedRunnable tmr : tmRunnables) {
             tmrQ.add(tmr);
         }
-        return isFinished;
+        return finished;
     }
 
 }

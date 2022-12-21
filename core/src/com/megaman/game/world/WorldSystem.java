@@ -1,26 +1,13 @@
 package com.megaman.game.world;
 
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.utils.ShapeUtils;
-import com.megaman.game.utils.enums.FloatToInt;
-import com.megaman.game.utils.enums.Position;
-import com.megaman.game.utils.interfaces.Updatable;
-import com.megaman.game.utils.objs.KeyValuePair;
-import com.megaman.game.utils.objs.Pair;
-import lombok.*;
 
 import java.util.*;
-
-import static com.megaman.game.utils.enums.FloatToInt.CEIL;
-import static com.megaman.game.utils.enums.FloatToInt.FLOOR;
-import static com.megaman.game.world.WorldVals.PPM;
-import static java.lang.Math.*;
 
 public class WorldSystem extends System {
 
@@ -60,7 +47,8 @@ public class WorldSystem extends System {
 
     // optimize by creating contact instances only when passing this filter method
     private static boolean filter(Fixture f1, Fixture f2) {
-        return masks.containsKey(f1.fixtureType) && masks.get(f1.fixtureType).contains(f2.fixtureType);
+        return (masks.containsKey(f1.fixtureType) && masks.get(f1.fixtureType).contains(f2.fixtureType)) ||
+                (masks.containsKey(f2.fixtureType) && masks.get(f2.fixtureType).contains(f1.fixtureType));
     }
 
     private final WorldContactListener listener;
@@ -173,8 +161,15 @@ public class WorldSystem extends System {
             for (Fixture o : overlapping) {
                 currContacts.add(new Contact(f, o));
             }
-        }         
-        // abstract bodies do not need collision handling
+        }
+        if (body.bodyType == BodyType.ABSTRACT || body.bodyType == BodyType.STATIC) {
+            return;
+        }
+        Array<Body> overlapping = worldGraph.getBodiesOverlapping(body, o -> o.bodyType == BodyType.STATIC);
+        for (Body o : overlapping) {
+            handleCollision(body, o);
+        }
+        /*
         if (body.bodyType == BodyType.ABSTRACT) {
             return;
         }
@@ -188,7 +183,8 @@ public class WorldSystem extends System {
             for (Body o : overlapping) {
                 handleCollision(body, o);
             }
-        }         
+        }
+         */
     }
 
     private void handleCollision(Body dynamicBody, Body staticBody) {
@@ -196,7 +192,7 @@ public class WorldSystem extends System {
             throw new IllegalStateException("First body must be dynamic, second must be static");
         }
         Rectangle overlap = new Rectangle();
-        boolean overlapping = Body.intersect(dynamicBody, staticBody, overlap);
+        boolean overlapping = dynamicBody.intersects(staticBody, overlap);
         if (!overlapping) {
             return;
         }
@@ -218,182 +214,3 @@ public class WorldSystem extends System {
     }
 
 }
-
-/*
-
-public class WorldSystem extends System {
-    
-    private static final float MIN_VEL = .01f;
-
-    private final Set<Contact> priorContacts = new HashSet<>();
-    private final Set<Contact> currentContacts = new HashSet<>();
-    private final List<Body> bodies = new ArrayList<>();
-    private final WorldContactListener worldContactListener;
-
-    private Vector2 airResistance = new Vector2(1.035f, 1.025f);
-    private float accumulator;
-
-    public WorldSystem(WorldContactListener worldContactListener) {
-        super(BodyComponent.class);
-        this.worldContactListener = worldContactListener;
-    }
-
-    @Override
-    protected void preProcess(float delta) {
-        bodies.clear();
-    }
-
-    @Override
-    protected void processEntity(Entity entity, float delta) {
-        BodyComponent bodyComponent = entity.getComponent(BodyComponent.class);
-        bodies.add(bodyComponent.body);
-    }
-
-    @Override
-    protected void postProcess(float delta) {
-        accumulator += delta;
-        float fixedTimeStep = 1f / 150f;
-        while (accumulator >= fixedTimeStep) {
-            accumulator -= fixedTimeStep;
-            for (Body body : bodies) {
-                Vector2 velocity = body.velocity;
-                // set velocity to zero if below threshold
-                if (abs(velocity.x) < PPM * MIN_VEL) {
-                    velocity.x = 0f;
-                }
-                if (abs(velocity.y) < PPM * MIN_VEL) {
-                    velocity.y = 0f;
-                }
-                // apply resistance
-                if (body.affectedByResistance) {
-                    if (body.resistance.x != 0) {
-                        velocity.x /= body.resistance.x;
-                    }
-                    if (body.resistance.y != 0) {
-                        velocity.y /= body.resistance.y;
-                    }
-                }
-                // reset resistance
-                body.resistance.set(airResistance);
-                // if gravity on, apply gravity
-                if (body.gravityOn) {
-                    velocity.add(0f, body.gravity.y);
-                }
-                // clamp velocity
-                Vector2 clamp = body.velClamp;
-                if (velocity.x > 0f && velocity.x > abs(clamp.x)) {
-                    velocity.x = abs(clamp.x);
-                } else if (velocity.x < 0f && velocity.x < -abs(clamp.x)) {
-                    velocity.x = -abs(clamp.x);
-                }
-                if (velocity.y > 0f && velocity.y > abs(clamp.y)) {
-                    velocity.y = abs(clamp.y);
-                } else if (velocity.y < 0f && velocity.y < -abs(clamp.y)) {
-                    velocity.y = -abs(clamp.y);
-                }
-                // translate
-                body.bounds.x += velocity.x * fixedTimeStep;
-                body.bounds.y += velocity.y * fixedTimeStep;
-                // set fixtures
-                for (Fixture fixture : body.fixtures) {
-                    Vector2 center = ShapeUtils.getCenterPoint(body.bounds);
-                    center.add(fixture.offset);
-                    fixture.bounds.setCenter(center);
-                }
-            }
-            // handle collisions
-            for (Body b1 : bodies) {
-                for (Body b2 : bodies) {
-                    if (b1.equals(b2)) {
-                        continue;
-                    }
-                    Rectangle overlap = new Rectangle();
-                    if (b1.intersects(b2, overlap)) {
-                        handleCollision(b1, b2, overlap);
-                    }
-                }
-            }
-            // handle fixture contacts
-            for (Body b1 : bodies) {
-                for (Body b2 : bodies) {
-                    if (b1.equals(b2)) {
-                        continue;
-                    }
-                    for (Fixture f1 : b1.fixtures) {
-                        for (Fixture f2 : b2.fixtures) {
-                            if (f1.overlaps(f2)) {
-                                currentContacts.add(new Contact(f1, f2));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // handle contacts in the current contacts setBounds
-        currentContacts.forEach(contact -> {
-            if (priorContacts.contains(contact)) {
-                worldContactListener.continueContact(contact, delta);
-            } else {
-                worldContactListener.beginContact(contact, delta);
-            }
-        });
-        // handle contacts in the prior contacts setBounds
-        priorContacts.forEach(contact -> {
-            if (!currentContacts.contains(contact)) {
-                worldContactListener.endContact(contact, delta);
-            }
-        });
-        // move current contacts to prior contacts setBounds, then clear the current contacts setBounds
-        priorContacts.clear();
-        priorContacts.addAll(currentContacts);
-        currentContacts.clear();
-        bodies.forEach(b -> b.setPrevPos(ShapeUtils.getPoint(b.bounds, Position.BOTTOM_LEFT)));
-    }
-
-    private void handleCollision(Body b1, Body b2, Rectangle overlap) {
-        if (overlap.getWidth() > overlap.getHeight()) {
-            if (b1.bounds.getY() > b2.bounds.getY()) {
-                if (ceil(b1.velocity.y) < -1f) {
-                    b1.resistance.x += b2.friction.x;
-                }
-                if (floor(b2.velocity.y) > 1f) {
-                    b2.resistance.x += b1.friction.x;
-                }
-                if ((b1.bodyType == BodyType.DYNAMIC && b2.bodyType == BodyType.STATIC)) {
-                    b1.bounds.y += overlap.getHeight();
-                } else if ((b2.bodyType == BodyType.DYNAMIC && b1.bodyType == BodyType.STATIC)) {
-                    b2.bounds.y -= overlap.getHeight();
-                }
-            } else {
-                if (floor(b1.velocity.y) > 1f) {
-                    b1.resistance.x += b2.friction.x;
-                }
-                if (ceil(b2.velocity.y) < -1f) {
-                    b2.resistance.x += b1.friction.x;
-                }
-                if ((b1.bodyType == BodyType.DYNAMIC && b2.bodyType == BodyType.STATIC)) {
-                    b1.bounds.y -= overlap.getHeight();
-                } else if ((b2.bodyType == BodyType.DYNAMIC && b1.bodyType == BodyType.STATIC)) {
-                    b2.bounds.y += overlap.getHeight();
-                }
-            }
-        } else {
-            if (b1.bounds.getX() > b2.bounds.getX()) {
-                if ((b1.bodyType == BodyType.DYNAMIC && b2.bodyType == BodyType.STATIC)) {
-                    b1.bounds.x += overlap.getWidth();
-                } else if ((b2.bodyType == BodyType.DYNAMIC && b1.bodyType == BodyType.STATIC)) {
-                    b2.bounds.x -= overlap.getWidth();
-                }
-            } else {
-                if ((b1.bodyType == BodyType.DYNAMIC && b2.bodyType == BodyType.STATIC)) {
-                    b1.bounds.x -= overlap.getWidth();
-                } else if ((b2.bodyType == BodyType.DYNAMIC && b1.bodyType == BodyType.STATIC)) {
-                    b2.bounds.x += overlap.getWidth();
-                }
-            }
-        }
-    }
-
-}
-
- */

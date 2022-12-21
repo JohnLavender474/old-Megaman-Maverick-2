@@ -1,5 +1,8 @@
 package com.megaman.game.entities.projectiles;
 
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.cull.CullOnEventComponent;
@@ -23,13 +26,17 @@ public abstract class Projectile extends Entity implements Damager {
 
     public Entity owner;
 
-    public Projectile(MegamanGame game, Entity owner) {
+    public Projectile(MegamanGame game) {
         super(game, EntityType.PROJECTILE);
-        this.owner = owner;
         addComponent(new SoundComponent());
         addComponent(new BodyComponent(body));
         addComponent(cullOnMessageComponent());
         addComponent(new CullOutOfBoundsComponent(() -> body.bounds));
+    }
+
+    @Override
+    public void init(Vector2 spawn, ObjectMap<String, Object> data) {
+        owner = (Entity) data.get(ConstKeys.OWNER);
     }
 
     @Override

@@ -40,4 +40,8 @@ public class Fixture {
         return bounds.overlaps(fixture.bounds);
     }
 
+    public <T> T getUserData(String key, Class<T> tClass) {
+        return tClass.cast(userData.get(key));
+    }
+
 }
