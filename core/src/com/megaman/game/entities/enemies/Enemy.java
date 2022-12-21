@@ -39,23 +39,23 @@ public abstract class Enemy extends Entity implements Damager, Damageable, Updat
         this.dmgNegs = defineDamageNegotiations();
         // define body comp
         defineBody(body);
-        addComponent(new BodyComponent(body));
+        putComponent(new BodyComponent(body));
         // define updatable comp
         UpdatableComponent uc = new UpdatableComponent();
         defineUpdateComponent(uc);
-        addComponent(uc);
+        putComponent(uc);
         // define cull event comp
         CullOnEventComponent coec = new CullOnEventComponent();
         defineCullOnEventComponent(coec);
-        addComponent(coec);
+        putComponent(coec);
         // define cull oocb comp
         CullOutOfBoundsComponent coocbc = new CullOutOfBoundsComponent();
         coocbc.timer = new Timer(cullDur);
         coocbc.boundsSupplier = () -> body.bounds;
-        addComponent(coocbc);
+        putComponent(coocbc);
         // other comps
-        addComponent(new SoundComponent());
-        addComponent(new HealthComponent(this::disintegrate));
+        putComponent(new SoundComponent());
+        putComponent(new HealthComponent(this::disintegrate));
     }
 
     protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations();

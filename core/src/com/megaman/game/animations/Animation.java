@@ -21,8 +21,8 @@ public class Animation implements Updatable, Resettable {
     public TextureRegion currRegion;
     public boolean loop = true;
 
-    private float animationDuration;
-    private boolean isFinished;
+    private float animDur;
+    private boolean finished;
     private float timeElapsed;
 
     public Animation(TextureRegion textureRegion) {
@@ -79,7 +79,7 @@ public class Animation implements Updatable, Resettable {
         frameTimeKeyValuePairs.forEach(frameTimeKeyValuePair -> {
             TextureRegion t = frameTimeKeyValuePair.value();
             Float f = frameTimeKeyValuePair.key();
-            animationDuration += f;
+            animDur += f;
             frameTimes.add(f);
             frames.add(t);
         });
@@ -87,14 +87,14 @@ public class Animation implements Updatable, Resettable {
 
     @Override
     public void update(float delta) {
-        if (!isFinished) {
+        if (!finished) {
             timeElapsed += delta;
         }
-        if (timeElapsed > animationDuration && !loop) {
-            timeElapsed = animationDuration - .000001f;
-            isFinished = true;
+        if (timeElapsed > animDur && !loop) {
+            timeElapsed = animDur - .000001f;
+            finished = true;
         }
-        float currentLoopDuration = timeElapsed % animationDuration;
+        float currentLoopDuration = timeElapsed % animDur;
         int index = 0;
         while (currentLoopDuration > frameTimes.get(index) && index < frames.size) {
             currentLoopDuration -= frameTimes.get(index);
@@ -106,7 +106,7 @@ public class Animation implements Updatable, Resettable {
     @Override
     public void reset() {
         timeElapsed = 0f;
-        isFinished = false;
+        finished = false;
     }
 
 }

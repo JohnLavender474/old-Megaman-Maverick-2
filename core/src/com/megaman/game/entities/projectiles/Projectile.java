@@ -28,10 +28,10 @@ public abstract class Projectile extends Entity implements Damager {
 
     public Projectile(MegamanGame game) {
         super(game, EntityType.PROJECTILE);
-        addComponent(new SoundComponent());
-        addComponent(new BodyComponent(body));
-        addComponent(cullOnMessageComponent());
-        addComponent(new CullOutOfBoundsComponent(() -> body.bounds));
+        putComponent(new SoundComponent());
+        putComponent(new BodyComponent(body));
+        putComponent(cullOnMessageComponent());
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
     }
 
     @Override

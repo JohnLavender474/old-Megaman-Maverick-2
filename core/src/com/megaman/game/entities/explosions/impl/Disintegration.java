@@ -36,9 +36,9 @@ public class Disintegration extends Entity {
         sprite = new Sprite();
         cullTimer = new Timer(CULL_DUR);
         body = new Body(BodyType.ABSTRACT);
-        addComponent(spriteComponent());
-        addComponent(updatableComponent());
-        addComponent(animationComponent());
+        putComponent(spriteComponent());
+        putComponent(updatableComponent());
+        putComponent(animationComponent());
     }
 
     @Override

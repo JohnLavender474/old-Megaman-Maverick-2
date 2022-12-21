@@ -2,8 +2,10 @@ package com.megaman.game.entities;
 
 import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.blocks.BlockFactory;
+import com.megaman.game.entities.decorations.DecorationFactory;
 import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
+import com.megaman.game.entities.special.SpecialFactory;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -16,8 +18,10 @@ public class EntityFactories {
     public EntityFactories(MegamanGame game) {
         factories = new EnumMap<>(EntityType.class) {{
             put(EntityType.BLOCK, new BlockFactory(game));
+            put(EntityType.SPECIAL, new SpecialFactory(game));
             put(EntityType.EXPLOSION, new ExplosionFactory(game));
             put(EntityType.PROJECTILE, new ProjectileFactory(game));
+            put(EntityType.DECORATION, new DecorationFactory(game));
         }};
     }
 

@@ -27,11 +27,11 @@ public class ExplosionOrb extends Entity {
 
     public ExplosionOrb(MegamanGame game) {
         super(game, EntityType.EXPLOSION);
-        addComponent(spriteComponent());
-        addComponent(animationComponent());
-        addComponent(updatableComponent());
-        addComponent(new CullOutOfBoundsComponent(sprite::getBoundingRectangle));
-        addComponent(new CullOnEventComponent(e -> e.eventType == EventType.PLAYER_SPAWN));
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+        putComponent(updatableComponent());
+        putComponent(new CullOutOfBoundsComponent(sprite::getBoundingRectangle));
+        putComponent(new CullOnEventComponent(e -> e.eventType == EventType.PLAYER_SPAWN));
     }
 
     @Override

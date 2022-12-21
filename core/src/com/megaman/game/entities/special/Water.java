@@ -1,0 +1,76 @@
+package com.megaman.game.entities.special;
+
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.animations.Animation;
+import com.megaman.game.animations.AnimationComponent;
+import com.megaman.game.animations.Animator;
+import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.entities.Entity;
+import com.megaman.game.entities.EntityType;
+import com.megaman.game.sprites.SpriteComponent;
+import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.world.*;
+
+public class Water extends Entity {
+
+    private static final String WATER_REG = "Water";
+    private static final String UNDER_REG = "Under";
+    private static final String SURFACE_REG = "Surface";
+
+    private static final float WATER_ALPHA = .5f;
+
+    private final TextureRegion waterReg;
+    private final TextureRegion surfaceReg;
+    private final TextureRegion underReg;
+
+    private final Fixture water;
+    private final Body body;
+
+    public Water(MegamanGame game) {
+        super(game, EntityType.SPECIAL);
+        TextureAtlas atlas = game.getAssMan().getAsset(TextureAsset.WATER.getSrc(), TextureAtlas.class);
+        this.waterReg = atlas.findRegion(WATER_REG);
+        this.underReg = atlas.findRegion(UNDER_REG);
+        this.surfaceReg = atlas.findRegion(SURFACE_REG);
+        this.body = new Body(BodyType.ABSTRACT);
+        this.water = new Fixture(this, FixtureType.WATER);
+        this.body.fixtures.add(water);
+        putComponent(new BodyComponent(body));
+    }
+
+    @Override
+    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
+        body.bounds.set(bounds);
+        water.bounds.set(bounds);
+        Array<SpriteHandle> handles = new Array<>();
+        Array<Animator> animators = new Array<>();
+        Sprite waterSprite = new Sprite(waterReg);
+        waterSprite.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+        waterSprite.setAlpha(WATER_ALPHA);
+        handles.add(new SpriteHandle(waterSprite, 4));
+        int rows = (int) (bounds.height / WorldVals.PPM);
+        int cols = (int) (bounds.width / WorldVals.PPM);
+        for (int x = 0; x < cols; x++) {
+            for (int y = 0; y < rows; y++) {
+                Vector2 pos = new Vector2(bounds.x + x * WorldVals.PPM, bounds.y + y * WorldVals.PPM);
+                TextureRegion region = y == rows - 1 ? surfaceReg : underReg;
+                Animation anim = new Animation(region, 2, .15f);
+                Sprite sprite = new Sprite();
+                sprite.setBounds(pos.x, pos.y, WorldVals.PPM, WorldVals.PPM);
+                sprite.setAlpha(WATER_ALPHA);
+                handles.add(new SpriteHandle(sprite, -1));
+                animators.add(new Animator(sprite, anim));
+            }
+        }
+        putComponent(new SpriteComponent(handles));
+        putComponent(new AnimationComponent(animators));
+    }
+
+}

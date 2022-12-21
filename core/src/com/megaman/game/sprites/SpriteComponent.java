@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.util.Arrays;
 import java.util.Collection;
 
-@NoArgsConstructor
 public class SpriteComponent implements Component {
 
     public Array<SpriteHandle> handles = new Array<>();
@@ -16,7 +15,7 @@ public class SpriteComponent implements Component {
         this(Arrays.asList(handles));
     }
 
-    public SpriteComponent(Collection<SpriteHandle> handles) {
+    public SpriteComponent(Iterable<SpriteHandle> handles) {
         for (SpriteHandle h : handles) {
             this.handles.add(h);
         }

@@ -1,5 +1,6 @@
 package com.megaman.game.world;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
@@ -7,6 +8,7 @@ import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.Damager;
+import com.megaman.game.entities.decorations.Splash;
 import com.megaman.game.entities.megaman.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
@@ -63,11 +65,15 @@ public class WorldContactListenerImpl implements WorldContactListener {
         } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.HEAD_TOUCHING_BLOCK, true);
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.WATER)) {
-            contact.mask2ndBody().set(BodySense.IN_WATER, true);
-            if (contact.mask2ndEntity() instanceof Megaman megaman) {
+            contact.mask1stBody().set(BodySense.IN_WATER, true);
+            if (contact.mask1stEntity() instanceof Megaman megaman &&
+                    !megaman.is(BodySense.FEET_ON_GROUND) &&
+                    !megaman.is(BehaviorType.WALL_SLIDING)) {
                 megaman.aButtonTask = AButtonTask.SWIM;
             }
-            // TODO: relegate to static method in WaterSplash.java
+            Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
+            Sound splashSound = game.getAssMan().getSound(SoundAsset.SPLASH_SOUND);
+            game.getAudioMan().playSound(splashSound, false);
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
             contact.mask1stBody().velocity.add(force);
@@ -98,6 +104,13 @@ public class WorldContactListenerImpl implements WorldContactListener {
             b.bounds.y += posDelta.y;
             if (contact.mask1stEntity() instanceof Megaman megaman) {
                 megaman.aButtonTask = AButtonTask.JUMP;
+            }
+        } else if (contact.acceptMask(FixtureType.BODY, FixtureType.WATER)) {
+            contact.mask1stBody().set(BodySense.IN_WATER, true);
+            if (contact.mask1stEntity() instanceof Megaman megaman &&
+                    !megaman.is(BodySense.FEET_ON_GROUND) &&
+                    !megaman.is(BehaviorType.WALL_SLIDING)) {
+                megaman.aButtonTask = AButtonTask.SWIM;
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().resistance.x = .95f;
@@ -135,6 +148,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman megaman) {
                 megaman.aButtonTask = AButtonTask.AIR_DASH;
             }
+            Sound splashSound = game.getAssMan().getSound(SoundAsset.SPLASH_SOUND);
+            game.getAudioMan().playSound(splashSound, false);
+            Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
         }
     }
 

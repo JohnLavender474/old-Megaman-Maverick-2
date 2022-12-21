@@ -35,8 +35,8 @@ public class Bullet extends Projectile {
     public Bullet(MegamanGame game) {
         super(game);
         defineBody();
-        addComponent(spriteComponent());
-        addComponent(updatableComponent());
+        putComponent(spriteComponent());
+        putComponent(updatableComponent());
     }
 
     @Override

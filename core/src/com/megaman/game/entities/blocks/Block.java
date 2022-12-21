@@ -22,8 +22,8 @@ public class Block extends Entity {
         body = new Body(BodyType.STATIC);
         blockFixture = new Fixture(this, FixtureType.BLOCK);
         body.fixtures.add(blockFixture);
-        addComponent(new BodyComponent(body));
-        addComponent(shapeComponent());
+        putComponent(new BodyComponent(body));
+        putComponent(shapeComponent());
     }
 
     @Override

@@ -29,7 +29,7 @@ public class Entity {
         throw new IllegalStateException("Init method not implemented");
     }
 
-    public void addComponent(Component c) {
+    public void putComponent(Component c) {
         components.put(c.getClass(), c);
     }
 

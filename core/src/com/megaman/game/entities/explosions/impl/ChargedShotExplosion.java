@@ -47,11 +47,11 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
         this.body = new Body(BodyType.ABSTRACT);
         this.soundTimer = new Timer(SOUND_INTERVAL);
         this.sprite = new Sprite();
-        addComponent(bodyComponent());
-        addComponent(spriteComponent());
-        addComponent(animationComponent());
-        addComponent(new SoundComponent());
-        addComponent(updatableComponent());
+        putComponent(bodyComponent());
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+        putComponent(new SoundComponent());
+        putComponent(updatableComponent());
     }
 
     @Override

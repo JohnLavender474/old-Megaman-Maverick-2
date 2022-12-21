@@ -22,7 +22,6 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
-import com.megaman.game.world.BodyComponent;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
 import com.megaman.game.world.WorldVals;
@@ -47,10 +46,10 @@ public class ChargedShot extends Projectile implements Faceable {
         this.sprite = new Sprite();
         this.traj = new Vector2();
         defineBody();
-        addComponent(shapeComponent());
-        addComponent(spriteComponent());
-        addComponent(animationComponent());
-        addComponent(updatableComponent());
+        putComponent(shapeComponent());
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+        putComponent(updatableComponent());
     }
 
     @Override

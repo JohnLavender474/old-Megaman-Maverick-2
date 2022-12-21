@@ -45,7 +45,6 @@ import com.megaman.game.world.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -136,15 +135,15 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         this.currentWeapon = MegamanWeapon.MEGA_BUSTER;
         this.chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
                 () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
-        addComponent(healthComponent());
-        addComponent(updatableComponent());
-        addComponent(bodyComponent());
-        addComponent(behaviorComponent());
-        addComponent(spriteComponent());
-        addComponent(animationComponent());
-        addComponent(new SoundComponent());
-        addComponent(controllerComponent());
-        addComponent(shapeComponent());
+        putComponent(healthComponent());
+        putComponent(updatableComponent());
+        putComponent(bodyComponent());
+        putComponent(behaviorComponent());
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+        putComponent(new SoundComponent());
+        putComponent(controllerComponent());
+        putComponent(shapeComponent());
     }
 
     @Override
