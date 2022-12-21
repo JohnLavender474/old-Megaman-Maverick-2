@@ -2,13 +2,16 @@ package com.megaman.game.audio;
 
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import lombok.Getter;
 
+@Getter
 public class AudioManager {
 
-    public int soundEffectsVolume = 5;
-    public int musicVolume = 5;
+    private int soundEffectsVolume = 5;
+    private int musicVolume = 5;
+    private Music currMusic;
 
-    public void changeSoundEffectVolume(int delta) {
+    public void changeSoundVolume(int delta) {
         soundEffectsVolume += delta;
         if (soundEffectsVolume > 10) {
             soundEffectsVolume = 10;
@@ -37,9 +40,13 @@ public class AudioManager {
     }
 
     public void playMusic(Music music, boolean loop) {
-        music.setLooping(loop);
-        music.setVolume(musicVolume / 10f);
-        music.play();
+        if (currMusic != null) {
+            currMusic.stop();
+        }
+        currMusic = music;
+        currMusic.setLooping(loop);
+        currMusic.setVolume(musicVolume / 10f);
+        currMusic.play();
     }
 
 }

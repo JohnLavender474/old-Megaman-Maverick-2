@@ -1,6 +1,5 @@
 package com.megaman.game.world;
 
-import com.megaman.game.components.ComponentType;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.objs.Pair;
 import com.megaman.game.utils.objs.Wrapper;
@@ -43,11 +42,11 @@ public class Contact {
     }
 
     public Body mask1stBody() {
-        return ((BodyComponent) mask1stEntity().getComponent(ComponentType.BODY)).body;
+        return mask1stEntity().getComponent(BodyComponent.class).body;
     }
 
     public Body mask2ndBody() {
-        return ((BodyComponent) mask2ndEntity().getComponent(ComponentType.BODY)).body;
+        return mask2ndEntity().getComponent(BodyComponent.class).body;
     }
 
     public <T> T mask1stData(String key, Class<T> tClass) {
@@ -60,9 +59,16 @@ public class Contact {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Contact contact &&
-                ((f1.equals(contact.f1) && f2.equals(contact.f1)) ||
-                        (f1.equals(contact.f2) && f2.equals(contact.f1)));
+        if (!(o instanceof Contact c)) {
+            return false;
+        }
+        if (f1.equals(c.f1)) {
+            return f2.equals(c.f2);
+        }
+        if (f1.equals(c.f2)) {
+            return f2.equals(c.f1);
+        }
+        return false;
     }
 
     @Override

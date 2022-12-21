@@ -12,7 +12,7 @@ import com.megaman.game.utils.enums.ProcessState;
 import com.megaman.game.utils.interfaces.Positional;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 
 import static com.megaman.game.utils.UtilMethods.interpolate;
@@ -58,7 +58,7 @@ public class LevelCamManager implements Updatable {
 
     public void setFocusable(Positional focusable) {
         this.focusable = focusable;
-        Vector2 pos = focusable.getPos();
+        Vector2 pos = focusable.getPosition();
         cam.position.x = pos.x;
         cam.position.y = pos.y;
         reset = true;
@@ -100,32 +100,28 @@ public class LevelCamManager implements Updatable {
         return UtilMethods.interpolate(startCopy, targetCopy, getTransTimerRatio());
     }
 
-    private void setTransVals(Rectangle nextGameRoom) {
+    private void setTransVals(Rectangle next) {
         transState = ProcessState.BEGIN;
         transStartPos.set(UtilMethods.toVec2(cam.position));
         transTargetPos.set(transStartPos);
-        focusableStartPos.set(focusable.getPos());
+        focusableStartPos.set(focusable.getPosition());
         focusableTargetPos.set(focusableStartPos);
         switch (transDirection) {
             case DIR_LEFT -> {
-                transTargetPos.x = (nextGameRoom.x + nextGameRoom.width) - min(nextGameRoom.width / 2.0f,
-                        cam.viewportWidth / 2.0f);
-                focusableTargetPos.x = (nextGameRoom.x + nextGameRoom.width) - DIST_ON_TRANS;
+                transTargetPos.x = (next.x + next.width) - min(next.width / 2.0f, cam.viewportWidth / 2.0f);
+                focusableTargetPos.x = (next.x + next.width) - DIST_ON_TRANS;
             }
             case DIR_RIGHT -> {
-                transTargetPos.x = nextGameRoom.x + min(nextGameRoom.width / 2.0f,
-                        cam.viewportWidth / 2.0f);
-                focusableTargetPos.x = nextGameRoom.x + DIST_ON_TRANS;
+                transTargetPos.x = next.x + min(next.width / 2.0f, cam.viewportWidth / 2.0f);
+                focusableTargetPos.x = next.x + DIST_ON_TRANS;
             }
             case DIR_UP -> {
-                transTargetPos.y = nextGameRoom.y + min(nextGameRoom.height / 2.0f,
-                        cam.viewportHeight / 2.0f);
-                focusableTargetPos.y = nextGameRoom.y + DIST_ON_TRANS;
+                transTargetPos.y = next.y + min(next.height / 2.0f, cam.viewportHeight / 2.0f);
+                focusableTargetPos.y = next.y + DIST_ON_TRANS;
             }
             case DIR_DOWN -> {
-                transTargetPos.y = (nextGameRoom.y + nextGameRoom.height) - min(nextGameRoom.height / 2.0f,
-                        cam.viewportHeight / 2.0f);
-                focusableTargetPos.y = (nextGameRoom.y + nextGameRoom.height) - DIST_ON_TRANS;
+                transTargetPos.y = (next.y + next.height) - min(next.height / 2.0f, cam.viewportHeight / 2.0f);
+                focusableTargetPos.y = (next.y + next.height) - DIST_ON_TRANS;
             }
         }
     }
@@ -149,7 +145,7 @@ public class LevelCamManager implements Updatable {
         }
         Rectangle currRoomBounds = currGameRoom.getRectangle();
         // case 2
-        if (currRoomBounds.contains(focusable.getPos())) {
+        if (currRoomBounds.contains(focusable.getPosition())) {
             setCamToFocusable(delta);
             if (cam.position.y > (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f) {
                 cam.position.y = (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f;
@@ -172,9 +168,11 @@ public class LevelCamManager implements Updatable {
         }
         // generic 5 * PPM by 5 * PPM square is used to determine push direction
         Rectangle overlap = new Rectangle();
-        float width = 5f * WorldConstVals.PPM;
-        float height = 5f * WorldConstVals.PPM;
-        Rectangle boundingBox = new Rectangle(0f, 0f, width, height).setCenter(focusable.getPos());
+        float width = 5f * WorldVals.PPM;
+        float height = 5f * WorldVals.PPM;
+        Rectangle boundingBox = new Rectangle()
+                .setSize(width, height)
+                .setCenter(focusable.getPosition());
         transDirection = UtilMethods.getOverlapPushDirection(boundingBox, currGameRoom.getRectangle(), overlap);
         // go ahead and set current game room to next room, which needs to be done even if
         // transition direction is null
@@ -207,12 +205,12 @@ public class LevelCamManager implements Updatable {
     }
 
     private RectangleMapObject nextGameRoom() {
-        if (focusable == null || focusable.getPos() == null) {
+        if (focusable == null || focusable.getPosition() == null) {
             return null;
         }
         RectangleMapObject nextGameRoom = null;
         for (RectangleMapObject room : gameRooms.values()) {
-            if (room.getRectangle().contains(focusable.getPos())) {
+            if (room.getRectangle().contains(focusable.getPosition())) {
                 nextGameRoom = room;
                 break;
             }
@@ -221,7 +219,7 @@ public class LevelCamManager implements Updatable {
     }
 
     private void setCamToFocusable(float delta) {
-        Vector2 pos = interpolate(UtilMethods.toVec2(cam.position), focusable.getPos(), delta * 10f);
+        Vector2 pos = interpolate(UtilMethods.toVec2(cam.position), focusable.getPosition(), delta * 10f);
         cam.position.x = pos.x;
         cam.position.y = pos.y;
     }

@@ -26,9 +26,9 @@ public class LevelMapManager implements Disposable {
     private CustomMapRenderer renderer;
 
     @Getter
-    private int widthInTiles;
+    private int worldWidth;
     @Getter
-    private int heightInTiles;
+    private int worldHeight;
 
     public LevelMapManager(OrthographicCamera cam, SpriteBatch batch) {
         this.cam = cam;
@@ -39,8 +39,8 @@ public class LevelMapManager implements Disposable {
         dispose();
         map = new TmxMapLoader().load(tmxFile);
         renderer = new CustomMapRenderer(map);
-        widthInTiles = map.getProperties().get("width", Integer.class);
-        heightInTiles = map.getProperties().get("height", Integer.class);
+        worldWidth = map.getProperties().get("width", Integer.class);
+        worldHeight = map.getProperties().get("height", Integer.class);
         Map<LevelMapLayer, Array<RectangleMapObject>> m = new EnumMap<>(LevelMapLayer.class);
         for (LevelMapLayer layerEnum : LevelMapLayer.values()) {
             Array<RectangleMapObject> objs = new Array<>();

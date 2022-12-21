@@ -7,7 +7,7 @@ import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class Trajectory implements Updatable {
     private int index;
 
     public Trajectory(Body body, String trajectory, Vector2 startCenterPoint) {
-        this(body, TrajectoryParser.parse(trajectory, WorldConstVals.PPM), startCenterPoint);
+        this(body, TrajectoryParser.parse(trajectory, WorldVals.PPM), startCenterPoint);
     }
 
     public Trajectory(Body body, Array<KeyValuePair<Vector2, Float>> defs, Vector2 startCenterPoint) {

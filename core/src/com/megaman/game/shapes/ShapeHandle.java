@@ -7,25 +7,27 @@ import com.badlogic.gdx.math.*;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Pair;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.function.Supplier;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 
-@Getter
-@Setter
-@NoArgsConstructor
 public class ShapeHandle implements RenderableShape {
 
-    public Updatable updatable = null;
+    public Updatable updatable;
+    public Supplier<Shape2D> shapeSupplier;
     public Supplier<Color> colorSupplier = () -> RED;
-    public Supplier<Shape2D> shapeSupplier = () -> null;
     public Supplier<Boolean> doRenderSupplier = () -> true;
     public Supplier<ShapeType> shapeTypeSupplier = () -> Line;
+
+    public ShapeHandle(Shape2D shape) {
+        this(() -> shape);
+    }
+
+    public ShapeHandle(Supplier<Shape2D> shapeSupplier) {
+        this.shapeSupplier = shapeSupplier;
+    }
 
     public Color getColor() {
         return colorSupplier.get();

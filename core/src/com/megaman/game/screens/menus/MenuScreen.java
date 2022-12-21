@@ -6,22 +6,24 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.ViewVals;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 
 public abstract class MenuScreen extends ScreenAdapter {
 
-    protected final ControllerManager controllerManager;
-    protected final AssetsManager assetsManager;
+    protected final AssetsManager assMan;
+    protected final ControllerManager ctrlMan;
     protected final OrthographicCamera uiCam;
+    protected final Viewport uiViewport;
     protected final SpriteBatch batch;
-
     protected Music music;
 
     private final String firstBtnKey;
@@ -33,16 +35,19 @@ public abstract class MenuScreen extends ScreenAdapter {
     private boolean selectionMade;
 
     public MenuScreen(MegamanGame game, String musicSrc, String firstBtnKey) {
-        this.controllerManager = game.getCtrlMan();
-        this.assetsManager = game.getAssMan();
-        this.music = assetsManager.getAsset(musicSrc, Music.class);
-        this.uiCam = game.getViewportMan().getCam(ViewportType.UI);
+        this.ctrlMan = game.getCtrlMan();
+        this.assMan = game.getAssMan();
+        this.music = assMan.getAsset(musicSrc, Music.class);
+        this.uiCam = new OrthographicCamera();
+        this.uiViewport = new FitViewport(ViewVals.VIEW_WIDTH, ViewVals.VIEW_HEIGHT, uiCam);
         this.currBtnKey = this.firstBtnKey = firstBtnKey;
         this.batch = game.getBatch();
         this.menuButtons = defineMenuButtons();
     }
 
     protected abstract ObjectMap<String, MenuButton> defineMenuButtons();
+
+    protected abstract void renderMenu();
 
     protected void onAnyMovement() {
     }
@@ -59,14 +64,13 @@ public abstract class MenuScreen extends ScreenAdapter {
         setMenuButton(firstBtnKey);
         selectionMade = false;
         music.play();
-        // gameContext.setDoUpdateController(true);
         Vector3 camPos = uiCam.position;
-        camPos.x = (ViewVals.VIEW_WIDTH * WorldConstVals.PPM) / 2f;
-        camPos.y = (ViewVals.VIEW_HEIGHT * WorldConstVals.PPM) / 2f;
+        camPos.x = (ViewVals.VIEW_WIDTH * WorldVals.PPM) / 2f;
+        camPos.y = (ViewVals.VIEW_HEIGHT * WorldVals.PPM) / 2f;
     }
 
     @Override
-    public void render(float delta) {
+    public final void render(float delta) {
         super.render(delta);
         if (isSelectionMade()) {
             return;
@@ -74,24 +78,26 @@ public abstract class MenuScreen extends ScreenAdapter {
         MenuButton menuButton = menuButtons.get(currBtnKey);
         if (menuButton != null) {
             Direction dir = null;
-            if (controllerManager.isJustPressed(ControllerBtn.DPAD_UP)) {
+            if (ctrlMan.isJustPressed(ControllerBtn.DPAD_UP)) {
                 dir = Direction.DIR_UP;
-            } else if (controllerManager.isJustPressed(ControllerBtn.DPAD_DOWN)) {
+            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_DOWN)) {
                 dir = Direction.DIR_DOWN;
-            } else if (controllerManager.isJustPressed(ControllerBtn.DPAD_LEFT)) {
+            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_LEFT)) {
                 dir = Direction.DIR_LEFT;
-            } else if (controllerManager.isJustPressed(ControllerBtn.DPAD_RIGHT)) {
+            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_RIGHT)) {
                 dir = Direction.DIR_RIGHT;
             }
             if (dir != null) {
                 onAnyMovement();
                 menuButton.onNavigate(dir, delta);
             }
-            if (controllerManager.isJustPressed(ControllerBtn.START) || controllerManager.isJustPressed(ControllerBtn.X)) {
+            if (ctrlMan.isJustPressed(ControllerBtn.START) || ctrlMan.isJustPressed(ControllerBtn.X)) {
                 onAnySelection();
                 selectionMade = menuButton.onSelect(delta);
             }
         }
+        renderMenu();
+        uiViewport.apply();
     }
 
     @Override
@@ -99,6 +105,11 @@ public abstract class MenuScreen extends ScreenAdapter {
         if (music != null) {
             music.stop();
         }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        uiViewport.update(width, height);
     }
 
 }

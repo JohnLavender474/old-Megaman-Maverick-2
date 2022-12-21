@@ -23,7 +23,7 @@ import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 
 public class Bullet extends Projectile {
 
@@ -92,19 +92,19 @@ public class Bullet extends Projectile {
     private void defineBody() {
         body.velClamp.set(CLAMP, CLAMP);
         // projectile fixture
-        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, .2f * WorldConstVals.PPM);
+        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, .2f * WorldVals.PPM);
         body.fixtures.add(projectileFixture);
         // damager fixture
-        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, .2f * WorldConstVals.PPM);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, .2f * WorldVals.PPM);
         body.fixtures.add(damagerFixture);
     }
 
     private SpriteComponent spriteComponent() {
         TextureRegion t = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
         sprite.setRegion(t);
-        sprite.setSize(WorldConstVals.PPM * 1.25f, WorldConstVals.PPM * 1.25f);
+        sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
         SpriteHandle handle = new SpriteHandle(sprite, 4);
-        handle.runnable = () -> handle.setPos(body.bounds, Position.CENTER);
+        handle.runnable = () -> handle.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(handle);
     }
 

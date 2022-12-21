@@ -21,7 +21,7 @@ public class PathfindingSystem extends System implements Disposable {
     private final List<Pathfinder> pfs = new ArrayList<>();
 
     @Setter
-    private WorldGraph graph;
+    private WorldGraph worldGraph;
 
     public PathfindingSystem() {
         super(PathfindingComponent.class);
@@ -49,7 +49,7 @@ public class PathfindingSystem extends System implements Disposable {
         if (pc.refreshTimer.isFinished()) {
             pc.refreshTimer.reset();
             pcs.add(pc);
-            pfs.add(new Pathfinder(graph, pc));
+            pfs.add(new Pathfinder(worldGraph, pc));
         }
     }
 
@@ -71,7 +71,7 @@ public class PathfindingSystem extends System implements Disposable {
 
     @Override
     public void dispose() {
-        execServ.shutdownNow();
+        execServ.shutdown();
     }
 
 }

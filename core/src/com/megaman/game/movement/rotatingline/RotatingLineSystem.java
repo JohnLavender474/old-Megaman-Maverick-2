@@ -12,17 +12,15 @@ public class RotatingLineSystem extends System {
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        RotatingLineComponent rlc = e.getComponent(RotatingLineComponent.class);
-        RotatingLine rl = rlc.rotatingLine;
-        if (rl == null) {
-            return;
+        RotatingLineComponent c = e.getComponent(RotatingLineComponent.class);
+        RotatingLine r = c.rotatingLine;
+        if (r != null) {
+            r.update(delta);
         }
-        rl.update(delta);
-        UpdatableConsumer<RotatingLine> uc = rlc.updatableConsumer;
-        if (uc == null) {
-            return;
+        UpdatableConsumer<RotatingLine> u = c.updatableConsumer;
+        if (u != null) {
+            u.consumeAndUpdate(r, delta);
         }
-        uc.consumeAndUpdate(rl, delta);
     }
 
 }

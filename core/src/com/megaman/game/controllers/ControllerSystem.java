@@ -7,23 +7,25 @@ import java.util.Map;
 
 public class ControllerSystem extends System {
 
-    private final ControllerManager ctrlManager;
+    private final ControllerManager ctrlMan;
 
-    public ControllerSystem(ControllerManager ctrlManager) {
+    public ControllerSystem(ControllerManager ctrlMan) {
         super(ControllerComponent.class);
-        this.ctrlManager = ctrlManager;
+        this.ctrlMan = ctrlMan;
     }
 
     @Override
     protected void processEntity(Entity e, float delta) {
         ControllerComponent c = e.getComponent(ControllerComponent.class);
         for (Map.Entry<ControllerBtn, ControllerAdapter> entry : c.ctrlAdapters.entrySet()) {
-            if (ctrlManager.isJustPressed(entry.getKey())) {
+            if (ctrlMan.isJustPressed(entry.getKey())) {
                 entry.getValue().onJustPressed();
-            } else if (ctrlManager.isPressed(entry.getKey())) {
+            } else if (ctrlMan.isPressed(entry.getKey())) {
                 entry.getValue().onPressContinued(delta);
-            } else if (ctrlManager.isJustReleased(entry.getKey())) {
+            } else if (ctrlMan.isJustReleased(entry.getKey())) {
                 entry.getValue().onJustReleased();
+            } else {
+                entry.getValue().onReleaseContinued();
             }
         }
     }

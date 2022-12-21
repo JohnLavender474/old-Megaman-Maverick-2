@@ -12,7 +12,9 @@ public class AnimationSystem extends System {
     @Override
     protected void processEntity(Entity e, float delta) {
         AnimationComponent c = e.getComponent(AnimationComponent.class);
-        c.animators.forEach(a -> a.update(delta));
+        for (Animator a : c.animators) {
+            a.update(delta);
+        }
     }
 
 }

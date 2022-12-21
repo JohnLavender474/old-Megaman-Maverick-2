@@ -10,6 +10,7 @@ import com.megaman.game.utils.interfaces.Updatable;
 
 public class Body implements Updatable {
 
+    public static final float MIN_VEL = .01f;
     public static final float STANDARD_RESISTANCE_X = 1.035f;
     public static final float STANDARD_RESISTANCE_Y = 1.025f;
 
@@ -45,6 +46,10 @@ public class Body implements Updatable {
         senses[sense.ordinal()] = is;
     }
 
+    public boolean intersects(Body body, Rectangle overlap) {
+        return Body.intersect(this, body, overlap);
+    }
+
     public boolean overlaps(Body body) {
         return bounds.overlaps(body.bounds);
     }
@@ -53,12 +58,16 @@ public class Body implements Updatable {
         ShapeUtils.setToPoint(bounds, pos, position);
     }
 
+    public Vector2 getPos() {
+        return new Vector2(bounds.x, bounds.y);
+    }
+
     public void setPrevPos(Vector2 prevPos) {
         this.prevPos.set(prevPos);
     }
 
     public Vector2 getPosDelta() {
-        return new Vector2(bounds.x, bounds.y).sub(prevPos);
+        return getPos().sub(prevPos);
     }
 
     public Vector2 getCenter() {
@@ -67,6 +76,13 @@ public class Body implements Updatable {
 
     @Override
     public void update(float delta) {
+        // if at or below min, then set to zero
+        if (Math.abs(velocity.x) <= MIN_VEL * WorldVals.PPM) {
+            velocity.x = 0f;
+        }
+        if (Math.abs(velocity.y) <= MIN_VEL * WorldVals.PPM) {
+            velocity.y = 0f;
+        }
         // apply resistance
         if (affectedByResistance) {
             if (resistance.x > 0f) {
@@ -92,16 +108,14 @@ public class Body implements Updatable {
         } else if (velocity.y < 0f && velocity.y < -Math.abs(velClamp.y)) {
             velocity.y = -Math.abs(velClamp.y);
         }
-        // resize body center
-        bounds.x += velocity.x * delta * WorldConstVals.PPM;
-        bounds.y += velocity.y * delta * WorldConstVals.PPM;
-        // resize fixture positions
-        fixtures.forEach(f -> {
+        // move bounds
+        bounds.x += velocity.x * delta;
+        bounds.y += velocity.y * delta;
+        // move fixtures
+        for (Fixture f : fixtures) {
             Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);
             f.bounds.setCenter(p);
-        });
-        // reset resistance
-        resistance.set(1f, 1f);
+        }
     }
 
 }

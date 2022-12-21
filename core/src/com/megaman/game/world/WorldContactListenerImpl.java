@@ -68,20 +68,6 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 megaman.aButtonTask = AButtonTask.SWIM;
             }
             // TODO: relegate to static method in WaterSplash.java
-            /*
-            List<Vector2> waterSplashPos = new ArrayList<>();
-            Rectangle waterListenerBounds = (Rectangle) contact.mask2ndFixture().getFixtureShape();
-            Rectangle waterBounds = (Rectangle) contact.mask1stFixture().getFixtureShape();
-            int numWaterSplashes = (int) Math.ceil(waterListenerBounds.width / PPM);
-            for (int i = 0; i < numWaterSplashes; i++) {
-                waterSplashPos.add(new Vector2(waterListenerBounds.x + (PPM / 2f) + i * PPM,
-                        waterBounds.y + waterBounds.height));
-            }
-            List<WaterSplash> waterSplashes = WaterSplash.set(gameContext, waterSplashPos);
-            gameContext.addEntities(waterSplashes);
-            Sound splashSound = gameContext.getAsset(SPLASH_SOUND.getSrc(), Sound.class);
-            gameContext.playSound(splashSound);
-             */
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
             contact.mask1stBody().velocity.add(force);
@@ -105,10 +91,13 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 dmgr.onDamageInflictedTo(dmgbl);
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
+            contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
+            /*
             Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body b = contact.mask1stBody();
             b.bounds.x += posDelta.x;
             b.bounds.y += posDelta.y;
+             */
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().resistance.x = .95f;
         } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
@@ -119,16 +108,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
             contact.mask1stBody().velocity.add(force);
         } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK)) {
-            // TODO: Implement laser
-            /*
-            Fixture first = contact.mask1stFixture();
-            Fixture second = contact.mask2ndFixture();
-            Collection<Vector2> contactPoints = first.getUserData(COLLECTION, Collection.class);
-            Collection<Vector2> temp = new ArrayList<>();
-            if (intersectLineRect((Polyline) first.getFixtureShape(), (Rectangle) second.getFixtureShape(), temp)) {
-                contactPoints.addAll(temp);
-            }
-             */
+
         }
     }
 
@@ -154,22 +134,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman megaman) {
                 megaman.aButtonTask = AButtonTask.AIR_DASH;
             }
-            // TODO: Create splashes via static method
-            /*
-            List<Vector2> waterSplashPos = new ArrayList<>();
-            Rectangle waterListenerBounds = (Rectangle) contact.mask2ndFixture().getFixtureShape();
-            Rectangle waterBounds = (Rectangle) contact.mask1stFixture().getFixtureShape();
-            int numWaterSplashes = (int) Math.ceil(waterListenerBounds.width / PPM);
-            for (int i = 0; i < numWaterSplashes; i++) {
-                waterSplashPos.add(new Vector2(waterListenerBounds.x + (PPM / 2f) + i * PPM,
-                        waterBounds.y + waterBounds.height));
-            }
-            List<WaterSplash> waterSplashes = WaterSplash.set(gameContext, waterSplashPos);
-            gameContext.addEntities(waterSplashes);
-            Sound splashSound = gameContext.getAsset(SPLASH_SOUND.getSrc(), Sound.class);
-            gameContext.playSound(splashSound);
-             */
         }
     }
-    
+
 }
+
+

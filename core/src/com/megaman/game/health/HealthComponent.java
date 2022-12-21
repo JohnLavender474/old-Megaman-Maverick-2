@@ -9,7 +9,7 @@ public class HealthComponent implements Component {
     public Array<Runnable> runOnDeath = new Array<>();
 
     @Getter
-    private int health;
+    private int health = HealthVals.MAX_HEALTH;
 
     public HealthComponent(Runnable... runOnDeath) {
         this.runOnDeath.addAll(runOnDeath);

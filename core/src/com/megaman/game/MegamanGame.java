@@ -7,8 +7,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 import com.megaman.game.animations.AnimationSystem;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.audio.AudioManager;
@@ -22,6 +20,10 @@ import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.health.HealthSystem;
+import com.megaman.game.movement.pendulum.PendulumSystem;
+import com.megaman.game.movement.rotatingline.RotatingLineSystem;
+import com.megaman.game.movement.trajectory.TrajectorySystem;
+import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.Level;
 import com.megaman.game.screens.levels.LevelScreen;
@@ -29,31 +31,31 @@ import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
-import com.megaman.game.utils.interfaces.Drawable;
+import com.megaman.game.utils.Logger;
+import com.megaman.game.world.WorldContactListener;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import lombok.Getter;
+import lombok.extern.java.Log;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Queue;
 
 @Getter
 public class MegamanGame extends Game {
 
-    private final Map<ScreenEnum, Screen> screens = new EnumMap<>(ScreenEnum.class);
-    private final Array<Disposable> disposables = new Array<>();
+    private Logger logger;
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-
-    private Megaman megaman;
+    private Map<ScreenEnum, Screen> screens;
 
     private AssetsManager assMan;
     private AudioManager audioMan;
     private EventManager eventMan;
     private ControllerManager ctrlMan;
 
+    private Megaman megaman;
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
 
@@ -61,51 +63,56 @@ public class MegamanGame extends Game {
 
     @Override
     public void create() {
+        logger = new Logger(true);
         debug = false;
         // renderers
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         // managers
         ctrlMan = new ControllerManager();
+        audioMan = new AudioManager();
         assMan = new AssetsManager();
         assMan.loadAssets();
-        audioMan = new AudioManager();
         // events
         eventMan = new EventManager();
-        // disposables
-        disposables.add(batch);
-        disposables.add(assMan);
-        disposables.add(shapeRenderer);
         // entity factories
         entityFactories = new EntityFactories(this);
         // game engine
-        gameEngine = new GameEngine(new Array<>() {{
-            add(new ControllerSystem(ctrlMan));
-            add(new CullOnOutOfBoundsSystem());
-            add(new CullOnEventSystem(eventMan));
-            add(new HealthSystem());
-            // TODO: trajectory system
-            add(new WorldSystem(new WorldContactListenerImpl(MegamanGame.this)));
-            // TODO: graph system
-            // TODO: pathfinding system
-            // TODO: rotating line system
-            // TODO: pendulum system
-            add(new UpdatableSystem());
-            add(new BehaviorSystem());
-            add(new AnimationSystem());
-            add(new SpriteSystem());
-            add(new LineSystem());
-            add(new ShapeSystem());
-            add(new SoundSystem(assMan, audioMan));
-        }});
+        WorldContactListener w = new WorldContactListenerImpl(this);
+        gameEngine = new GameEngine(
+                new ControllerSystem(ctrlMan),
+                new CullOnOutOfBoundsSystem(),
+                new CullOnEventSystem(eventMan),
+                new HealthSystem(),
+                new TrajectorySystem(),
+                new WorldSystem(w),
+                new PathfindingSystem(),
+                new RotatingLineSystem(),
+                new PendulumSystem(),
+                new UpdatableSystem(),
+                new BehaviorSystem(),
+                new AnimationSystem(),
+                new SpriteSystem(),
+                new LineSystem(),
+                new ShapeSystem(),
+                new SoundSystem(assMan, audioMan));
         // megaman
         megaman = new Megaman(this);
+        // put screens
+        screens = new EnumMap<>(ScreenEnum.class);
+        screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
+        // set screen
+        setLevelScreen(Level.TEST);
     }
 
     public void setLevelScreen(Level level) {
         LevelScreen levelScreen = (LevelScreen) screens.get(ScreenEnum.LEVEL);
-        levelScreen.set(level.tmxFile);
+        levelScreen.set(level.getTmxFile());
         setScreen(levelScreen);
+        if (level.getMusicAsset() != null) {
+            levelScreen.setMusic(level.getMusicAsset());
+            levelScreen.playMusic(true);
+        }
     }
 
     @Override
@@ -122,25 +129,24 @@ public class MegamanGame extends Game {
 
     @Override
     public void render() {
+        logger.log("FPS: " + Gdx.graphics.getFramesPerSecond());
         Gdx.gl20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
         ctrlMan.update();
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
-        }
         super.render();
     }
 
     @Override
     public void dispose() {
         super.dispose();
+        batch.dispose();
+        assMan.dispose();
         screen.dispose();
-        for (Disposable d : disposables) {
-            d.dispose();
-        }
+        shapeRenderer.dispose();
+        gameEngine.getSystem(PathfindingSystem.class).dispose();
     }
 
 }

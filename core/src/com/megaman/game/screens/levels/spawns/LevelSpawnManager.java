@@ -19,14 +19,13 @@ import java.util.Queue;
 public class LevelSpawnManager {
 
     private Array<LevelSpawn<Enemy>> enemySpawns;
-
     private RectangleMapObject currPlayerCheckpoint;
     private Queue<RectangleMapObject> playerCheckpoints;
 
     public void set(Array<LevelSpawn<Enemy>> enemySpawns, Array<RectangleMapObject> playerCheckpointObjs) {
         this.enemySpawns = enemySpawns;
         playerCheckpoints = new LinkedList<>();
-        playerCheckpointObjs.sort(Comparator.comparing(p -> p.getProperties().get("index", Integer.class)));
+        playerCheckpointObjs.sort(Comparator.comparing(p -> Integer.valueOf(p.getName())));
         for (RectangleMapObject p : playerCheckpointObjs) {
             playerCheckpoints.add(p);
         }

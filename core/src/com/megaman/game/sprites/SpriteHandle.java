@@ -9,8 +9,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
+import com.megaman.game.utils.interfaces.Positional;
 
-public class SpriteHandle implements Drawable, Runnable, Comparable<SpriteHandle> {
+public class SpriteHandle implements Drawable, Positional, Runnable, Comparable<SpriteHandle> {
 
     public Sprite sprite;
     public Runnable runnable;
@@ -49,9 +50,28 @@ public class SpriteHandle implements Drawable, Runnable, Comparable<SpriteHandle
         return cam.frustum.boundsInFrustum(ShapeUtils.rectToBBox(sprite.getBoundingRectangle()));
     }
 
-    public void setPos(Rectangle bounds, Position pos) {
-        Vector2 point = ShapeUtils.getPoint(bounds, pos);
-        ShapeUtils.setToPoint(sprite.getBoundingRectangle(), point, pos);
+    public void setPosition(Rectangle bounds, Position pos) {
+        Vector2 p = ShapeUtils.getPoint(bounds, pos);
+        switch (pos) {
+            case BOTTOM_LEFT -> sprite.setPosition(p.x, p.y);
+            case BOTTOM_CENTER -> sprite.setPosition(p.x - sprite.getWidth() / 2f, p.y);
+            case BOTTOM_RIGHT -> sprite.setPosition(p.x - sprite.getWidth(), p.y);
+            case CENTER_LEFT -> {
+                sprite.setCenter(p.x, p.y);
+                sprite.setX(sprite.getX() + sprite.getWidth() / 2f);
+            }
+            case CENTER -> sprite.setCenter(p.x, p.y);
+            case CENTER_RIGHT -> {
+                sprite.setCenter(p.x, p.y);
+                sprite.setX(sprite.getX() - sprite.getWidth() / 2f);
+            }
+            case TOP_LEFT -> sprite.setPosition(p.x, p.y - sprite.getHeight());
+            case TOP_CENTER -> {
+                sprite.setCenter(p.x, p.y);
+                sprite.setY(sprite.getY() - sprite.getHeight() / 2f);
+            }
+            case TOP_RIGHT -> sprite.setPosition(p.x - sprite.getWidth(), p.y - sprite.getHeight());
+        }
     }
 
     @Override
@@ -70,6 +90,16 @@ public class SpriteHandle implements Drawable, Runnable, Comparable<SpriteHandle
     @Override
     public int compareTo(SpriteHandle o) {
         return priority - o.priority;
+    }
+
+    @Override
+    public Vector2 getPosition() {
+        return new Vector2(sprite.getX(), sprite.getY());
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        sprite.setPosition(x, y);
     }
 
 }

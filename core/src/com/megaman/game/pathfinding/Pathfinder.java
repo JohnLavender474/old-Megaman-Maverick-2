@@ -3,9 +3,8 @@ package com.megaman.game.pathfinding;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import com.megaman.game.world.WorldGraph;
-import com.megaman.game.world.WorldNode;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +19,7 @@ public class Pathfinder implements Callable<LinkedList<Vector2>> {
 
     @Override
     public LinkedList<Vector2> call() {
+        /*
         LinkedList<Vector2> path = new LinkedList<>();
         // get start node
         WorldNode sNode = graph.getNode(pc.getStart());
@@ -42,7 +42,7 @@ public class Pathfinder implements Callable<LinkedList<Vector2>> {
             closed.add(currNHandle.node);
             if (currNHandle.node.equals(tNode)) {
                 while (currNHandle != null) {
-                    path.addFirst(currNHandle.node.getPos().cpy().scl(WorldConstVals.PPM));
+                    path.addFirst(currNHandle.node.getPosition().cpy().scl(WorldVals.PPM));
                     currNHandle = currNHandle.pred;
                 }
                 break;
@@ -52,7 +52,7 @@ public class Pathfinder implements Callable<LinkedList<Vector2>> {
                 if (closed.contains(neighbor) || pc.isReject(neighbor)) {
                     continue;
                 }
-                int totalDist = currNHandle.dist + (int) currNHandle.node.getPos().dst(neighbor.getPos());
+                int totalDist = currNHandle.dist + (int) currNHandle.node.getPosition().dst(neighbor.getPosition());
                 NodeHandle neighborNHandle = nodeHandles[neighbor.x][neighbor.y];
                 if (neighborNHandle == null) {
                     neighborNHandle = new NodeHandle(neighbor, totalDist, currNHandle);
@@ -67,8 +67,11 @@ public class Pathfinder implements Callable<LinkedList<Vector2>> {
             }
         }
         return path;
+         */
+        return new LinkedList<>();
     }
 
+    /*
     @AllArgsConstructor
     private static final class NodeHandle implements Comparable<NodeHandle> {
 
@@ -92,5 +95,6 @@ public class Pathfinder implements Callable<LinkedList<Vector2>> {
         }
 
     }
+     */
 
 }

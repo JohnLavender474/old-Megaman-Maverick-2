@@ -18,7 +18,7 @@ import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.BodyComponent;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,8 +50,8 @@ public class ChargedShot extends Projectile implements Faceable {
         // fully charged?
         fullyCharged = (boolean) data.get(ConstKeys.BOOL);
         // set bounds of sprite, body, and fixtures
-        float bodyDim = WorldConstVals.PPM;
-        float spriteDim = WorldConstVals.PPM;
+        float bodyDim = WorldVals.PPM;
+        float spriteDim = WorldVals.PPM;
         if (fullyCharged) {
             spriteDim *= 1.75f;
         } else {
@@ -92,7 +92,7 @@ public class ChargedShot extends Projectile implements Faceable {
         SpriteHandle handle = new SpriteHandle(sprite, 4);
         handle.runnable = () -> {
             sprite.setFlip(is(Facing.LEFT), false);
-            handle.setPos(body.bounds, Position.CENTER);
+            handle.setPosition(body.bounds, Position.CENTER);
         };
         return new SpriteComponent(handle);
     }

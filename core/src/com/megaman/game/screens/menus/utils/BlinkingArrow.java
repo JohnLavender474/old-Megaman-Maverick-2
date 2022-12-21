@@ -9,7 +9,7 @@ import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 
 @Getter
@@ -28,7 +28,7 @@ public class BlinkingArrow implements Updatable, Drawable {
         this.center = center;
         arrowSprite.setRegion(assetsManager.getAsset(TextureAsset.DECORATIONS.getSrc(), TextureAtlas.class)
                 .findRegion("Arrow"));
-        arrowSprite.setSize(WorldConstVals.PPM / 2f, WorldConstVals.PPM / 2f);
+        arrowSprite.setSize(WorldVals.PPM / 2f, WorldVals.PPM / 2f);
         arrowSprite.setCenter(center.x, center.y);
         arrowBlinkTimer.setDuration(ARROW_BLINK_DURATION);
     }

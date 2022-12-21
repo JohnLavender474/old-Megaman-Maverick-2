@@ -16,6 +16,7 @@ import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.ViewVals;
+import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
@@ -45,15 +46,14 @@ import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
-import com.megaman.game.ui.MainBitsBarUi;
+import com.megaman.game.ui.BitsBar;
 import com.megaman.game.ui.TextHandle;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
-import com.megaman.game.world.WorldConstVals;
-import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
+import com.megaman.game.world.WorldVals;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -95,8 +95,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     public LevelScreen(MegamanGame game) {
         this.game = game;
         // cameras and viewports
-        float screenWidth = ViewVals.VIEW_WIDTH * WorldConstVals.PPM;
-        float screenHeight = ViewVals.VIEW_HEIGHT * WorldConstVals.PPM;
+        float screenWidth = ViewVals.VIEW_WIDTH * WorldVals.PPM;
+        float screenHeight = ViewVals.VIEW_HEIGHT * WorldVals.PPM;
         gameCam = new OrthographicCamera();
         uiCam = new OrthographicCamera();
         gameViewport = new FitViewport(screenWidth, screenHeight, gameCam);
@@ -106,17 +106,18 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         levelCamMan = new LevelCamManager(gameCam);
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
         // drawables
-        MainBitsBarUi healthBar = new MainBitsBarUi(
+        AssetsManager assMan = game.getAssMan();
+        BitsBar healthBar = new BitsBar(
                 () -> game.getMegaman().getHealth(),
-                game.getAssMan().getTextureRegion(TextureAsset.BITS, "StandardBit"),
-                game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "Black"));
+                assMan.getTextureRegion(TextureAsset.BITS, "StandardBit"),
+                assMan.getTextureRegion(TextureAsset.DECORATIONS, "Black"));
         addUiDrawable(healthBar);
         // sounds
-        playerDeathSound = game.getAssMan().getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
+        playerDeathSound = assMan.getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
     public void set(String tmxFile) {
-        // set game cam for systems
+        // init systems
         GameEngine engine = game.getGameEngine();
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
@@ -124,9 +125,10 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         // set map, fetch layer data
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
-        // set world system graph
-        WorldGraph worldGraph = new WorldGraph(levelMapMan.getWidthInTiles(), levelMapMan.getHeightInTiles());
-        engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
+        // set world graph
+        // WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
+        engine.getSystem(WorldSystem.class).setWorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
+        // engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
         // set spawns
         Array<RectangleMapObject> playerSpawns = new Array<>();
         Array<LevelSpawn<Enemy>> enemySpawns = new Array<>();
@@ -153,8 +155,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                             case SPECIAL -> EntityType.SPECIAL;
                             default -> throw new IllegalStateException("Incompatible state");
                         };
-                        Entity block = factories.fetch(entityType, o.getName());
-                        engine.spawnEntity(block, o.getRectangle(), data);
+                        Entity entity = factories.fetch(entityType, o.getName());
+                        engine.spawnEntity(entity, o.getRectangle(), data);
                     }
                 }
             }
@@ -174,18 +176,22 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     }
 
     public void playMusic(boolean loop) {
-        if (music.isPlaying()) {
+        if (music != null && music.isPlaying()) {
             music.stop();
         }
         game.getAudioMan().playMusic(music, loop);
     }
 
     public void pauseMusic() {
-        music.pause();
+        if (music != null) {
+            music.pause();
+        }
     }
 
     public void stopMusic() {
-        music.stop();
+        if (music != null) {
+            music.stop();
+        }
     }
 
     @Override
@@ -230,7 +236,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             throw new IllegalStateException("Must call set method before rendering");
         }
         super.render(delta);
-        // TODO: render
         if (game.getCtrlMan().isJustPressed(ControllerBtn.START)) {
             if (paused) {
                 resume();
@@ -238,9 +243,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 pause();
             }
         }
+        GameEngine engine = game.getGameEngine();
+        EventManager eventMan = game.getEventMan();
         if (!paused) {
-            GameEngine engine = game.getGameEngine();
-            EventManager eventMan = game.getEventMan();
             levelCamMan.update(delta);
             if (levelCamMan.getTransState() == null) {
                 spawnMan.update(engine, gameCam);
@@ -283,7 +288,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             }
         }
         // update engine
-        game.getGameEngine().update(delta);
+        engine.update(delta);
         // level drawables
         SpriteBatch batch = game.getBatch();
         batch.setProjectionMatrix(gameCam.combined);

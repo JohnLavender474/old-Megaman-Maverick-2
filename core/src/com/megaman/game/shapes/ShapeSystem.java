@@ -32,7 +32,7 @@ public class ShapeSystem extends System {
             if (!h.doRender()) {
                 continue;
             }
-            Updatable u = h.getUpdatable();
+            Updatable u = h.updatable;
             if (u != null) {
                 u.update(delta);
             }

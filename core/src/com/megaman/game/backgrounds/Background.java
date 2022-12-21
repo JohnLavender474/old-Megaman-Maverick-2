@@ -7,7 +7,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 
 public class Background implements Updatable, Drawable {
 
@@ -41,8 +41,8 @@ public class Background implements Updatable, Drawable {
         this.backgroundModel = new Sprite(textureRegion);
         this.backgroundModel.setBounds(
                 startX, startY,
-                width * WorldConstVals.PPM + 1f,
-                height * WorldConstVals.PPM + 1f);
+                width * WorldVals.PPM + 1f,
+                height * WorldVals.PPM + 1f);
         this.backgroundSprites = new Sprite[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -58,8 +58,8 @@ public class Background implements Updatable, Drawable {
     public void resetPositions() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                float x = startX + (width * j * WorldConstVals.PPM);
-                float y = startY + (height * i * WorldConstVals.PPM);
+                float x = startX + (width * j * WorldVals.PPM);
+                float y = startY + (height * i * WorldVals.PPM);
                 backgroundSprites[i][j].setPosition(x, y);
             }
         }

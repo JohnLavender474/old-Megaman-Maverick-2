@@ -8,7 +8,6 @@ import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.Fixture;
-import com.megaman.game.world.WorldNode;
 
 import java.util.LinkedList;
 import java.util.function.Consumer;
@@ -25,7 +24,7 @@ public class PathfindingComponent implements Component {
     public float speed;
     public Timer refreshTimer;
 
-    public Predicate<Fixture> reject;
+    public Predicate<Object> reject;
     public Supplier<Vector2> startSupplier;
     public Supplier<Vector2> targetSupplier;
     public Consumer<Vector2> targetConsumer;
@@ -38,7 +37,7 @@ public class PathfindingComponent implements Component {
         this(body, targetSupplier, obj -> false, speed, DEFAULT_REFRESH_TIME);
     }
 
-    public PathfindingComponent(Body body, Supplier<Vector2> targetSupplier, Predicate<Fixture> reject,
+    public PathfindingComponent(Body body, Supplier<Vector2> targetSupplier, Predicate<Object> reject,
                                 float speed, float timeToRefresh) {
         this.body = body;
         this.startSupplier = () -> ShapeUtils.getCenterPoint(this.body.bounds);
@@ -58,21 +57,17 @@ public class PathfindingComponent implements Component {
         targetConsumer.accept(p);
     }
 
-    public boolean isReject(WorldNode node) {
-        return isReject(node.fixtures);
+    public boolean isReject(Object o) {
+        return reject.test(o);
     }
 
-    public boolean isReject(Array<Fixture> fixtures) {
-        for (Fixture f : fixtures) {
-            if (isReject(f)) {
+    public boolean isReject(Iterable<Object> objs) {
+        for (Object o : objs) {
+            if (isReject(o)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public boolean isReject(Fixture f) {
-        return reject.test(f);
     }
 
     public Vector2 getStart() {

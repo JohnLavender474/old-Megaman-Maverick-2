@@ -1,115 +1,143 @@
 package com.megaman.game.world;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.megaman.game.graph.Graph;
+import com.badlogic.gdx.utils.OrderedMap;
+import com.badlogic.gdx.utils.Predicate;
 import com.megaman.game.utils.interfaces.Resettable;
+import com.megaman.game.utils.objs.KeyValuePair;
+import com.sun.nio.sctp.NotificationHandler;
 
-public class WorldGraph extends Graph<WorldNode> implements Resettable {
+public class WorldGraph implements Resettable {
+
+    private final int width;
+    private final int height;
+    private final OrderedMap<WorldCoordinate, Array<Body>> bodies;
+    private final OrderedMap<WorldCoordinate, Array<Fixture>> fixtures;
 
     public WorldGraph(int width, int height) {
-        super(createNodes(width, height));
-    }
-
-    public static WorldNode[][] createNodes(int width, int height) {
-        WorldNode[][] worldNodes = new WorldNode[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                worldNodes[x][y] = new WorldNode(x, y);
-            }
-        }
-        return worldNodes;
-    }
-
-    public WorldNode getNode(Vector2 pos) {
-        int x = Math.round(pos.x / WorldConstVals.PPM);
-        int y = Math.round(pos.y / WorldConstVals.PPM);
-        return getNode(x, y);
-    }
-
-    public Array<WorldNode> getNodesOverlapping(Rectangle bounds) {
-        int[] m = getMinsAndMaxes(bounds);
-        int xMin = m[0];
-        int yMin = m[1];
-        int xMax = m[2];
-        int yMax = m[3];
-        Array<WorldNode> nodeList = new Array<>((xMax - xMin) * (yMax - yMin));
-        for (int x = xMin; x < xMax; x++) {
-            for (int y = yMin; y < yMax; y++) {
-                nodeList.add(nodes[x][y]);
-            }
-        }
-        return nodeList;
+        this.width = width;
+        this.height = height;
+        this.bodies = new OrderedMap<>();
+        this.fixtures = new OrderedMap<>();
     }
 
     private int[] getMinsAndMaxes(Rectangle bounds) {
-        int minX = (int) Math.floor(bounds.x / WorldConstVals.PPM);
-        int minY = (int) Math.floor(bounds.y / WorldConstVals.PPM);
-        int maxX = (int) Math.ceil((bounds.x + bounds.width) / WorldConstVals.PPM);
-        int maxY = (int) Math.ceil((bounds.y + bounds.height) / WorldConstVals.PPM);
+        int minX = (int) Math.floor(bounds.x / WorldVals.PPM);
+        int minY = (int) Math.floor(bounds.y / WorldVals.PPM);
+        int maxX = (int) Math.ceil((bounds.x + bounds.width) / WorldVals.PPM);
+        int maxY = (int) Math.ceil((bounds.y + bounds.height) / WorldVals.PPM);
         return new int[] {
                 Integer.max(0, minX),
                 Integer.max(0, minY),
-                Integer.min(nodes.length, maxX),
-                Integer.min(nodes[0].length, maxY)
+                Integer.min(width, maxX),
+                Integer.min(height, maxY)
         };
     }
 
     public void addBody(Body body) {
-        Array<WorldNode> worldNodes = getNodesOverlapping(body.bounds);
-        for (WorldNode n : worldNodes) {
-            n.bodies.add(body);
+        int[] m = getMinsAndMaxes(body.bounds);
+        int xMin = m[0];
+        int yMin = m[1];
+        int xMax = m[2];
+        int yMax = m[3];
+        for (int x = xMin; x < xMax; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                WorldCoordinate c = new WorldCoordinate(x, y);
+                Array<Body> b;
+                if (bodies.containsKey(c)) {
+                    b = bodies.get(c);
+                } else {
+                    b = new Array<>();
+                    bodies.put(c, b);
+                }
+                b.add(body);
+            }
         }
     }
 
     public void addFixture(Fixture fixture) {
-        Array<WorldNode> worldNodes = getNodesOverlapping(fixture.bounds);
-        for (WorldNode n : worldNodes) {
-            n.fixtures.add(fixture);
+        int[] m = getMinsAndMaxes(fixture.bounds);
+        int xMin = m[0];
+        int yMin = m[1];
+        int xMax = m[2];
+        int yMax = m[3];
+        for (int x = xMin; x < xMax; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                WorldCoordinate c = new WorldCoordinate(x, y);
+                Array<Fixture> f;
+                if (fixtures.containsKey(c)) {
+                    f = fixtures.get(c);
+                } else {
+                    f = new Array<>();
+                    fixtures.put(c, f);
+                }
+                f.add(fixture);
+            }
         }
     }
 
-    public Array<Body> getBodiesOverlapping(Body body) {
-        Array<WorldNode> worldNodes = getNodesOverlapping(body.bounds);
-        Array<Body> overlappingBodies = new Array<>(30);
-        ObjectSet<Body> alreadyChecked = new ObjectSet<>(30);
-        for (WorldNode n : worldNodes) {
-            for (Body o : n.bodies) {
-                if (alreadyChecked.contains(o)) {
+    public Array<Body> getBodiesOverlapping(Body body, Predicate<Body> pred) {
+        int[] m = getMinsAndMaxes(body.bounds);
+        int xMin = m[0];
+        int yMin = m[1];
+        int xMax = m[2];
+        int yMax = m[3];
+        Array<Body> overlapping = new Array<>(30);
+        ObjectSet<Body> checked = new ObjectSet<>();
+        for (int x = xMin; x < xMax; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                WorldCoordinate c = new WorldCoordinate(x, y);
+                if (!bodies.containsKey(c)) {
                     continue;
                 }
-                alreadyChecked.add(o);
-                if (body.overlaps(o)) {
-                    overlappingBodies.add(o);
+                for (Body other : bodies.get(c)) {
+                    if (body.equals(other) || checked.contains(other)) {
+                        continue;
+                    }
+                    checked.add(other);
+                    if (body.overlaps(other) && pred.evaluate(other)) {
+                        overlapping.add(other);
+                    }
                 }
             }
         }
-        return overlappingBodies;
+        return overlapping;
     }
 
-    public Array<Fixture> getFixturesOverlapping(Fixture fixture) {
-        Array<WorldNode> worldNodes = getNodesOverlapping(fixture.bounds);
-        Array<Fixture> overlappingFixtures = new Array<>(30);
-        ObjectSet<Fixture> alreadyChecked = new ObjectSet<>(30);
-        for (WorldNode n : worldNodes) {
-            for (Fixture o : n.fixtures) {
-                if (alreadyChecked.contains(o)) {
+    public Array<Fixture> getFixturesOverlapping(Fixture fixture, Predicate<Fixture> pred) {
+        int[] m = getMinsAndMaxes(fixture.bounds);
+        int xMin = m[0];
+        int yMin = m[1];
+        int xMax = m[2];
+        int yMax = m[3];
+        Array<Fixture> overlapping = new Array<>();
+        ObjectSet<Fixture> checked = new ObjectSet<>();
+        for (int x = xMin; x < xMax; x++) {
+            for (int y = yMin; y < yMax; y++) {
+                WorldCoordinate c = new WorldCoordinate(x, y);
+                if (!fixtures.containsKey(c)) {
                     continue;
                 }
-                alreadyChecked.add(o);
-                if (fixture.overlaps(o)) {
-                    overlappingFixtures.add(o);
+                for (Fixture other : fixtures.get(c)) {
+                    if (checked.contains(other)) {
+                        continue;
+                    }
+                    checked.add(other);
+                    if (fixture.overlaps(other) && pred.evaluate(other)) {
+                        overlapping.add(other);
+                    }
                 }
             }
         }
-        return overlappingFixtures;
+        return overlapping;
     }
 
     @Override
     public void reset() {
-        forEachNode(WorldNode::reset);
+        bodies.clear();
+        fixtures.clear();
     }
 
 }

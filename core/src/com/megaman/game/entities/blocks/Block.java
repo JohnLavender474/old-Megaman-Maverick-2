@@ -5,25 +5,31 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
-import com.megaman.game.world.Body;
-import com.megaman.game.world.BodyType;
-import com.megaman.game.world.Fixture;
-import com.megaman.game.world.FixtureType;
+import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.world.*;
 
 public class Block extends Entity {
 
     public static final float STANDARD_FRIC_X = .035f;
-    public static final float STANDARD_FRIC_Y = .035f;
+    public static final float STANDARD_FRIC_Y = 0f;
 
-    public final Body body = new Body(BodyType.STATIC);
+    public final Body body;
+    public final Fixture blockFixture;
 
     public Block(MegamanGame game) {
         super(game, EntityType.BLOCK);
+        body = new Body(BodyType.STATIC);
+        blockFixture = new Fixture(this, FixtureType.BLOCK);
+        body.fixtures.add(blockFixture);
+        addComponent(new BodyComponent(body));
+        addComponent(shapeComponent());
     }
 
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         body.bounds.set(bounds);
+        blockFixture.bounds.set(body.bounds);
         if (data.containsKey(BlockDataKey.FRICTION_X.key)) {
             body.friction.x = (float) data.get(BlockDataKey.FRICTION_X.key);
         } else {
@@ -40,8 +46,10 @@ public class Block extends Entity {
         if (data.containsKey(BlockDataKey.RESIST_ON.key)) {
             body.affectedByResistance = (boolean) data.get(BlockDataKey.RESIST_ON.key);
         }
-        Fixture blockFixture = new Fixture(this, FixtureType.BLOCK, bounds);
-        body.fixtures.add(blockFixture);
+    }
+
+    public ShapeComponent shapeComponent() {
+        return new ShapeComponent(new ShapeHandle(body.bounds));
     }
 
 }

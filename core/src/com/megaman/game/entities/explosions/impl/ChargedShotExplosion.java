@@ -64,7 +64,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
         // body
         body.bounds.setCenter(spawn);
         // sprite
-        float spriteDim = (fullyCharged ? 1.75f : 1.25f) * WorldConstVals.PPM;
+        float spriteDim = (fullyCharged ? 1.75f : 1.25f) * WorldVals.PPM;
         sprite.setSize(spriteDim, spriteDim);
     }
 
@@ -85,9 +85,9 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
     }
 
     private BodyComponent bodyComponent() {
-        body.bounds.setSize(WorldConstVals.PPM, WorldConstVals.PPM);
+        body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
         // damager fixture
-        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, WorldConstVals.PPM);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, WorldVals.PPM);
         body.fixtures.add(damagerFixture);
         return new BodyComponent(body);
     }
@@ -95,7 +95,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
     private SpriteComponent spriteComponent() {
         SpriteHandle handle = new SpriteHandle(sprite, 5);
         handle.runnable = () -> {
-            handle.setPos(body.bounds, Position.CENTER);
+            handle.setPosition(body.bounds, Position.CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
         };
         return new SpriteComponent(handle);

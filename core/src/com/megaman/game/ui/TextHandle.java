@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.utils.interfaces.Drawable;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 public class TextHandle implements Drawable {
 
     public static final String FONT_SRC = "Megaman10Font.ttf";
-    public static final int FONT_SIZE = Math.round(WorldConstVals.PPM / 2f);
+    public static final int FONT_SIZE = Math.round(WorldVals.PPM / 2f);
 
     private final BitmapFont font;
     private final GlyphLayout layout = new GlyphLayout();

@@ -16,7 +16,7 @@ import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.BodyType;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,7 +50,7 @@ public class Disintegration extends Entity {
     }
 
     private SpriteComponent spriteComponent() {
-        sprite.setSize(WorldConstVals.PPM, WorldConstVals.PPM);
+        sprite.setSize(WorldVals.PPM, WorldVals.PPM);
         return new SpriteComponent(new SpriteHandle(sprite, 4));
     }
 

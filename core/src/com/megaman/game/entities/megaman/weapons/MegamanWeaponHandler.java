@@ -14,7 +14,7 @@ import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.world.BodySense;
-import com.megaman.game.world.WorldConstVals;
+import com.megaman.game.world.WorldVals;
 import lombok.RequiredArgsConstructor;
 
 import java.util.EnumMap;
@@ -99,16 +99,16 @@ public class MegamanWeaponHandler {
 
     private Vector2 getSpawnCenter() {
         Vector2 spawnCenter = new Vector2(megaman.body.getCenter());
-        float xOffset = .75f * WorldConstVals.PPM;
+        float xOffset = .75f * WorldVals.PPM;
         if (megaman.is(Facing.LEFT)) {
             xOffset *= 1f;
         }
         spawnCenter.x += xOffset;
-        float yOffset = WorldConstVals.PPM / 16f;
+        float yOffset = WorldVals.PPM / 16f;
         if (megaman.is(BehaviorType.WALL_SLIDING)) {
-            yOffset += .15f * WorldConstVals.PPM;
+            yOffset += .15f * WorldVals.PPM;
         } else if (!megaman.is(BodySense.FEET_ON_GROUND)) {
-            yOffset += WorldConstVals.PPM / 4f;
+            yOffset += WorldVals.PPM / 4f;
         }
         spawnCenter.y += yOffset;
         return spawnCenter;
