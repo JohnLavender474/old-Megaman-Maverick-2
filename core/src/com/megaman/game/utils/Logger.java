@@ -2,7 +2,6 @@ package com.megaman.game.utils;
 
 import lombok.*;
 
-@NoArgsConstructor
 @AllArgsConstructor
 public class Logger {
 

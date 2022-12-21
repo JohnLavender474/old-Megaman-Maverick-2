@@ -12,11 +12,14 @@ import com.megaman.game.entities.decorations.Splash;
 import com.megaman.game.entities.megaman.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.objs.Wrapper;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
+
+    private static final Logger logger = new Logger(true);
 
     private final MegamanGame game;
 
@@ -63,7 +66,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
             contact.mask2ndBody().velocity.set(v);
             contact.mask2ndData(ConstKeys.RUN, Runnable.class).run();
         } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
-            contact.mask1stBody().set(BodySense.HEAD_TOUCHING_BLOCK, true);
+            Body headBody = contact.mask1stBody();
+            headBody.set(BodySense.HEAD_TOUCHING_BLOCK, true);
+            headBody.velocity.y = 0f;
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.WATER)) {
             contact.mask1stBody().set(BodySense.IN_WATER, true);
             if (contact.mask1stEntity() instanceof Megaman megaman &&

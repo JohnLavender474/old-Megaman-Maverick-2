@@ -28,12 +28,18 @@ public class Bullet extends Projectile {
 
     private static final float CLAMP = 10f;
 
-    private final Sprite sprite = new Sprite();
+    private static TextureRegion bulletReg;
 
-    private Vector2 traj = new Vector2();
+    private final Sprite sprite;
+    private final Vector2 traj;
 
     public Bullet(MegamanGame game) {
         super(game);
+        if (bulletReg == null) {
+            bulletReg = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
+        }
+        this.sprite = new Sprite();
+        this.traj = new Vector2();
         defineBody();
         putComponent(spriteComponent());
         putComponent(updatableComponent());
@@ -70,7 +76,7 @@ public class Bullet extends Projectile {
     public void hitShield(Fixture shieldFixture) {
         owner = shieldFixture.entity;
         traj.x *= -1f;
-        String reflectDir = (String) shieldFixture.userData.get(ConstKeys.DIR);
+        String reflectDir = shieldFixture.getUserData(ConstKeys.DIR, String.class);
         if (reflectDir == null || reflectDir.equals(ConstKeys.STRAIGHT)) {
             traj.y = 0f;
         } else {
@@ -97,10 +103,9 @@ public class Bullet extends Projectile {
     }
 
     private SpriteComponent spriteComponent() {
-        TextureRegion t = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
-        sprite.setRegion(t);
+        sprite.setRegion(bulletReg);
         sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
-        SpriteHandle h = new SpriteHandle(sprite, 4);
+        SpriteHandle h = new SpriteHandle(sprite, 3);
         h.runnable = () -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);
     }

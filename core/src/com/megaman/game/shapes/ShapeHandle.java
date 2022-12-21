@@ -16,8 +16,8 @@ import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 public class ShapeHandle implements RenderableShape {
 
     public Updatable updatable;
+    public Supplier<Color> colorSupplier;
     public Supplier<Shape2D> shapeSupplier;
-    public Supplier<Color> colorSupplier = () -> RED;
     public Supplier<Boolean> doRenderSupplier = () -> true;
     public Supplier<ShapeType> shapeTypeSupplier = () -> Line;
 
@@ -25,8 +25,17 @@ public class ShapeHandle implements RenderableShape {
         this(() -> shape);
     }
 
+    public ShapeHandle(Shape2D shape, Color color) {
+        this(() -> shape, () -> color);
+    }
+
     public ShapeHandle(Supplier<Shape2D> shapeSupplier) {
+        this(shapeSupplier, () -> RED);
+    }
+
+    public ShapeHandle(Supplier<Shape2D> shapeSupplier, Supplier<Color> colorSupplier) {
         this.shapeSupplier = shapeSupplier;
+        this.colorSupplier = colorSupplier;
     }
 
     public Color getColor() {

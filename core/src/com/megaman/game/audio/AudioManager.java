@@ -7,28 +7,38 @@ import lombok.Getter;
 @Getter
 public class AudioManager {
 
-    private int soundEffectsVolume = 5;
-    private int musicVolume = 5;
+    private float soundEffectsVolume = 5f;
+    private float musicVolume = 5f;
     private Music currMusic;
 
-    public void changeSoundVolume(int delta) {
+    public void changeSoundVolume(float delta) {
         soundEffectsVolume += delta;
-        if (soundEffectsVolume > 10) {
-            soundEffectsVolume = 10;
+        if (soundEffectsVolume > 10f) {
+            soundEffectsVolume = 10f;
         }
-        if (soundEffectsVolume < 0) {
-            soundEffectsVolume = 0;
+        if (soundEffectsVolume < 0f) {
+            soundEffectsVolume = 0f;
         }
     }
 
-    public void changeMusicVolume(int delta) {
+    public void scaleSoundVolume(float scale) {
+        float s = soundEffectsVolume / scale;
+        changeSoundVolume(s);
+    }
+
+    public void changeMusicVolume(float delta) {
         musicVolume += delta;
-        if (musicVolume > 10) {
-            musicVolume = 10;
+        if (musicVolume > 10f) {
+            musicVolume = 10f;
         }
-        if (musicVolume < 0) {
-            musicVolume = 0;
+        if (musicVolume < 0f) {
+            musicVolume = 0f;
         }
+    }
+
+    public void scaleMusicVolume(float scale) {
+        float s = musicVolume / scale;
+        changeMusicVolume(s);
     }
 
     public void playSound(Sound sound, boolean loop) {

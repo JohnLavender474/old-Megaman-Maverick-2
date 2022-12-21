@@ -12,8 +12,10 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
+import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.world.*;
@@ -24,11 +26,11 @@ public class Water extends Entity {
     private static final String UNDER_REG = "Under";
     private static final String SURFACE_REG = "Surface";
 
-    private static final float WATER_ALPHA = .5f;
+    private static TextureRegion waterReg;
+    private static TextureRegion surfaceReg;
+    private static TextureRegion underReg;
 
-    private final TextureRegion waterReg;
-    private final TextureRegion surfaceReg;
-    private final TextureRegion underReg;
+    private static final float WATER_ALPHA = .5f;
 
     private final Fixture water;
     private final Body body;
@@ -36,13 +38,20 @@ public class Water extends Entity {
     public Water(MegamanGame game) {
         super(game, EntityType.SPECIAL);
         TextureAtlas atlas = game.getAssMan().getAsset(TextureAsset.WATER.getSrc(), TextureAtlas.class);
-        this.waterReg = atlas.findRegion(WATER_REG);
-        this.underReg = atlas.findRegion(UNDER_REG);
-        this.surfaceReg = atlas.findRegion(SURFACE_REG);
+        if (waterReg == null) {
+            waterReg = atlas.findRegion(WATER_REG);
+        }
+        if (underReg == null) {
+            underReg = atlas.findRegion(UNDER_REG);
+        }
+        if (surfaceReg == null) {
+            surfaceReg = atlas.findRegion(SURFACE_REG);
+        }
         this.body = new Body(BodyType.ABSTRACT);
         this.water = new Fixture(this, FixtureType.WATER);
         this.body.fixtures.add(water);
         putComponent(new BodyComponent(body));
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
     }
 
     @Override
@@ -54,7 +63,7 @@ public class Water extends Entity {
         Sprite waterSprite = new Sprite(waterReg);
         waterSprite.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
         waterSprite.setAlpha(WATER_ALPHA);
-        handles.add(new SpriteHandle(waterSprite, 4));
+        handles.add(new SpriteHandle(waterSprite, 5));
         int rows = (int) (bounds.height / WorldVals.PPM);
         int cols = (int) (bounds.width / WorldVals.PPM);
         for (int x = 0; x < cols; x++) {

@@ -3,10 +3,13 @@ package com.megaman.game.cull;
 import com.badlogic.gdx.graphics.Camera;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.UtilMethods;
 import lombok.Setter;
 
 public class CullOnOutOfBoundsSystem extends System {
+
+    private static final Logger logger = new Logger(true);
 
     @Setter
     private Camera gameCam;
@@ -31,6 +34,7 @@ public class CullOnOutOfBoundsSystem extends System {
         }
         c.timer.update(delta);
         if (c.timer.isFinished()) {
+            logger.log("Culled: " + e);
             e.dead = true;
         }
     }

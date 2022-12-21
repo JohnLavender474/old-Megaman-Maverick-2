@@ -3,6 +3,7 @@ package com.megaman.game.entities.blocks;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.shapes.ShapeComponent;
@@ -23,7 +24,8 @@ public class Block extends Entity {
         blockFixture = new Fixture(this, FixtureType.BLOCK);
         body.fixtures.add(blockFixture);
         putComponent(new BodyComponent(body));
-        putComponent(shapeComponent());
+        putComponent(new ShapeComponent(body.bounds));
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
     }
 
     @Override
@@ -46,10 +48,6 @@ public class Block extends Entity {
         if (data.containsKey(BlockDataKey.RESIST_ON.key)) {
             body.affectedByResistance = (boolean) data.get(BlockDataKey.RESIST_ON.key);
         }
-    }
-
-    public ShapeComponent shapeComponent() {
-        return new ShapeComponent(new ShapeHandle(body.bounds));
     }
 
 }

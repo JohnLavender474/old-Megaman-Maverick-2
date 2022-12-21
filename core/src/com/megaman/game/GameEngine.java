@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.entities.Entity;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.KeyValuePair;
@@ -16,6 +17,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class GameEngine implements Updatable, Resettable {
+
+    private static final Logger logger = new Logger(false);
 
     private final OrderedMap<Class<? extends System>, System> systems = new OrderedMap<>();
 
@@ -79,6 +82,7 @@ public class GameEngine implements Updatable, Resettable {
                     r.run();
                 }
                 eIter.remove();
+                logger.log("Removed from engine: " + e);
             }
         }
         while (!entitiesToAdd.isEmpty()) {
@@ -96,6 +100,7 @@ public class GameEngine implements Updatable, Resettable {
                     s.addEntity(e);
                 }
             }
+            logger.log("Added to engine: " + e);
         }
         for (System s : systems.values()) {
             s.update(delta);

@@ -22,38 +22,28 @@ import java.util.Set;
 
 public abstract class Enemy extends Entity implements Damager, Damageable, Updatable {
 
-    public static final float DEFAULT_CULL_DUR = 1.5f;
-
     protected final Timer dmgTimer;
     protected final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs;
 
     protected final Body body = new Body(BodyType.DYNAMIC);
 
     public Enemy(MegamanGame game, float damageDuration) {
-        this(game, damageDuration, DEFAULT_CULL_DUR);
+        this(game, damageDuration, CullOutOfBoundsComponent.DEFAULT_CULL_DUR);
     }
 
     public Enemy(MegamanGame game, float dmgDur, float cullDur) {
         super(game, EntityType.ENEMY);
         this.dmgTimer = new Timer(dmgDur, true);
         this.dmgNegs = defineDamageNegotiations();
-        // define body comp
         defineBody(body);
         putComponent(new BodyComponent(body));
-        // define updatable comp
         UpdatableComponent uc = new UpdatableComponent();
         defineUpdateComponent(uc);
         putComponent(uc);
-        // define cull event comp
         CullOnEventComponent coec = new CullOnEventComponent();
         defineCullOnEventComponent(coec);
         putComponent(coec);
-        // define cull oocb comp
-        CullOutOfBoundsComponent coocbc = new CullOutOfBoundsComponent();
-        coocbc.timer = new Timer(cullDur);
-        coocbc.boundsSupplier = () -> body.bounds;
-        putComponent(coocbc);
-        // other comps
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
         putComponent(new SoundComponent());
         putComponent(new HealthComponent(this::disintegrate));
     }

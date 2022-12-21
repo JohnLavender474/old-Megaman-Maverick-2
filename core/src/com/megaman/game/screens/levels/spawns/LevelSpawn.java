@@ -11,13 +11,13 @@ import lombok.RequiredArgsConstructor;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class LevelSpawn<E extends Entity> {
+public class LevelSpawn {
 
     private final Rectangle bounds;
-    private final Supplier<E> entitySupplier;
+    private final Supplier<Entity> entitySupplier;
     private final Supplier<ObjectMap<String, Object>> dataSupplier;
 
-    private E entity;
+    private Entity entity;
     private boolean inCamBounds;
 
     public void update(GameEngine engine, Camera cam) {

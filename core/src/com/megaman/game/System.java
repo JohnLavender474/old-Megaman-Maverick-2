@@ -17,8 +17,7 @@ public abstract class System implements Updatable, Resettable {
     protected final Queue<Entity> entitiesToAddQueue = new LinkedList<>();
     protected final OrderedSet<Class<? extends Component>> componentMask = new OrderedSet<>();
 
-    public boolean on = true;
-
+    protected boolean on = true;
     protected boolean updating;
 
     @SafeVarargs
@@ -68,7 +67,8 @@ public abstract class System implements Updatable, Resettable {
         }
         updating = true;
         while (!entitiesToAddQueue.isEmpty()) {
-            entities.add(entitiesToAddQueue.poll());
+            Entity e = entitiesToAddQueue.poll();
+            entities.add(e);
         }
         preProcess(delta);
         Iterator<Entity> eIter = entities.iterator();
@@ -88,6 +88,11 @@ public abstract class System implements Updatable, Resettable {
     public void reset() {
         entities.clear();
         entitiesToAddQueue.clear();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 
 }

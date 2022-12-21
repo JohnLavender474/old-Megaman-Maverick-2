@@ -36,7 +36,6 @@ import com.megaman.game.world.WorldContactListener;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import lombok.Getter;
-import lombok.extern.java.Log;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -44,9 +43,7 @@ import java.util.Map;
 @Getter
 public class MegamanGame extends Game {
 
-    public static boolean DEBUG = false;
-
-    private Logger logger;
+    private static final Logger logger = new Logger(false);
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
@@ -65,7 +62,6 @@ public class MegamanGame extends Game {
 
     @Override
     public void create() {
-        logger = new Logger(DEBUG);
         debug = false;
         // renderers
         batch = new SpriteBatch();

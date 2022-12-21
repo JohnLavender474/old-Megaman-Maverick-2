@@ -28,8 +28,12 @@ public class AssetsManager implements Disposable {
         return assMan.get(asset, tClass);
     }
 
+    public TextureAtlas getTextureAtlas(TextureAsset t) {
+        return getAsset(t.getSrc(), TextureAtlas.class);
+    }
+
     public TextureRegion getTextureRegion(TextureAsset t, String region) {
-        return getAsset(t.getSrc(), TextureAtlas.class).findRegion(region);
+        return getTextureAtlas(t).findRegion(region);
     }
 
     public Sound getSound(SoundAsset s) {

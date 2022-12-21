@@ -6,30 +6,30 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.GameEngine;
-import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.screens.levels.map.LevelMapObjParser;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.objs.KeyValuePair;
 
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class LevelSpawnManager {
+public class LevelSpawnManager implements Resettable {
 
-    private Array<LevelSpawn<Enemy>> enemySpawns;
+    private Array<LevelSpawn> spawns;
     private RectangleMapObject currPlayerCheckpoint;
     private Queue<RectangleMapObject> playerCheckpoints;
 
-    public void set(Array<LevelSpawn<Enemy>> enemySpawns, Array<RectangleMapObject> playerCheckpointObjs) {
-        this.enemySpawns = enemySpawns;
-        playerCheckpoints = new LinkedList<>();
+    public void set(Array<RectangleMapObject> playerCheckpointObjs, Array<LevelSpawn> spawns) {
+        this.spawns = spawns;
+        this.playerCheckpoints = new LinkedList<>();
         playerCheckpointObjs.sort(Comparator.comparing(p -> Integer.valueOf(p.getName())));
         for (RectangleMapObject p : playerCheckpointObjs) {
-            playerCheckpoints.add(p);
+            this.playerCheckpoints.add(p);
         }
-        currPlayerCheckpoint = playerCheckpoints.poll();
+        this.currPlayerCheckpoint = this.playerCheckpoints.poll();
     }
 
     public KeyValuePair<Vector2, ObjectMap<String, Object>> getCurrPlayerCheckpoint() {
@@ -42,10 +42,10 @@ public class LevelSpawnManager {
     }
 
     public void update(GameEngine engine, Camera cam) {
-        if (enemySpawns == null || playerCheckpoints == null) {
+        if (spawns == null || playerCheckpoints == null) {
             throw new IllegalStateException("Set method must first be called with non-null values");
         }
-        for (LevelSpawn<Enemy> s : enemySpawns) {
+        for (LevelSpawn s : spawns) {
             s.update(engine, cam);
         }
         if (playerCheckpoints.isEmpty()) {
@@ -55,6 +55,13 @@ public class LevelSpawnManager {
         if (UtilMethods.isInCamBounds(cam, nextPSpawn.getRectangle())) {
             currPlayerCheckpoint = playerCheckpoints.poll();
         }
+    }
+
+    @Override
+    public void reset() {
+        spawns = null;
+        playerCheckpoints = null;
+        currPlayerCheckpoint = null;
     }
 
 }

@@ -169,22 +169,6 @@ public class WorldSystem extends System {
         for (Body o : overlapping) {
             handleCollision(body, o);
         }
-        /*
-        if (body.bodyType == BodyType.ABSTRACT) {
-            return;
-        }
-        Array<Body> overlapping = worldGraph.getBodiesOverlapping(body,
-                o -> body.bodyType == BodyType.STATIC ? o.bodyType == BodyType.DYNAMIC : o.bodyType == BodyType.STATIC);
-        if (body.bodyType == BodyType.STATIC) {
-            for (Body o : overlapping) {
-                handleCollision(o, body);
-            }
-        } else {
-            for (Body o : overlapping) {
-                handleCollision(body, o);
-            }
-        }
-         */
     }
 
     private void handleCollision(Body dynamicBody, Body staticBody) {

@@ -40,8 +40,23 @@ public class Fixture {
         return bounds.overlaps(fixture.bounds);
     }
 
+    public void putUserData(String key, Object o) {
+        userData.put(key, o);
+    }
+
+    public boolean hasUserData(String key) {
+        return userData.containsKey(key);
+    }
+
     public <T> T getUserData(String key, Class<T> tClass) {
         return tClass.cast(userData.get(key));
+    }
+
+    public <T> T getUserDataOrDefault(String key, Class<T> tClass, T def) {
+        if (!hasUserData(key)) {
+            return def;
+        }
+        return getUserData(key, tClass);
     }
 
 }

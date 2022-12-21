@@ -11,7 +11,10 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.SoundComponent;
-import com.megaman.game.entities.*;
+import com.megaman.game.entities.Damageable;
+import com.megaman.game.entities.EntityType;
+import com.megaman.game.entities.Faceable;
+import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.projectiles.Projectile;
@@ -33,6 +36,9 @@ import static com.megaman.game.assets.TextureAsset.MEGAMAN_HALF_CHARGED_SHOT;
 
 public class ChargedShot extends Projectile implements Faceable {
 
+    private static TextureRegion fullyChargedReg;
+    private static TextureRegion halfChargedReg;
+
     private final Sprite sprite;
     private final Vector2 traj;
 
@@ -43,6 +49,12 @@ public class ChargedShot extends Projectile implements Faceable {
 
     public ChargedShot(MegamanGame game) {
         super(game);
+        if (fullyChargedReg == null) {
+            fullyChargedReg = game.getAssMan().getTextureRegion(MEGAMAN_CHARGED_SHOT, "Shoot");
+        }
+        if (halfChargedReg == null) {
+            halfChargedReg = game.getAssMan().getTextureRegion(MEGAMAN_HALF_CHARGED_SHOT, "Shoot");
+        }
         this.sprite = new Sprite();
         this.traj = new Vector2();
         defineBody();
@@ -55,9 +67,7 @@ public class ChargedShot extends Projectile implements Faceable {
     @Override
     public void init(Vector2 center, ObjectMap<String, Object> data) {
         super.init(center, data);
-        // fully charged?
         fullyCharged = (boolean) data.get(ConstKeys.BOOL);
-        // bounds of sprite, body, and fixtures
         float bodyDim = WorldVals.PPM;
         float spriteDim = WorldVals.PPM;
         if (fullyCharged) {
@@ -72,9 +82,7 @@ public class ChargedShot extends Projectile implements Faceable {
         for (Fixture f : body.fixtures) {
             f.bounds.set(body.bounds);
         }
-        // trajectory
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
-        // facing
         facing = traj.x > 0f ? Facing.RIGHT : Facing.LEFT;
     }
 
@@ -145,7 +153,7 @@ public class ChargedShot extends Projectile implements Faceable {
     }
 
     private SpriteComponent spriteComponent() {
-        SpriteHandle handle = new SpriteHandle(sprite, 4);
+        SpriteHandle handle = new SpriteHandle(sprite, 3);
         handle.runnable = () -> {
             sprite.setFlip(is(Facing.LEFT), false);
             handle.setPosition(body.bounds, Position.CENTER);
@@ -154,19 +162,10 @@ public class ChargedShot extends Projectile implements Faceable {
     }
 
     private AnimationComponent animationComponent() {
-        // fully charged anim
-        TextureRegion fullyChargedRegion = game.getAssMan().getTextureRegion(MEGAMAN_CHARGED_SHOT, "Shoot");
-        Animation fullyChargedAnim = new Animation(fullyChargedRegion, 2, .05f);
-        // half charged anim
-        TextureRegion halfChargedRegion = game.getAssMan().getTextureRegion(MEGAMAN_HALF_CHARGED_SHOT, "Shoot");
-        Animation halfChargedAnim = new Animation(halfChargedRegion, 2, .05f);
-        // anims
-        ObjectMap<String, Animation> anims = new ObjectMap<>();
-        anims.put("charged", fullyChargedAnim);
-        anims.put("half", halfChargedAnim);
-        // animator
-        Animator animator = new Animator(sprite, () -> fullyCharged ? "charged" : "half", anims);
-        return new AnimationComponent(animator);
+        return new AnimationComponent(sprite, () -> fullyCharged ? "charged" : "half", new ObjectMap<>() {{
+            put("charged", new Animation(fullyChargedReg, 2, .05f));
+            put("half", new Animation(halfChargedReg, 2, .05f));
+        }});
     }
 
     private void defineBody() {
@@ -175,10 +174,8 @@ public class ChargedShot extends Projectile implements Faceable {
             size /= 2f;
         }
         body.bounds.setSize(size, size);
-        // projectile fixture
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE);
         body.fixtures.add(projectileFixture);
-        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER);
         body.fixtures.add(damagerFixture);
     }

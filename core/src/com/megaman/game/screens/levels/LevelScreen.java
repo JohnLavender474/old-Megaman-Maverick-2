@@ -20,16 +20,16 @@ import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
 import com.megaman.game.behaviors.BehaviorSystem;
 import com.megaman.game.controllers.ControllerBtn;
+import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
-import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
-import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
@@ -89,10 +89,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final Queue<TextHandle> uiText = new LinkedList<>();
     private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables = new Array<>();
 
-    public Music music;
-    public boolean paused;
-
+    private boolean paused;
     private boolean set;
+    private Music music;
 
     public LevelScreen(MegamanGame game) {
         this.game = game;
@@ -119,54 +118,40 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     }
 
     public void set(String tmxFile) {
-        // init systems
         GameEngine engine = game.getGameEngine();
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(ShapeSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
-        // set map, fetch layer data
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
-        // set world graph
-        // WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
         engine.getSystem(WorldSystem.class).setWorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
-        // engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
-        // set spawns
         Array<RectangleMapObject> playerSpawns = new Array<>();
-        Array<LevelSpawn<Enemy>> enemySpawns = new Array<>();
+        Array<LevelSpawn> spawns = new Array<>();
         EntityFactories factories = game.getEntityFactories();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
             switch (e.getKey()) {
                 case GAME_ROOMS -> levelCamMan.set(e.getValue(), game.getMegaman());
                 case PLAYER_SPAWNS -> playerSpawns.addAll(e.getValue());
-                case ENEMY_SPAWNS -> {
+                case ENEMY_SPAWNS, BLOCKS, HAZARDS, SENSORS, SPECIAL -> {
+                    EntityType type = switch (e.getKey()) {
+                        case ENEMY_SPAWNS -> EntityType.ENEMY;
+                        case BLOCKS -> EntityType.BLOCK;
+                        case HAZARDS -> EntityType.HAZARD;
+                        case SENSORS -> EntityType.SENSOR;
+                        case SPECIAL -> EntityType.SPECIAL;
+                        default -> throw new IllegalStateException("Incompatible state");
+                    };
                     for (RectangleMapObject o : e.getValue()) {
-                        enemySpawns.add(new LevelSpawn<>(
+                        spawns.add(new LevelSpawn(
                                 o.getRectangle(),
-                                () -> (Enemy) factories.fetch(EntityType.ENEMY, o.getName()),
+                                () -> factories.fetch(type, o.getName()),
                                 () -> LevelMapObjParser.parse(o)));
-                    }
-                }
-                case BLOCKS, HAZARDS, SENSORS, SPECIAL -> {
-                    for (RectangleMapObject o : e.getValue()) {
-                        ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
-                        EntityType entityType = switch (e.getKey()) {
-                            case BLOCKS -> EntityType.BLOCK;
-                            case HAZARDS -> EntityType.HAZARD;
-                            case SENSORS -> EntityType.SENSOR;
-                            case SPECIAL -> EntityType.SPECIAL;
-                            default -> throw new IllegalStateException("Incompatible state");
-                        };
-                        Entity entity = factories.fetch(entityType, o.getName());
-                        engine.spawnEntity(entity, o.getRectangle(), data);
                     }
                 }
             }
         }
-        spawnMan.set(enemySpawns, playerSpawns);
-        // set player death delay timer to end
+        spawnMan.set(playerSpawns, spawns);
         playerDeathDelayTimer.setToEnd();
-        // level screen is now set
         set = true;
     }
 
@@ -182,12 +167,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             music.stop();
         }
         game.getAudioMan().playMusic(music, loop);
-    }
-
-    public void pauseMusic() {
-        if (music != null) {
-            music.pause();
-        }
     }
 
     public void stopMusic() {
@@ -238,7 +217,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             throw new IllegalStateException("Must call set method before rendering");
         }
         super.render(delta);
-        if (game.getCtrlMan().isJustPressed(ControllerBtn.START)) {
+        ControllerManager ctrlMan = game.getCtrlMan();
+        if (ctrlMan.isJustPressed(ControllerBtn.START)) {
             if (paused) {
                 resume();
             } else {
@@ -293,9 +273,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 spawnMegaman();
             }
         }
-        // update engine
         engine.update(delta);
-        // level drawables
         SpriteBatch batch = game.getBatch();
         batch.setProjectionMatrix(gameCam.combined);
         batch.begin();
@@ -308,7 +286,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             gameSpritesQ.poll().draw(batch);
         }
         batch.end();
-        // ui drawables
         batch.setProjectionMatrix(uiCam.combined);
         batch.begin();
         for (KeyValuePair<Supplier<Boolean>, Drawable> uiDrawable : uiDrawables) {
@@ -321,7 +298,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             uiText.poll().draw(batch);
         }
         batch.end();
-        // shape renderables
         ShapeRenderer shapeRenderer = game.getShapeRenderer();
         shapeRenderer.setProjectionMatrix(gameCam.combined);
         for (Map.Entry<ShapeRenderer.ShapeType, Queue<RenderableShape>> e : shapeRenderQs.entrySet()) {
@@ -338,14 +314,28 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     @Override
     public void pause() {
+        if (paused) {
+            return;
+        }
         paused = true;
-        super.pause();
+        AudioManager audioMan = game.getAudioMan();
+        audioMan.scaleSoundVolume(.5f);
+        audioMan.scaleMusicVolume(.5f);
+        Sound pauseSound = game.getAssMan().getSound(SoundAsset.PAUSE_SOUND);
+        audioMan.playSound(pauseSound, false);
     }
 
     @Override
     public void resume() {
+        if (!paused) {
+            return;
+        }
         paused = false;
-        super.resume();
+        AudioManager audioMan = game.getAudioMan();
+        audioMan.scaleSoundVolume(2f);
+        audioMan.scaleMusicVolume(2f);
+        Sound pauseSound = game.getAssMan().getSound(SoundAsset.PAUSE_SOUND);
+        audioMan.playSound(pauseSound, false);
     }
 
     @Override
@@ -357,9 +347,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     @Override
     public void dispose() {
         set = false;
-        if (music != null) {
-            music.stop();
-        }
+        stopMusic();
+        spawnMan.reset();
         levelMapMan.dispose();
         game.getGameEngine().reset();
         game.getEventMan().remove(this);

@@ -41,4 +41,18 @@ public class Entity {
         return components.containsKey(cClass);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder(getClass().getSimpleName() + ": ");
+        int i = 1;
+        for (Class<? extends Component> c : components.keys()) {
+            s.append(c.getSimpleName());
+            if (i < components.size) {
+                s.append(", ");
+            }
+            i++;
+        }
+        return s.toString();
+    }
+
 }
