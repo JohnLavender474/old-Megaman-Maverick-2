@@ -62,7 +62,7 @@
   <object id="6" x="1728" y="1152" width="64" height="448"/>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
-  <object id="3" name="0" x="192" y="1312" width="32" height="32"/>
+  <object id="3" name="0" x="96" y="1504" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="GameRooms" visible="0">
   <object id="4" name="1" x="0" y="1152" width="864" height="448"/>

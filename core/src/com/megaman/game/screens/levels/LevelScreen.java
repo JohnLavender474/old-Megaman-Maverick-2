@@ -30,6 +30,7 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventManager;
@@ -49,6 +50,7 @@ import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.ui.BitsBar;
 import com.megaman.game.ui.TextHandle;
 import com.megaman.game.updatables.UpdatableSystem;
+import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
@@ -245,6 +247,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         }
         GameEngine engine = game.getGameEngine();
         EventManager eventMan = game.getEventMan();
+        Megaman megaman = game.getMegaman();
         if (!paused) {
             levelCamMan.update(delta);
             if (levelCamMan.getTransState() == null) {
@@ -263,11 +266,14 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         eventMan.dispatchEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.POS, levelCamMan.getTransInterpolation());
                         }}));
+                        ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
                     }
-                    case CONTINUE ->
-                            eventMan.dispatchEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
-                                put(ConstKeys.POS, levelCamMan.getTransInterpolation());
-                            }}));
+                    case CONTINUE -> {
+                        eventMan.dispatchEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                            put(ConstKeys.POS, levelCamMan.getTransInterpolation());
+                        }}));
+                        ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
+                    }
                     case END -> {
                         engine.setSystemsOn(true,
                                 ControllerSystem.class,

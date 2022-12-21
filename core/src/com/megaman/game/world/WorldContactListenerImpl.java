@@ -92,12 +92,13 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
-            /*
             Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body b = contact.mask1stBody();
             b.bounds.x += posDelta.x;
             b.bounds.y += posDelta.y;
-             */
+            if (contact.mask1stEntity() instanceof Megaman megaman) {
+                megaman.aButtonTask = AButtonTask.JUMP;
+            }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().resistance.x = .95f;
         } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {

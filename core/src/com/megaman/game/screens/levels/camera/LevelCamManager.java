@@ -109,19 +109,19 @@ public class LevelCamManager implements Updatable {
         switch (transDirection) {
             case DIR_LEFT -> {
                 transTargetPos.x = (next.x + next.width) - min(next.width / 2.0f, cam.viewportWidth / 2.0f);
-                focusableTargetPos.x = (next.x + next.width) - DIST_ON_TRANS;
+                focusableTargetPos.x = (next.x + next.width) - DIST_ON_TRANS * WorldVals.PPM;
             }
             case DIR_RIGHT -> {
                 transTargetPos.x = next.x + min(next.width / 2.0f, cam.viewportWidth / 2.0f);
-                focusableTargetPos.x = next.x + DIST_ON_TRANS;
+                focusableTargetPos.x = next.x + DIST_ON_TRANS * WorldVals.PPM;
             }
             case DIR_UP -> {
                 transTargetPos.y = next.y + min(next.height / 2.0f, cam.viewportHeight / 2.0f);
-                focusableTargetPos.y = next.y + DIST_ON_TRANS;
+                focusableTargetPos.y = next.y + DIST_ON_TRANS * WorldVals.PPM;
             }
             case DIR_DOWN -> {
                 transTargetPos.y = (next.y + next.height) - min(next.height / 2.0f, cam.viewportHeight / 2.0f);
-                focusableTargetPos.y = (next.y + next.height) - DIST_ON_TRANS;
+                focusableTargetPos.y = (next.y + next.height) - DIST_ON_TRANS * WorldVals.PPM;
             }
         }
     }

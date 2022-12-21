@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 public enum Level {
 
     TIMBER_WOMAN_LEVEL("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC),
-    TEST("Test2.tmx", MusicAsset.MMZ_NEO_ARCADIA_MUSIC);
+    TEST("Test1.tmx", MusicAsset.MMZ_NEO_ARCADIA_MUSIC);
 
     private final String tmxFile;
     @Getter

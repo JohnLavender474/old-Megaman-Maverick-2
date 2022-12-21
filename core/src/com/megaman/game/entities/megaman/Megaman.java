@@ -720,7 +720,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 return is(BehaviorType.JUMPING) ?
                         body.velocity.y >= 0f :
-                        aButtonTask == AButtonTask.JUMP && is(BodySense.FEET_ON_GROUND);
+                        aButtonTask == AButtonTask.JUMP &&
+                                ctrlMan.isJustPressed(ControllerBtn.A) &&
+                                (is(BodySense.FEET_ON_GROUND) || is(BehaviorType.WALL_SLIDING));
             }
 
             @Override

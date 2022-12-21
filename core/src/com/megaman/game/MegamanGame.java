@@ -44,6 +44,8 @@ import java.util.Map;
 @Getter
 public class MegamanGame extends Game {
 
+    public static boolean DEBUG = false;
+
     private Logger logger;
 
     private SpriteBatch batch;
@@ -63,7 +65,7 @@ public class MegamanGame extends Game {
 
     @Override
     public void create() {
-        logger = new Logger(true);
+        logger = new Logger(DEBUG);
         debug = false;
         // renderers
         batch = new SpriteBatch();
