@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum SoundAsset implements Asset {
 
     DINK_SOUND("Dink.mp3"),
+    ERROR_SOUND("Error.mp3"),
     THUMP_SOUND("Thump.mp3"),
     WHOOSH_SOUND("Whoosh.mp3"),
     PAUSE_SOUND("PauseMenu.mp3"),

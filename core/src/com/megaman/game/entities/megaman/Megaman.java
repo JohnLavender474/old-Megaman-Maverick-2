@@ -134,10 +134,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
                         () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
         currWeapon = MegamanWeapon.MEGA_BUSTER;
-        weaponHandler = new MegamanWeaponHandler(
-                this,
-                game.getGameEngine(),
-                game.getEntityFactories());
+        weaponHandler = new MegamanWeaponHandler(this);
         weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
         weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
         healthHandler = new MegamanHealthHandler(this);
@@ -362,11 +359,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             public void onJustReleased() {
-                if (!canFireCurrWeapon()) {
-                    return;
-                }
-                if (!shoot()) {
-                    // TODO: play error sound
+                if (!canFireCurrWeapon() || !shoot()) {
+                    getComponent(SoundComponent.class).request(SoundAsset.ERROR_SOUND);
                 }
                 stopCharging();
             }

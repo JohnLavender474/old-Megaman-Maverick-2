@@ -43,7 +43,7 @@ import java.util.Map;
 @Getter
 public class MegamanGame extends Game {
 
-    private static final Logger logger = new Logger(false);
+    private static final Logger logger = new Logger(MegamanGame.class, false);
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
