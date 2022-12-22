@@ -1,4 +1,4 @@
-package com.megaman.game.ui;
+package com.megaman.game.screens.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;

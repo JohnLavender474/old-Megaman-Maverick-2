@@ -14,38 +14,30 @@ public class WorldSystem extends System {
     private static final int PROCESS_CYCLES = 2;
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
-        // damager
         put(FixtureType.DAMAGER, EnumSet.of(
                 FixtureType.DAMAGEABLE));
-        // body
         put(FixtureType.BODY, EnumSet.of(
                 FixtureType.WATER,
                 FixtureType.FORCE));
-        // side
         put(FixtureType.SIDE, EnumSet.of(
                 FixtureType.ICE,
                 FixtureType.BLOCK,
                 FixtureType.BOUNCER));
-        // feet
         put(FixtureType.FEET, EnumSet.of(
                 FixtureType.ICE,
                 FixtureType.BLOCK,
                 FixtureType.BOUNCER));
-        // head
         put(FixtureType.HEAD, EnumSet.of(
                 FixtureType.BLOCK,
                 FixtureType.BOUNCER));
-        // projectile
         put(FixtureType.PROJECTILE, EnumSet.of(
                 FixtureType.BODY,
                 FixtureType.BLOCK,
                 FixtureType.SHIELD));
-        // laser
         put(FixtureType.LASER, EnumSet.of(
                 FixtureType.BLOCK));
     }};
 
-    // optimize by creating contact instances only when passing this filter method
     private static boolean filter(Fixture f1, Fixture f2) {
         return (masks.containsKey(f1.fixtureType) && masks.get(f1.fixtureType).contains(f2.fixtureType)) ||
                 (masks.containsKey(f2.fixtureType) && masks.get(f2.fixtureType).contains(f1.fixtureType));
@@ -53,8 +45,8 @@ public class WorldSystem extends System {
 
     private final WorldContactListener listener;
 
-    private OrderedSet<Contact> priorContacts = new OrderedSet<>();
-    private OrderedSet<Contact> currContacts = new OrderedSet<>();
+    private OrderedSet<Contact> priorContacts;
+    private OrderedSet<Contact> currContacts;
     private WorldGraph worldGraph;
     private float accumulator;
     private int currCycle;
@@ -62,9 +54,11 @@ public class WorldSystem extends System {
     public WorldSystem(WorldContactListener listener) {
         super(BodyComponent.class);
         this.listener = listener;
+        this.priorContacts = new OrderedSet<>();
+        this.currContacts = new OrderedSet<>();
     }
 
-    public void setWorldGraph(int worldWidth, int worldHeight) {
+    public void setWorldSize(int worldWidth, int worldHeight) {
         worldGraph = new WorldGraph(worldWidth, worldHeight);
     }
 
@@ -80,7 +74,6 @@ public class WorldSystem extends System {
                 eIter.remove();
                 continue;
             }
-            // set prev pos of body
             BodyComponent c = e.getComponent(BodyComponent.class);
             c.body.setPrevPos(new Vector2(c.body.bounds.x, c.body.bounds.y));
         }
@@ -94,25 +87,21 @@ public class WorldSystem extends System {
         }
         updating = true;
         preProcess(delta);
-        // step world by fixed time
         accumulator += delta;
         while (accumulator >= WorldVals.FIXED_STEP) {
-            // subtract fixed step
             accumulator -= WorldVals.FIXED_STEP;
-            // reset cycle to 0
             currCycle = 0;
-            // cycle 0: update bodies
-            // cycle 1: resolve bodies
             while (currCycle < PROCESS_CYCLES) {
                 for (Entity e : entities) {
+                    if (e.asleep) {
+                        continue;
+                    }
                     processEntity(e, WorldVals.FIXED_STEP);
                 }
                 currCycle++;
             }
-            // reset world graph
             worldGraph.reset();
         }
-        // continue or begin contacts
         for (Contact c : currContacts) {
             if (priorContacts.contains(c)) {
                 listener.continueContact(c, delta);
@@ -120,7 +109,6 @@ public class WorldSystem extends System {
                 listener.beginContact(c, delta);
             }
         }
-        // end contacts
         for (Contact c : priorContacts) {
             if (!currContacts.contains(c)) {
                 listener.endContact(c, delta);

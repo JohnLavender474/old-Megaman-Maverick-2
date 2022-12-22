@@ -2,7 +2,7 @@ package com.megaman.game.dialogue;
 
 import com.badlogic.gdx.audio.Sound;
 import com.megaman.game.audio.AudioManager;
-import com.megaman.game.ui.TextHandle;
+import com.megaman.game.screens.ui.TextHandle;
 
 import java.util.LinkedList;
 import java.util.Queue;

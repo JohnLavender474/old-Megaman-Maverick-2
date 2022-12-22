@@ -2,9 +2,9 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>5</int>
+        <int>6</int>
         <key>texturePackerVersion</key>
-        <string>6.0.2</string>
+        <string>7.0.0</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -127,8 +127,8 @@
                 <filename>../SpriteSheets/MegamanFire.txt</filename>
             </struct>
         </map>
-        <key>multiPack</key>
-        <false/>
+        <key>multiPackMode</key>
+        <enum type="SettingsBase::MultiPackMode">MultiPackOff</enum>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
@@ -186,6 +186,7 @@
             <key type="filename">../Frames/MegamanFire/SlipSlide.png</key>
             <key type="filename">../Frames/MegamanFire/SlipSlideShoot.png</key>
             <key type="filename">../Frames/MegamanFire/StandShoot.png</key>
+            <key type="filename">../Frames/MegamanFire/StillClimb.png</key>
             <key type="filename">../Frames/MegamanFire/WallSlide.png</key>
             <key type="filename">../Frames/MegamanFire/WallSlideShoot.png</key>
             <struct type="IndividualSpriteSettings">
@@ -203,16 +204,26 @@
                 <false/>
             </struct>
             <key type="filename">../Frames/MegamanFire/AirDashCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/AirDashHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/BeamLand.png</key>
             <key type="filename">../Frames/MegamanFire/Climb.png</key>
             <key type="filename">../Frames/MegamanFire/ClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/ClimbHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/FinishClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/FinishClimbHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/GroundSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/GroundSlideHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/JumpCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/JumpHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/SlipSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/SlipSlideHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/Stand.png</key>
             <key type="filename">../Frames/MegamanFire/StandCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/StillClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/StillClimbHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/Swim.png</key>
             <key type="filename">../Frames/MegamanFire/WallSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/WallSlideHalfCharging.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -243,8 +254,25 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../Frames/MegamanFire/InitRunHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/StandHalfCharging.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>256,128,512,256</rect>
+                <key>scale9Paddings</key>
+                <rect>256,128,512,256</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../Frames/MegamanFire/Run.png</key>
             <key type="filename">../Frames/MegamanFire/RunCharging.png</key>
+            <key type="filename">../Frames/MegamanFire/RunHalfCharging.png</key>
             <key type="filename">../Frames/MegamanFire/RunShoot.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -261,10 +289,16 @@
                 <false/>
             </struct>
         </map>
-        <key>fileList</key>
-        <array>
-            <filename>../Frames/MegamanFire</filename>
-        </array>
+        <key>fileLists</key>
+        <map type="SpriteSheetMap">
+            <key>default</key>
+            <struct type="SpriteSheet">
+                <key>files</key>
+                <array>
+                    <filename>../Frames/MegamanFire</filename>
+                </array>
+            </struct>
+        </map>
         <key>ignoreFileList</key>
         <array/>
         <key>replaceList</key>

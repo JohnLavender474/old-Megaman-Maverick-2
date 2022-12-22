@@ -19,7 +19,6 @@ import com.megaman.game.ViewVals;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
-import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
@@ -31,6 +30,7 @@ import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventManager;
@@ -47,9 +47,10 @@ import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
-import com.megaman.game.ui.BitsBar;
-import com.megaman.game.ui.TextHandle;
+import com.megaman.game.screens.ui.BitsBar;
+import com.megaman.game.screens.ui.TextHandle;
 import com.megaman.game.updatables.UpdatableSystem;
+import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
@@ -108,23 +109,34 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
         // drawables
         AssetsManager assMan = game.getAssMan();
-        BitsBar healthBar = new BitsBar(
-                () -> game.getMegaman().getHealth(),
-                assMan.getTextureRegion(TextureAsset.BITS, "StandardBit"),
-                assMan.getTextureRegion(TextureAsset.DECORATIONS, "Black"));
+        Megaman megaman = game.getMegaman();
+        float healthBarX = WorldVals.PPM * .4f;
+        float healthBarY = WorldVals.PPM * 9f;
+        BitsBar healthBar = new BitsBar(healthBarX, healthBarY, megaman::getHealth, assMan, "StandardBit");
         addUiDrawable(healthBar);
+        for (MegamanWeapon weapon : MegamanWeapon.values()) {
+            if (weapon == MegamanWeapon.MEGA_BUSTER) {
+                continue;
+            }
+            BitsBar weaponBar = new BitsBar(healthBarX + WorldVals.PPM, healthBarY,
+                    megaman::getCurrentAmmo, assMan, weapon.weaponBitSrc);
+            addUiDrawable(() -> weapon == megaman.currWeapon, weaponBar);
+        }
         // sounds
         playerDeathSound = assMan.getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
     public void set(String tmxFile) {
+        uiCam.position.set(ConstFuncs.getCamInitPos());
+        gameCam.position.set(ConstFuncs.getCamInitPos());
         GameEngine engine = game.getGameEngine();
+        engine.setAllSystemsOn();
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(ShapeSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
-        engine.getSystem(WorldSystem.class).setWorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
+        engine.getSystem(WorldSystem.class).setWorldSize(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
         Array<RectangleMapObject> playerSpawns = new Array<>();
         Array<LevelSpawn> spawns = new Array<>();
         EntityFactories factories = game.getEntityFactories();

@@ -2,12 +2,9 @@ package com.megaman.game.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-// import com.badlogic.gdx.controllers.Controller;
-// import com.badlogic.gdx.controllers.Controllers;
 
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class ControllerManager {
 
@@ -29,7 +26,8 @@ public class ControllerManager {
         put(ControllerBtn.DPAD_DOWN, Input.Keys.DOWN);
         put(ControllerBtn.A, Input.Keys.W);
         put(ControllerBtn.X, Input.Keys.D);
-        put(ControllerBtn.START, Input.Keys.SPACE);
+        put(ControllerBtn.START, Input.Keys.S);
+        put(ControllerBtn.SELECT, Input.Keys.A);
     }};
 
     private final Map<ControllerBtn, Integer> keyboardCodes = new EnumMap<>(ControllerBtn.class);
@@ -98,7 +96,7 @@ public class ControllerManager {
                 } else {
                     newStat = ControllerBtnStat.PRESSED;
                 }
-            } else if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED){
+            } else if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED) {
                 newStat = ControllerBtnStat.RELEASED;
             } else {
                 newStat = ControllerBtnStat.JUST_RELEASED;

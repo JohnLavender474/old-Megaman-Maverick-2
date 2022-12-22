@@ -1,7 +1,7 @@
 Megaman.png
-size: 128, 672
+size: 128, 704
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 AirDash
   rotate: false
@@ -68,7 +68,7 @@ ClimbShoot
   index: -1
 Damaged
   rotate: false
-  xy: 0, 480
+  xy: 0, 512
   size: 96, 32
   orig: 96, 32
   offset: 0, 0
@@ -166,35 +166,35 @@ JumpShoot
   index: -1
 LayDownDamaged
   rotate: false
-  xy: 0, 512
+  xy: 0, 544
   size: 96, 32
   orig: 96, 32
   offset: 0, 0
   index: -1
 Run
   rotate: false
-  xy: 0, 544
+  xy: 0, 576
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 RunCharging
   rotate: false
-  xy: 0, 576
+  xy: 0, 608
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 RunHalfCharging
   rotate: false
-  xy: 0, 608
+  xy: 0, 640
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 RunShoot
   rotate: false
-  xy: 0, 640
+  xy: 0, 672
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
@@ -255,65 +255,86 @@ StandShoot
   orig: 32, 32
   offset: 0, 0
   index: -1
-Swim
+StillClimb
   rotate: false
   xy: 64, 96
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-SwimAttack
-  rotate: false
-  xy: 96, 96
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-SwimCharging
+StillClimbCharging
   rotate: false
   xy: 0, 416
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
-SwimHalfCharging
+StillClimbHalfCharging
   rotate: false
   xy: 64, 416
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
-SwimShoot
+Swim
+  rotate: false
+  xy: 96, 96
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+SwimAttack
   rotate: false
   xy: 0, 128
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-WallSlide
-  rotate: false
-  xy: 32, 128
-  size: 32, 32
-  orig: 32, 32
-  offset: 0, 0
-  index: -1
-WallSlideCharging
+SwimCharging
   rotate: false
   xy: 0, 448
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
-WallSlideHalfCharging
+SwimHalfCharging
   rotate: false
   xy: 64, 448
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
-WallSlideShoot
+SwimShoot
+  rotate: false
+  xy: 32, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+WallSlide
   rotate: false
   xy: 64, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+WallSlideCharging
+  rotate: false
+  xy: 0, 480
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+WallSlideHalfCharging
+  rotate: false
+  xy: 64, 480
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+WallSlideShoot
+  rotate: false
+  xy: 96, 128
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

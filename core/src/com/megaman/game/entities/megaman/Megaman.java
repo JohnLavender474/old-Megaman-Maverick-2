@@ -1,20 +1,18 @@
 package com.megaman.game.entities.megaman;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
-import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
-import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.SoundAsset;
-import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.behaviors.Behavior;
 import com.megaman.game.behaviors.BehaviorComponent;
@@ -24,10 +22,12 @@ import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
+import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
-import com.megaman.game.entities.megaman.weapons.MegaChargeStatus;
+import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
+import com.megaman.game.entities.projectiles.ChargeStatus;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventType;
@@ -49,7 +49,6 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
 
@@ -90,7 +89,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float TIME_TO_FULLY_CHARGED = 1.25f;
 
     public static final float EXPLOSION_ORB_SPEED = 3.5f;
-    
+
     public static final float CHARGING_ANIM_TIME = .125f;
 
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
@@ -111,7 +110,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private final Timer groundSlideTimer;
     private final Timer dmgRecovBlinkTimer;
 
-    public MegamanWeapon currentWeapon;
+    public MegamanWeapon currWeapon;
     public AButtonTask aButtonTask;
     @Getter
     @Setter
@@ -121,36 +120,52 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public Megaman(MegamanGame game) {
         super(game, EntityType.MEGAMAN);
-        this.sprite = new Sprite();
-        this.body = new Body(BodyType.DYNAMIC);
-        this.airDashTimer = new Timer(MAX_AIR_DASH_TIME);
-        this.dmgTimer = new Timer(DAMAGE_DURATION, true);
-        this.shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
-        this.groundSlideTimer = new Timer(MAX_GROUND_SLIDE_TIME);
-        this.dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
-        this.wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
-        this.dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
-        this.weaponHandler = new MegamanWeaponHandler(this, game.getGameEngine(), game.getEntityFactories());
-        this.weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER, true);
-        this.healthHandler = new MegamanHealthHandler(this);
-        this.currentWeapon = MegamanWeapon.MEGA_BUSTER;
-        this.chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
-                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
-        putComponent(healthComponent());
+        sprite = new Sprite();
+        body = new Body(BodyType.DYNAMIC);
+        airDashTimer = new Timer(MAX_AIR_DASH_TIME);
+        dmgTimer = new Timer(DAMAGE_DURATION, true);
+        shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
+        groundSlideTimer = new Timer(MAX_GROUND_SLIDE_TIME);
+        dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
+        wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
+        dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
+        chargingTimer = new Timer(
+                TIME_TO_FULLY_CHARGED,
+                new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
+                        () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
+        currWeapon = MegamanWeapon.MEGA_BUSTER;
+        weaponHandler = new MegamanWeaponHandler(
+                this,
+                game.getGameEngine(),
+                game.getEntityFactories());
+        weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
+        weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
+        healthHandler = new MegamanHealthHandler(this);
         putComponent(updatableComponent());
         putComponent(bodyComponent());
-        putComponent(behaviorComponent());
         putComponent(spriteComponent());
-        putComponent(animationComponent());
+        putComponent(healthComponent());
+        putComponent(behaviorComponent());
         putComponent(new SoundComponent());
         putComponent(controllerComponent());
+        putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
     }
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
         body.bounds.setPosition(spawn);
+        currWeapon = MegamanWeapon.MEGA_BUSTER;
+        weaponHandler.reset();
         aButtonTask = AButtonTask.JUMP;
         facing = Facing.RIGHT;
+        airDashTimer.reset();
+        dmgTimer.setToEnd();
+        shootAnimTimer.setToEnd();
+        groundSlideTimer.reset();
+        dmgRecovTimer.setToEnd();
+        wallJumpTimer.setToEnd();
+        dmgRecovBlinkTimer.reset();
+        chargingTimer.reset();
     }
 
     @Override
@@ -193,6 +208,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return getComponent(HealthComponent.class).getHealth();
     }
 
+    public int getCurrentAmmo() {
+        if (currWeapon == MegamanWeapon.MEGA_BUSTER) {
+            return Integer.MAX_VALUE;
+        }
+        return weaponHandler.getAmmo(currWeapon);
+    }
+
     public void stopCharging() {
         chargingTimer.reset();
         stopLoop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
@@ -203,26 +225,38 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     public boolean shoot() {
-        boolean shot = weaponHandler.fireWeapon(currentWeapon, getChargeStatus());
+        boolean shot = weaponHandler.fireWeapon(currWeapon, getChargeStatus());
         if (shot) {
             shootAnimTimer.reset();
         }
         return shot;
     }
 
-    public MegaChargeStatus getChargeStatus() {
+    public boolean canFireWeapon(MegamanWeapon weapon) {
+        return weaponHandler.canFireWeapon(weapon, getChargeStatus());
+    }
+
+    public boolean canFireCurrWeapon() {
+        return canFireWeapon(currWeapon);
+    }
+
+    public ChargeStatus getChargeStatus() {
         if (isChargingFully()) {
-            return MegaChargeStatus.FULLY_CHARGED;
+            return ChargeStatus.FULLY_CHARGED;
         }
-        return isCharging() ? MegaChargeStatus.HALF_CHARGED : MegaChargeStatus.NOT_CHARGED;
+        return isCharging() ? ChargeStatus.HALF_CHARGED : ChargeStatus.NOT_CHARGED;
     }
 
     public boolean isChargingFully() {
-        return weaponHandler.isChargeable(currentWeapon) && chargingTimer.isFinished();
+        return weaponHandler.isChargeable(currWeapon) && chargingTimer.isFinished();
+    }
+
+    public boolean isHalfCharging() {
+        return getChargeStatus() == ChargeStatus.HALF_CHARGED;
     }
 
     public boolean isCharging() {
-        return weaponHandler.isChargeable(currentWeapon) && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
+        return weaponHandler.isChargeable(currWeapon) && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
     }
 
     public boolean is(BehaviorType behaviorType) {
@@ -252,7 +286,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private ControllerComponent controllerComponent() {
         ControllerComponent c = new ControllerComponent();
         BehaviorComponent bc = getComponent(BehaviorComponent.class);
-        // left dpad
         ControllerManager ctrlMan = game.getCtrlMan();
         c.ctrlAdapters.put(ControllerBtn.DPAD_LEFT, new ControllerAdapter() {
             @Override
@@ -282,7 +315,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
             }
         });
-        // right dpad
         c.ctrlAdapters.put(ControllerBtn.DPAD_RIGHT, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
@@ -311,12 +343,18 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
             }
         });
-        // x
         c.ctrlAdapters.put(ControllerBtn.X, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
-                if (isDamaged() || !weaponHandler.isChargeable(currentWeapon)) {
+                if (isDamaged()) {
                     stopCharging();
+                    return;
+                }
+                if (!isCharging() && !weaponHandler.canFireWeapon(currWeapon, ChargeStatus.HALF_CHARGED)) {
+                    stopCharging();
+                    return;
+                }
+                if (isHalfCharging() && !weaponHandler.canFireWeapon(currWeapon, ChargeStatus.FULLY_CHARGED)) {
                     return;
                 }
                 chargingTimer.update(delta);
@@ -324,10 +362,23 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             public void onJustReleased() {
+                if (!canFireCurrWeapon()) {
+                    return;
+                }
                 if (!shoot()) {
                     // TODO: play error sound
                 }
                 stopCharging();
+            }
+        });
+        c.ctrlAdapters.put(ControllerBtn.SELECT, new ControllerAdapter() {
+            @Override
+            public void onJustPressed() {
+                int x = currWeapon.ordinal() + 1;
+                if (x >= MegamanWeapon.values().length) {
+                    x = 0;
+                }
+                currWeapon = MegamanWeapon.values()[x];
             }
         });
         return c;
@@ -431,184 +482,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
         };
         return new SpriteComponent(handle);
-    }
-
-    private AnimationComponent animationComponent() {
-        Supplier<String> keySupplier = () -> {
-            String key;
-            if (isDamaged()) {
-                key = is(BehaviorType.GROUND_SLIDING) ? "LayDownDamaged" : "Damaged";
-            } else if (is(BehaviorType.AIR_DASHING)) {
-                if (isChargingFully()) {
-                    key = "AirDashCharging";
-                } else if (isCharging()) {
-                    key = "AirDashHalfCharging";
-                } else {
-                    key = "AirDash";
-                }
-            } else if (is(BehaviorType.GROUND_SLIDING)) {
-                if (isChargingFully()) {
-                    key = "GroundSlideCharging";
-                } else if (isCharging()) {
-                    key = "GroundSlideHalfCharging";
-                } else {
-                    key = "GroundSlide";
-                }
-            } else if (is(BehaviorType.WALL_SLIDING)) {
-                if (isShooting()) {
-                    key = "WallSlideShoot";
-                } else if (isChargingFully()) {
-                    key = "WallSlideCharging";
-                } else if (isCharging()) {
-                    key = "WallSlideHalfCharging";
-                } else {
-                    key = "WallSlide";
-                }
-            } else if (is(BehaviorType.SWIMMING)) {
-                if (isShooting()) {
-                    key = "SwimShoot";
-                } else if (isChargingFully()) {
-                    key = "SwimCharging";
-                } else if (isCharging()) {
-                    key = "SwimHalfCharging";
-                } else {
-                    key = "Swim";
-                }
-            } else if (is(BehaviorType.JUMPING) || !is(BodySense.FEET_ON_GROUND)) {
-                if (isShooting()) {
-                    key = "JumpShoot";
-                } else if (isChargingFully()) {
-                    key = "JumpCharging";
-                } else if (isCharging()) {
-                    key = "JumpHalfCharging";
-                } else {
-                    key = "Jump";
-                }
-            } else if (is(BodySense.FEET_ON_GROUND) && is(BehaviorType.RUNNING)) {
-                if (isShooting()) {
-                    key = "RunShoot";
-                } else if (isChargingFully()) {
-                    key = "RunCharging";
-                } else if (isCharging()) {
-                    key = "RunHalfCharging";
-                } else {
-                    key = "Run";
-                }
-            } else if (is(BehaviorType.CLIMBING)) {
-                if (isShooting()) {
-                    key = "ClimbShoot";
-                } else if (isChargingFully()) {
-                    key = "ClimbCharging";
-                } else if (isCharging()) {
-                    key = "ClimbHalfCharging";
-                } else {
-                    key = "Climb";
-                }
-            } else if (is(BodySense.FEET_ON_GROUND) && Math.abs(body.velocity.x) > WorldVals.PPM / 8f) {
-                if (isShooting()) {
-                    key = "SlipSlideShoot";
-                } else if (isChargingFully()) {
-                    key = "SlipSlideCharging";
-                } else if (isCharging()) {
-                    key = "SlipSlideHalfCharging";
-                } else {
-                    key = "SlipSlide";
-                }
-            } else {
-                if (isShooting()) {
-                    key = "StandShoot";
-                } else if (isChargingFully()) {
-                    key = "StandCharging";
-                } else if (isCharging()) {
-                    key = "StandHalfCharging";
-                } else {
-                    key = "Stand";
-                }
-            }
-            return currentWeapon.name() + key;
-        };
-        ObjectMap<String, Animation> anims = new ObjectMap<>();
-        for (MegamanWeapon weapon : MegamanWeapon.values()) {
-            String textureAtlasKey = switch (weapon) {
-                case MEGA_BUSTER -> TextureAsset.MEGAMAN.getSrc();
-                // case FLAME_TOSS -> TextureAsset.MEGAMAN_FIRE.getSrc();
-                // TODO: replace with fire texture atlas src
-                case FLAME_TOSS -> TextureAsset.MEGAMAN.getSrc();
-            };
-            TextureAtlas textureAtlas = game.getAssMan().getAsset(textureAtlasKey, TextureAtlas.class);
-            ObjectMap<String, Animation> tempAnims = new ObjectMap<>();
-            // climb
-            tempAnims.put("Climb", new Animation(textureAtlas.findRegion("Climb"), 2, .125f));
-            tempAnims.put("ClimbShoot", new Animation(textureAtlas.findRegion("ClimbShoot")));
-            tempAnims.put("ClimbHalfCharging", new Animation(
-                    textureAtlas.findRegion("ClimbHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("ClimbCharging", new Animation(
-                    textureAtlas.findRegion("ClimbCharging"), 2, CHARGING_ANIM_TIME));
-            // stand
-            tempAnims.put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
-            tempAnims.put("StandCharging", new Animation(
-                    textureAtlas.findRegion("StandCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("StandHalfCharging", new Animation(
-                    textureAtlas.findRegion("StandHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("StandShoot", new Animation(textureAtlas.findRegion("StandShoot")));
-            // damaged
-            tempAnims.put("Damaged", new Animation(textureAtlas.findRegion("Damaged"), 3, .05f));
-            tempAnims.put("LayDownDamaged", new Animation(textureAtlas.findRegion("LayDownDamaged"), 3, .05f));
-            // run
-            tempAnims.put("Run", new Animation(textureAtlas.findRegion("Run"), 4, .125f));
-            tempAnims.put("RunCharging", new Animation(textureAtlas
-                    .findRegion("RunCharging"), 4, CHARGING_ANIM_TIME));
-            tempAnims.put("RunHalfCharging", new Animation(
-                    textureAtlas.findRegion("RunHalfCharging"), 4, CHARGING_ANIM_TIME));
-            tempAnims.put("RunShoot", new Animation(textureAtlas.findRegion("RunShoot"), 4, .125f));
-            // jump
-            tempAnims.put("Jump", new Animation(textureAtlas.findRegion("Jump")));
-            tempAnims.put("JumpCharging", new Animation(
-                    textureAtlas.findRegion("JumpCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("JumpHalfCharging", new Animation(
-                    textureAtlas.findRegion("JumpHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("JumpShoot", new Animation(textureAtlas.findRegion("JumpShoot")));
-            // swim
-            tempAnims.put("Swim", new Animation(textureAtlas.findRegion("Swim")));
-            tempAnims.put("SwimAttack", new Animation(textureAtlas.findRegion("SwimAttack")));
-            tempAnims.put("SwimCharging", new Animation(
-                    textureAtlas.findRegion("SwimCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("SwimHalfCharging", new Animation(
-                    textureAtlas.findRegion("SwimHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("SwimShoot", new Animation(textureAtlas.findRegion("SwimShoot")));
-            // wall slide
-            tempAnims.put("WallSlide", new Animation(textureAtlas.findRegion("WallSlide")));
-            tempAnims.put("WallSlideCharging", new Animation(
-                    textureAtlas.findRegion("WallSlideCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("WallSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("WallSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("WallSlideShoot", new Animation(textureAtlas.findRegion("WallSlideShoot")));
-            // ground slide
-            tempAnims.put("GroundSlide", new Animation(textureAtlas.findRegion("GroundSlide")));
-            tempAnims.put("GroundSlideCharging", new Animation(
-                    textureAtlas.findRegion("GroundSlideCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("GroundSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("GroundSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
-            // air dash
-            tempAnims.put("AirDash", new Animation(textureAtlas.findRegion("AirDash")));
-            tempAnims.put("AirDashCharging", new Animation(
-                    textureAtlas.findRegion("AirDashCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("AirDashHalfCharging", new Animation(
-                    textureAtlas.findRegion("AirDashHalfCharging"), 2, CHARGING_ANIM_TIME));
-            // slip slide
-            tempAnims.put("SlipSlide", new Animation(textureAtlas.findRegion("SlipSlide")));
-            tempAnims.put("SlipSlideCharging", new Animation(
-                    textureAtlas.findRegion("SlipSlideCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("SlipSlideHalfCharging", new Animation(
-                    textureAtlas.findRegion("SlipSlideHalfCharging"), 2, CHARGING_ANIM_TIME));
-            tempAnims.put("SlipSlideShoot", new Animation(textureAtlas.findRegion("SlipSlideShoot")));
-            // put anims
-            ObjectMap.Entries<String, Animation> entries = tempAnims.entries();
-            for (ObjectMap.Entry<String, Animation> e : entries) {
-                anims.put(currentWeapon.name() + e.key, e.value);
-            }
-        }
-        return new AnimationComponent(new Animator(sprite, keySupplier, anims));
     }
 
     private BehaviorComponent behaviorComponent() {
@@ -856,15 +729,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     private UpdatableComponent updatableComponent() {
-        UpdatableComponent c = new UpdatableComponent();
-        c.add(delta -> {
-            // timers
-            // TODO: Fix
-            /*
-            if (!stats.weaponsChargeable) {
-                chargingTimer.reset();
+        return new UpdatableComponent(delta -> {
+            if (!weaponHandler.isChargeable(currWeapon)) {
+                stopCharging();
             }
-             */
+            weaponHandler.update(delta);
             dmgTimer.update(delta);
             if (isDamaged()) {
                 chargingTimer.reset();
@@ -891,11 +760,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             }
             shootAnimTimer.update(delta);
             wallJumpTimer.update(delta);
-            // TODO: weapon defs
-            // megamanWeaponDefs.get(currentWeapon).updateCooldownTimer(delta);
         });
-        return c;
     }
-
 
 }

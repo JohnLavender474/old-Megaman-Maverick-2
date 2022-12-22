@@ -18,7 +18,7 @@ import java.util.Queue;
 
 public class GameEngine implements Updatable, Resettable {
 
-    private static final Logger logger = new Logger(false);
+    private static final Logger logger = new Logger(GameEngine.class, false);
 
     private final OrderedMap<Class<? extends System>, System> systems = new OrderedMap<>();
 
@@ -35,6 +35,12 @@ public class GameEngine implements Updatable, Resettable {
     public GameEngine(Iterable<System> systems) {
         for (System s : systems) {
             this.systems.put(s.getClass(), s);
+        }
+    }
+
+    public final void setAllSystemsOn() {
+        for (System s : systems.values()) {
+            s.on = true;
         }
     }
 

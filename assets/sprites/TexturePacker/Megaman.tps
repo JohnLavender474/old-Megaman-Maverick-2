@@ -2,9 +2,9 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>5</int>
+        <int>6</int>
         <key>texturePackerVersion</key>
-        <string>6.0.2</string>
+        <string>7.0.0</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -127,8 +127,8 @@
                 <filename>../SpriteSheets/Megaman.txt</filename>
             </struct>
         </map>
-        <key>multiPack</key>
-        <false/>
+        <key>multiPackMode</key>
+        <enum type="SettingsBase::MultiPackMode">MultiPackOff</enum>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
@@ -188,6 +188,7 @@
             <key type="filename">../Frames/Megaman/SlipSlide.png</key>
             <key type="filename">../Frames/Megaman/SlipSlideShoot.png</key>
             <key type="filename">../Frames/Megaman/StandShoot.png</key>
+            <key type="filename">../Frames/Megaman/StillClimb.png</key>
             <key type="filename">../Frames/Megaman/Swim.png</key>
             <key type="filename">../Frames/Megaman/SwimAttack.png</key>
             <key type="filename">../Frames/Megaman/SwimShoot.png</key>
@@ -224,6 +225,8 @@
             <key type="filename">../Frames/Megaman/Stand.png</key>
             <key type="filename">../Frames/Megaman/StandCharging.png</key>
             <key type="filename">../Frames/Megaman/StandHalfCharging.png</key>
+            <key type="filename">../Frames/Megaman/StillClimbCharging.png</key>
+            <key type="filename">../Frames/Megaman/StillClimbHalfCharging.png</key>
             <key type="filename">../Frames/Megaman/SwimCharging.png</key>
             <key type="filename">../Frames/Megaman/SwimHalfCharging.png</key>
             <key type="filename">../Frames/Megaman/WallSlideCharging.png</key>
@@ -261,10 +264,16 @@
                 <false/>
             </struct>
         </map>
-        <key>fileList</key>
-        <array>
-            <filename>../Frames/Megaman</filename>
-        </array>
+        <key>fileLists</key>
+        <map type="SpriteSheetMap">
+            <key>default</key>
+            <struct type="SpriteSheet">
+                <key>files</key>
+                <array>
+                    <filename>../Frames/Megaman</filename>
+                </array>
+            </struct>
+        </map>
         <key>ignoreFileList</key>
         <array/>
         <key>replaceList</key>

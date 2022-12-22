@@ -1,4 +1,4 @@
-package com.megaman.game.entities.megaman;
+package com.megaman.game.entities.megaman.vals;
 
 public class MegamanVals {
 

@@ -76,9 +76,12 @@ public abstract class System implements Updatable, Resettable {
             Entity e = eIter.next();
             if (e.dead || !qualifiesMembership(e)) {
                 eIter.remove();
-            } else {
-                processEntity(e, delta);
+                continue;
             }
+            if (e.asleep) {
+                continue;
+            }
+            processEntity(e, delta);
         }
         postProcess(delta);
         updating = false;

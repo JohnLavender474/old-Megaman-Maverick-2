@@ -10,63 +10,129 @@ import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.entities.megaman.MegamanVals;
+import com.megaman.game.entities.megaman.vals.MegamanVals;
+import com.megaman.game.entities.projectiles.ChargeStatus;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.utils.interfaces.Resettable;
+import com.megaman.game.utils.interfaces.Updatable;
+import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.BodySense;
 import com.megaman.game.world.WorldVals;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class MegamanWeaponHandler {
+public class MegamanWeaponHandler implements Updatable, Resettable {
 
-    @AllArgsConstructor
-    private static class MegaWeaponEntry {
-        private int ammo;
-        private boolean chargeable;
+    private static class MegaWeaponEntry implements Updatable, Resettable {
+
+        private final Timer cooldownTimer;
+        private final Predicate<Megaman> chargeable;
+        private final Predicate<Megaman> extraPredicate;
+
+        private int ammo = MegamanVals.MAX_WEAPON_AMMO;
+
+        private MegaWeaponEntry(float cooldownDur) {
+            this(cooldownDur, m -> true);
+        }
+
+        private MegaWeaponEntry(float cooldownDur, Predicate<Megaman> chargeable) {
+            this(cooldownDur, chargeable, m -> true);
+        }
+
+        private MegaWeaponEntry(float cooldownDur, Predicate<Megaman> chargeable, Predicate<Megaman> extraPredicate) {
+            this.cooldownTimer = new Timer(cooldownDur, true);
+            this.extraPredicate = extraPredicate;
+            this.chargeable = chargeable;
+        }
+
+        private boolean isChargeable(Megaman megaman) {
+            return chargeable.test(megaman);
+        }
+
+        private boolean passesExtraPredicate(Megaman megaman) {
+            return cooldownTimer.isFinished() && extraPredicate.test(megaman);
+        }
+
+        @Override
+        public void update(float delta) {
+            cooldownTimer.update(delta);
+        }
+
+        @Override
+        public void reset() {
+            cooldownTimer.reset();
+        }
+
     }
 
     private static final float MEGA_BUSTER_BULLET_VEL = 10f;
     private static final Vector2 FLAME_TOSS_TRAJECTORY = new Vector2(35f, 10f);
+
+    private static final Map<MegamanWeapon, Supplier<MegaWeaponEntry>> entrySuppliers =
+            new EnumMap<>(MegamanWeapon.class) {{
+                put(MegamanWeapon.MEGA_BUSTER, () -> new MegaWeaponEntry(.01f));
+                put(MegamanWeapon.FLAME_TOSS, () -> new MegaWeaponEntry(
+                        .25f,
+                        m -> !m.is(BodySense.IN_WATER),
+                        m -> !m.is(BodySense.IN_WATER)));
+            }};
 
     private final Megaman megaman;
     private final GameEngine gameEngine;
     private final EntityFactories factories;
     private final Map<MegamanWeapon, MegaWeaponEntry> weapons = new EnumMap<>(MegamanWeapon.class);
 
+    @Override
+    public void reset() {
+        for (MegaWeaponEntry e : weapons.values()) {
+            e.cooldownTimer.setToEnd();
+        }
+    }
+
+    @Override
+    public void update(float delta) {
+        MegaWeaponEntry e = weapons.get(megaman.currWeapon);
+        if (e == null) {
+            return;
+        }
+        e.update(delta);
+    }
+
+    public void putWeapon(MegamanWeapon weapon) {
+        weapons.put(weapon, entrySuppliers.get(weapon).get());
+    }
+
     public boolean hasWeapon(MegamanWeapon weapon) {
         return weapons.containsKey(weapon);
     }
 
-    public boolean canFireWeapon(MegamanWeapon weapon, MegaChargeStatus stat) {
+    public boolean canFireWeapon(MegamanWeapon weapon, ChargeStatus stat) {
         if (!hasWeapon(weapon)) {
             return false;
         }
-        int cost = weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (stat) {
-            case FULLY_CHARGED -> weapon.fullyChargedCost;
-            case HALF_CHARGED -> weapon.halfChargedCost;
-            case NOT_CHARGED -> weapon.cost;
-        };
-        return cost <= getAmmo(weapon);
-    }
-
-    public void putWeapon(MegamanWeapon weapon, boolean chargeable) {
-        putWeapon(weapon, MegamanVals.MAX_WEAPON_AMMO, chargeable);
-    }
-
-    public void putWeapon(MegamanWeapon weapon, int ammo, boolean chargeable) {
-        if (ammo > MegamanVals.MAX_WEAPON_AMMO) {
-            ammo = MegamanVals.MAX_WEAPON_AMMO;
-        } else if (ammo < 0) {
-            ammo = 0;
+        MegaWeaponEntry e = weapons.get(weapon);
+        if (!e.cooldownTimer.isFinished() || !e.passesExtraPredicate(megaman)) {
+            return false;
         }
-        weapons.put(weapon, new MegaWeaponEntry(ammo, chargeable));
+        int cost = e.isChargeable(megaman) ?
+                (weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (stat) {
+                    case FULLY_CHARGED -> weapon.fullyChargedCost;
+                    case HALF_CHARGED -> weapon.halfChargedCost;
+                    case NOT_CHARGED -> weapon.cost;
+                }) : weapon.cost;
+        return cost <= e.ammo;
+    }
+
+    public boolean isChargeable(MegamanWeapon weapon) {
+        return hasWeapon(weapon) && weapons.get(weapon).isChargeable(megaman);
     }
 
     public void translateAmmo(MegamanWeapon weapon, int delta) {
@@ -105,16 +171,12 @@ public class MegamanWeaponHandler {
         return weapons.get(weapon).ammo;
     }
 
-    public boolean isChargeable(MegamanWeapon weapon) {
-        return hasWeapon(weapon) && weapons.get(weapon).chargeable;
-    }
-
-    public boolean fireWeapon(MegamanWeapon weapon, MegaChargeStatus stat) {
-        if (!hasWeapon(weapon)) {
+    public boolean fireWeapon(MegamanWeapon weapon, ChargeStatus stat) {
+        if (!canFireWeapon(weapon, stat)) {
             return false;
         }
         if (!isChargeable(weapon)) {
-            stat = MegaChargeStatus.NOT_CHARGED;
+            stat = ChargeStatus.NOT_CHARGED;
         }
         int cost = weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (stat) {
             case FULLY_CHARGED -> weapon.fullyChargedCost;
@@ -151,7 +213,7 @@ public class MegamanWeaponHandler {
         return spawnCenter;
     }
 
-    private void fireMegaBuster(MegaChargeStatus stat) {
+    private void fireMegaBuster(ChargeStatus stat) {
         float x = MEGA_BUSTER_BULLET_VEL;
         if (megaman.is(Facing.LEFT)) {
             x *= -1f;
@@ -163,12 +225,12 @@ public class MegamanWeaponHandler {
         Projectile projectile = switch (stat) {
             case NOT_CHARGED -> (Bullet) factories.fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
             case HALF_CHARGED, FULLY_CHARGED -> {
-                data.put(ConstKeys.BOOL, stat == MegaChargeStatus.FULLY_CHARGED);
+                data.put(ConstKeys.BOOL, stat == ChargeStatus.FULLY_CHARGED);
                 yield (ChargedShot) factories.fetch(EntityType.PROJECTILE, ProjectileFactory.CHARGED_SHOT);
             }
         };
         Vector2 s = getSpawnCenter();
-        if (stat == MegaChargeStatus.NOT_CHARGED) {
+        if (stat == ChargeStatus.NOT_CHARGED) {
             megaman.request(SoundAsset.MEGA_BUSTER_BULLET_SHOT_SOUND);
         } else {
             megaman.request(SoundAsset.MEGA_BUSTER_CHARGED_SHOT_SOUND);
@@ -178,7 +240,7 @@ public class MegamanWeaponHandler {
         gameEngine.spawnEntity(projectile, s, data);
     }
 
-    private void fireFlameToss(MegaChargeStatus chargeStatus) {
+    private void fireFlameToss(ChargeStatus chargeStatus) {
     }
 
 }

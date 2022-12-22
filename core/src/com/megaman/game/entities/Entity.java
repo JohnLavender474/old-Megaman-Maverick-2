@@ -15,6 +15,7 @@ public class Entity {
     public final MegamanGame game;
 
     public boolean dead = true;
+    public boolean asleep = false;
 
     public Entity(MegamanGame game, EntityType entityType) {
         this.game = game;

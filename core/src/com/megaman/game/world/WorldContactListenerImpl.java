@@ -9,7 +9,7 @@ import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.decorations.Splash;
-import com.megaman.game.entities.megaman.AButtonTask;
+import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.utils.Logger;
@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
 
-    private static final Logger logger = new Logger(true);
+    private static final Logger logger = new Logger(WorldContactListener.class, true);
 
     private final MegamanGame game;
 

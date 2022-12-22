@@ -5,11 +5,12 @@ import lombok.*;
 @AllArgsConstructor
 public class Logger {
 
+    private Class<?> aClass;
     private boolean logging;
 
     public void log(String s) {
         if (logging) {
-            System.out.println(s);
+            System.out.println(aClass.getSimpleName().toUpperCase() + ": " + s);
         }
     }
 
