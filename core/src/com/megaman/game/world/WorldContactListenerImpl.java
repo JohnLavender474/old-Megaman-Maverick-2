@@ -48,7 +48,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 megaman.request(SoundAsset.MEGAMAN_LAND_SOUND);
             }
         } else if (contact.acceptMask(FixtureType.BOUNCER, w,
-                FixtureType.FEET, FixtureType.HEAD, FixtureType.SIDE)) {
+                FixtureType.FEET,
+                FixtureType.HEAD,
+                FixtureType.SIDE)) {
             float bounce = contact.mask1stData(ConstKeys.VAL, Float.class);
             Vector2 v = new Vector2();
             switch (w.data) {
@@ -82,14 +84,20 @@ public class WorldContactListenerImpl implements WorldContactListener {
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
             contact.mask1stBody().velocity.add(force);
-        } else if (contact.acceptMask(FixtureType.PROJECTILE, FixtureType.BLOCK)) {
-            ((Projectile) contact.mask1stEntity()).hitBlock(contact.mask.getSecond());
-        } else if (contact.acceptMask(FixtureType.PROJECTILE, FixtureType.BODY)) {
-            ((Projectile) contact.mask1stEntity()).hitBody(contact.mask.getSecond());
-        } else if (contact.acceptMask(FixtureType.PROJECTILE, FixtureType.SHIELD)) {
-            ((Projectile) contact.mask1stEntity()).hitShield(contact.mask.getSecond());
+        } else if (contact.acceptMask(FixtureType.PROJECTILE, w,
+                FixtureType.BLOCK,
+                FixtureType.BODY,
+                FixtureType.SHIELD,
+                FixtureType.WATER)) {
+            Projectile p = (Projectile) contact.mask1stEntity();
+            Fixture f = contact.mask.getSecond();
+            switch (w.data) {
+                case BLOCK -> p.hitBlock(f);
+                case BODY -> p.hitBody(f);
+                case SHIELD -> p.hitShield(f);
+                case WATER -> p.hitWater(f);
+            }
         }
-        // TODO: Add other contacts
     }
 
     @Override

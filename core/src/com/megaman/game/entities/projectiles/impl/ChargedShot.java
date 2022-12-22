@@ -1,6 +1,5 @@
 package com.megaman.game.entities.projectiles.impl;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -8,7 +7,6 @@ import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
-import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.Damageable;
@@ -39,7 +37,6 @@ public class ChargedShot extends Projectile implements Faceable {
     private static TextureRegion fullyChargedReg;
     private static TextureRegion halfChargedReg;
 
-    private final Sprite sprite;
     private final Vector2 traj;
 
     private boolean fullyCharged;
@@ -55,7 +52,6 @@ public class ChargedShot extends Projectile implements Faceable {
         if (halfChargedReg == null) {
             halfChargedReg = game.getAssMan().getTextureRegion(MEGAMAN_HALF_CHARGED_SHOT, "Shoot");
         }
-        this.sprite = new Sprite();
         this.traj = new Vector2();
         defineBody();
         putComponent(shapeComponent());
@@ -65,8 +61,7 @@ public class ChargedShot extends Projectile implements Faceable {
     }
 
     @Override
-    public void init(Vector2 center, ObjectMap<String, Object> data) {
-        super.init(center, data);
+    public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         fullyCharged = (boolean) data.get(ConstKeys.BOOL);
         float bodyDim = WorldVals.PPM;
         float spriteDim = WorldVals.PPM;
@@ -78,12 +73,12 @@ public class ChargedShot extends Projectile implements Faceable {
         }
         sprite.setSize(spriteDim, spriteDim);
         body.bounds.setSize(bodyDim, bodyDim);
-        body.bounds.setCenter(center);
         for (Fixture f : body.fixtures) {
             f.bounds.set(body.bounds);
         }
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
         facing = traj.x > 0f ? Facing.RIGHT : Facing.LEFT;
+        super.init(spawn, data);
     }
 
     @Override
@@ -154,7 +149,7 @@ public class ChargedShot extends Projectile implements Faceable {
 
     private SpriteComponent spriteComponent() {
         SpriteHandle handle = new SpriteHandle(sprite, 3);
-        handle.runnable = () -> {
+        handle.updatable = delta -> {
             sprite.setFlip(is(Facing.LEFT), false);
             handle.setPosition(body.bounds, Position.CENTER);
         };

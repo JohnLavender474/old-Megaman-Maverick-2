@@ -33,7 +33,8 @@ public class WorldSystem extends System {
         put(FixtureType.PROJECTILE, EnumSet.of(
                 FixtureType.BODY,
                 FixtureType.BLOCK,
-                FixtureType.SHIELD));
+                FixtureType.SHIELD,
+                FixtureType.WATER));
         put(FixtureType.LASER, EnumSet.of(
                 FixtureType.BLOCK));
     }};

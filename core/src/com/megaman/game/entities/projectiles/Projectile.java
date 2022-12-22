@@ -1,5 +1,6 @@
 package com.megaman.game.entities.projectiles;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
@@ -22,12 +23,19 @@ import java.util.Set;
 
 public abstract class Projectile extends Entity implements Damager {
 
-    public final Body body = new Body(BodyType.ABSTRACT);
+    public final Body body;
+    public final Sprite sprite;
 
     public Entity owner;
 
     public Projectile(MegamanGame game) {
+        this(game, BodyType.ABSTRACT);
+    }
+
+    public Projectile(MegamanGame game, BodyType bodyType) {
         super(game, EntityType.PROJECTILE);
+        body = new Body(bodyType);
+        sprite = new Sprite();
         putComponent(new SoundComponent());
         putComponent(new BodyComponent(body));
         putComponent(cullOnMessageComponent());
@@ -37,6 +45,7 @@ public abstract class Projectile extends Entity implements Damager {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         owner = (Entity) data.get(ConstKeys.OWNER);
+        body.bounds.setCenter(spawn);
     }
 
     @Override
@@ -51,6 +60,9 @@ public abstract class Projectile extends Entity implements Damager {
     }
 
     public void hitShield(Fixture shieldFixture) {
+    }
+
+    public void hitWater(Fixture waterFixture) {
     }
 
     protected CullOnEventComponent cullOnMessageComponent() {

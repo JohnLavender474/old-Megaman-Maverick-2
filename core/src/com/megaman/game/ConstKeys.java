@@ -2,6 +2,9 @@ package com.megaman.game;
 
 public class ConstKeys {
 
+    public static final String X = "x";
+    public static final String Y = "y";
+
     public static final String DEFAULT = "default";
     public static final String BOOL = "bool";
     public static final String OWNER = "owner";

@@ -98,7 +98,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
 
     private SpriteComponent spriteComponent() {
         SpriteHandle handle = new SpriteHandle(sprite, 4);
-        handle.runnable = () -> {
+        handle.updatable = delta -> {
             handle.setPosition(body.bounds, Position.CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
         };

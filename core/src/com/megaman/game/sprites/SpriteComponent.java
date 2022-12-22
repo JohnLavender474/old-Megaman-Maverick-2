@@ -2,10 +2,8 @@ package com.megaman.game.sprites;
 
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
-import lombok.NoArgsConstructor;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 public class SpriteComponent implements Component {
 

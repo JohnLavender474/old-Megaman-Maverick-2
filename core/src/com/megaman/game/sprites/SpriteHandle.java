@@ -10,11 +10,12 @@ import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Positional;
+import com.megaman.game.utils.interfaces.Updatable;
 
-public class SpriteHandle implements Drawable, Positional, Runnable, Comparable<SpriteHandle> {
+public class SpriteHandle implements Drawable, Positional, Updatable, Comparable<SpriteHandle> {
 
     public Sprite sprite;
-    public Runnable runnable;
+    public Updatable updatable;
 
     public int priority;
     public boolean hidden;
@@ -27,10 +28,10 @@ public class SpriteHandle implements Drawable, Positional, Runnable, Comparable<
         this(sprite, priority, null);
     }
 
-    public SpriteHandle(Sprite sprite, int priority, Runnable runnable) {
+    public SpriteHandle(Sprite sprite, int priority, Updatable updatable) {
         this.sprite = sprite;
         this.priority = priority;
-        this.runnable = runnable;
+        this.updatable = updatable;
     }
 
     public SpriteHandle(TextureRegion region) {
@@ -52,6 +53,10 @@ public class SpriteHandle implements Drawable, Positional, Runnable, Comparable<
 
     public void setPosition(Rectangle bounds, Position pos) {
         Vector2 p = ShapeUtils.getPoint(bounds, pos);
+        setPosition(p, pos);
+    }
+
+    public void setPosition(Vector2 p, Position pos) {
         switch (pos) {
             case BOTTOM_LEFT -> sprite.setPosition(p.x, p.y);
             case BOTTOM_CENTER -> sprite.setPosition(p.x - sprite.getWidth() / 2f, p.y);
@@ -80,11 +85,11 @@ public class SpriteHandle implements Drawable, Positional, Runnable, Comparable<
     }
 
     @Override
-    public void run() {
-        if (runnable == null) {
+    public void update(float delta) {
+        if (updatable == null) {
             return;
         }
-        runnable.run();
+        updatable.update(delta);
     }
 
     @Override

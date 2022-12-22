@@ -17,6 +17,7 @@ import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
@@ -250,7 +251,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, megaman);
         data.put(ConstKeys.TRAJECTORY, trajectory);
-        Projectile projectile = switch (stat) {
+        Projectile proj = switch (stat) {
             case NOT_CHARGED -> (Bullet) factories.fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
             case HALF_CHARGED, FULLY_CHARGED -> {
                 data.put(ConstKeys.BOOL, stat == ChargeStatus.FULLY_CHARGED);
@@ -265,12 +266,36 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
             megaman.stopLoop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
             s.y += WorldVals.PPM / 10f;
         }
-        engine.spawnEntity(projectile, s, data);
-        return projectile;
+        engine.spawnEntity(proj, s, data);
+        return proj;
     }
 
-    private Projectile fireFlameToss(ChargeStatus chargeStatus) {
-        return null;
+    private Projectile fireFlameToss(ChargeStatus stat) {
+        ObjectMap<String, Object> data = new ObjectMap<>();
+        data.put(ConstKeys.OWNER, megaman);
+        Projectile proj = switch (stat) {
+            case NOT_CHARGED, HALF_CHARGED, FULLY_CHARGED -> {
+                data.put(ConstKeys.LEFT, megaman.is(Facing.LEFT));
+                yield (Fireball) factories.fetch(EntityType.PROJECTILE, ProjectileFactory.FIREBALL);
+            }
+
+            // TODO: charged flame weapons
+            /*
+            case HALF_CHARGED -> {
+
+            }
+            case FULLY_CHARGED -> {
+
+            }
+             */
+
+        };
+        engine.spawnEntity(proj, getSpawnCenter(), data);
+
+        // TODO: play different sounds
+        megaman.request(SoundAsset.CRASH_BOMBER_SOUND);
+
+        return proj;
     }
 
 }

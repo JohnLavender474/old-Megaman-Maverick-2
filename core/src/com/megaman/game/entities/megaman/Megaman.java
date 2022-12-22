@@ -1,7 +1,5 @@
 package com.megaman.game.entities.megaman;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -121,7 +119,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public Megaman(MegamanGame game) {
         super(game, EntityType.MEGAMAN);
         sprite = new Sprite();
-        body = new Body(BodyType.DYNAMIC);
+        body = new Body(BodyType.DYNAMIC, true);
         airDashTimer = new Timer(MAX_AIR_DASH_TIME);
         dmgTimer = new Timer(DAMAGE_DURATION, true);
         shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
@@ -383,7 +381,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         body.velClamp.set(CLAMP_X * WorldVals.PPM, CLAMP_Y * WorldVals.PPM);
         body.bounds.width = .8f * WorldVals.PPM;
         body.affectedByResistance = true;
-        body.gravityOn = true;
         Rectangle m1 = new Rectangle();
         m1.setSize(.575f * WorldVals.PPM, WorldVals.PPM / 16f);
         Runnable onBounce = () -> {
@@ -469,7 +466,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         sprite.setSize(1.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
         SpriteHandle handle = new SpriteHandle(sprite);
         handle.priority = 3;
-        handle.runnable = () -> {
+        handle.updatable = delta -> {
             handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setAlpha(recoveryBlink ? 0f : 1f);
             sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());

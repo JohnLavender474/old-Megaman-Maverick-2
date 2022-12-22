@@ -10,46 +10,32 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
+import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.enums.Position;
-import com.megaman.game.world.Body;
 import com.megaman.game.world.WorldVals;
 
-public class Splash extends Entity {
+public class SmokePuff extends Entity {
 
-    private static final String SPLASH_REG = "Splash";
-    private static final float ALPHA = .5f;
-
-    private static TextureRegion splashReg;
+    private static TextureRegion smokePuffReg;
 
     private final Vector2 pos;
     private final Sprite sprite;
     private final Animation anim;
 
-    public Splash(MegamanGame game) {
+    public SmokePuff(MegamanGame game) {
         super(game, EntityType.DECORATION);
-        if (splashReg == null) {
-            splashReg = game.getAssMan().getTextureRegion(TextureAsset.WATER, SPLASH_REG);
+        if (smokePuffReg == null) {
+            smokePuffReg = game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "SmokePuff");
         }
         pos = new Vector2();
         sprite = new Sprite();
-        anim = new Animation(splashReg, 5, .075f, false);
+        anim = new Animation(smokePuffReg, 7, .025f, false);
         putComponent(spriteComponent());
         putComponent(updatableComponent());
         putComponent(new AnimationComponent(sprite, anim));
-    }
-
-    public static void generate(MegamanGame game, Body splasher, Body water) {
-        int numSplashes = (int) Math.ceil(splasher.bounds.width / WorldVals.PPM);
-        for (int i = 0; i < numSplashes; i++) {
-            Vector2 pos = new Vector2(
-                    splasher.bounds.x + (WorldVals.PPM / 2f) + i * WorldVals.PPM,
-                    water.bounds.y + water.bounds.height);
-            Splash s = (Splash) game.getEntityFactories().fetch(EntityType.DECORATION, DecorationFactory.SPLASH);
-            game.getGameEngine().spawnEntity(s, pos);
-        }
     }
 
     @Override
@@ -59,8 +45,7 @@ public class Splash extends Entity {
 
     private SpriteComponent spriteComponent() {
         sprite.setSize(WorldVals.PPM, WorldVals.PPM);
-        sprite.setAlpha(ALPHA);
-        SpriteHandle handle = new SpriteHandle(sprite, -1);
+        SpriteHandle handle = new SpriteHandle(sprite, 3);
         handle.updatable = delta -> handle.setPosition(pos, Position.BOTTOM_CENTER);
         return new SpriteComponent(handle);
     }

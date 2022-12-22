@@ -1,7 +1,7 @@
 Decorations.png
-size: 1920, 1764
+size: 1920, 1975
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 Arrow
   rotate: false
@@ -12,14 +12,14 @@ Arrow
   index: -1
 Black
   rotate: false
-  xy: 448, 0
+  xy: 672, 0
   size: 200, 200
   orig: 200, 200
   offset: 0, 0
   index: -1
 Blue
   rotate: false
-  xy: 1352, 0
+  xy: 1576, 0
   size: 225, 225
   orig: 225, 225
   offset: 0, 0
@@ -33,56 +33,63 @@ Disintegration
   index: -1
 Explosion
   rotate: false
-  xy: 648, 0
+  xy: 872, 0
   size: 704, 64
   orig: 704, 64
   offset: 0, 0
   index: -1
 MegamanHelmet
   rotate: false
-  xy: 1577, 0
+  xy: 0, 225
   size: 300, 284
   orig: 300, 284
   offset: 0, 0
   index: -1
 MegamanSubtitle
   rotate: false
-  xy: 800, 284
+  xy: 0, 625
   size: 1078, 270
   orig: 1078, 270
   offset: 0, 0
   index: -1
 MegamanTitle
   rotate: false
-  xy: 0, 684
+  xy: 0, 895
   size: 1920, 1080
   orig: 1920, 1080
   offset: 0, 0
   index: -1
 PlayerExplosionOrbs
   rotate: false
-  xy: 192, 0
+  xy: 416, 0
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
+SmokePuff
+  rotate: false
+  xy: 192, 0
+  size: 224, 32
+  orig: 224, 32
+  offset: 0, 0
+  index: -1
 StageSelectBox_Blinking
   rotate: false
-  xy: 320, 0
+  xy: 544, 0
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 StageSelectBox_Highlighted
   rotate: false
-  xy: 0, 284
+  xy: 300, 225
   size: 400, 400
   orig: 400, 400
   offset: 0, 0
   index: -1
 StageSelectBox_Unhighlighted
   rotate: false
-  xy: 400, 284
+  xy: 700, 225
   size: 400, 400
   orig: 400, 400
   offset: 0, 0

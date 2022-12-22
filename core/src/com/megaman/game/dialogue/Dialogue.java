@@ -72,7 +72,7 @@ public class Dialogue implements Updatable, Drawable {
             }
             return;
         }
-        // if timer is finished, then run next anim runnable
+        // if timer is finished, then run next anim updatable
         if (speedUp.get()) {
             dialogueTypingTimer.update(delta * 2f);
         } else {

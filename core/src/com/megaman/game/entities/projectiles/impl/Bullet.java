@@ -1,6 +1,5 @@
 package com.megaman.game.entities.projectiles.impl;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -30,7 +29,6 @@ public class Bullet extends Projectile {
 
     private static TextureRegion bulletReg;
 
-    private final Sprite sprite;
     private final Vector2 traj;
 
     public Bullet(MegamanGame game) {
@@ -38,7 +36,6 @@ public class Bullet extends Projectile {
         if (bulletReg == null) {
             bulletReg = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
         }
-        this.sprite = new Sprite();
         this.traj = new Vector2();
         defineBody();
         putComponent(spriteComponent());
@@ -47,9 +44,8 @@ public class Bullet extends Projectile {
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
-        super.init(spawn, data);
-        body.bounds.setCenter(spawn);
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
+        super.init(spawn, data);
     }
 
     public void disintegrate() {
@@ -106,7 +102,7 @@ public class Bullet extends Projectile {
         sprite.setRegion(bulletReg);
         sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
         SpriteHandle h = new SpriteHandle(sprite, 3);
-        h.runnable = () -> h.setPosition(body.bounds, Position.CENTER);
+        h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);
     }
 

@@ -31,13 +31,22 @@ public class Body implements Updatable {
     private final Vector2 prevPos;
 
     public Body(BodyType bodyType) {
+        this(bodyType, false);
+    }
+
+    public Body(BodyType bodyType, boolean gravityOn) {
+        this(bodyType, gravityOn, 0f, 0f);
+    }
+
+    public Body(BodyType bodyType, boolean gravityOn, float gravityX, float gravityY) {
         this.bodyType = bodyType;
+        this.gravityOn = gravityOn;
         this.prevPos = new Vector2();
-        this.gravity = new Vector2();
         this.bounds = new Rectangle();
         this.fixtures = new Array<>();
         this.velocity = new Vector2();
         this.friction = new Vector2();
+        this.gravity = new Vector2(gravityX, gravityY);
         this.senses = new boolean[BodySense.values().length];
         this.velClamp = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
         this.resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);

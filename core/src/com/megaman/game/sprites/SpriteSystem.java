@@ -3,11 +3,8 @@ package com.megaman.game.sprites;
 import com.badlogic.gdx.graphics.Camera;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.utils.interfaces.Drawable;
-import lombok.Setter;
 
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 public class SpriteSystem extends System {
 
@@ -37,7 +34,7 @@ public class SpriteSystem extends System {
     protected void processEntity(Entity e, float delta) {
         SpriteComponent c = e.getComponent(SpriteComponent.class);
         for (SpriteHandle h : c.handles) {
-            h.run();
+            h.update(delta);
             if (h.hidden || !h.isInCamBounds(gameCam)) {
                 continue;
             }
