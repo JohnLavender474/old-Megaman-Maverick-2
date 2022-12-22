@@ -1,7 +1,7 @@
 package com.megaman.game.entities;
 
-public interface EntityFactory<E extends Entity> {
+public interface EntityFactory {
 
-    E fetch(String key);
+    Entity fetch(String key);
 
 }

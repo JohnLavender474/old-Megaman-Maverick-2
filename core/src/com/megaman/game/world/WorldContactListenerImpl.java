@@ -12,6 +12,7 @@ import com.megaman.game.entities.decorations.Splash;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.objs.Wrapper;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +112,12 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
-            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
+            Vector2 posDelta;
+            if (contact.mask2ndEntity().hasComponent(TrajectoryComponent.class)) {
+                posDelta = contact.mask2ndEntity().getComponent(TrajectoryComponent.class).trajectory.getPosDelta();
+            } else {
+                posDelta = contact.mask2ndBody().getPosDelta();
+            }
             Body b = contact.mask1stBody();
             b.bounds.x += posDelta.x;
             b.bounds.y += posDelta.y;

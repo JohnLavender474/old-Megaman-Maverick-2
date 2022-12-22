@@ -6,17 +6,17 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactory;
 import com.megaman.game.entities.EntityPool;
 
-public class DecorationFactory implements EntityFactory<Entity> {
+public class DecorationFactory implements EntityFactory {
 
     public static final String SPLASH = "Splash";
     public static final String SMOKE_PUFF = "SmokePuff";
 
-    private final ObjectMap<String, EntityPool<Entity>> pools;
+    private final ObjectMap<String, EntityPool> pools;
 
     public DecorationFactory(MegamanGame game) {
         this.pools = new ObjectMap<>() {{
-            put(SPLASH, new EntityPool<>(5, () -> new Splash(game)));
-            put(SMOKE_PUFF, new EntityPool<>(5, () -> new SmokePuff(game)));
+            put(SPLASH, new EntityPool(5, () -> new Splash(game)));
+            put(SMOKE_PUFF, new EntityPool(5, () -> new SmokePuff(game)));
         }};
     }
 

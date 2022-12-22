@@ -1,12 +1,21 @@
 package com.megaman.game.movement.trajectory;
 
 import com.megaman.game.Component;
+import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.world.Body;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@NoArgsConstructor
 public class TrajectoryComponent implements Component {
 
-    public final List<Trajectory> trajectories = new ArrayList<>();
+    public Trajectory trajectory;
+
+    public TrajectoryComponent(Body body, String trajStr) {
+        trajectory = new Trajectory(body, trajStr, ShapeUtils.getCenterPoint(body.bounds));
+    }
+
+    public void reset() {
+        trajectory = null;
+    }
 
 }

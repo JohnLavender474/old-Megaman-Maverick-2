@@ -5,6 +5,7 @@ import com.megaman.game.entities.blocks.BlockFactory;
 import com.megaman.game.entities.decorations.DecorationFactory;
 import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
+import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.entities.special.SpecialFactory;
 
 import java.util.EnumMap;
@@ -13,11 +14,12 @@ import java.util.Map;
 
 public class EntityFactories {
 
-    private final Map<EntityType, EntityFactory<? extends Entity>> factories;
+    private final Map<EntityType, EntityFactory> factories;
 
     public EntityFactories(MegamanGame game) {
         factories = new EnumMap<>(EntityType.class) {{
             put(EntityType.BLOCK, new BlockFactory(game));
+            put(EntityType.SENSOR, new SensorFactory(game));
             put(EntityType.SPECIAL, new SpecialFactory(game));
             put(EntityType.EXPLOSION, new ExplosionFactory(game));
             put(EntityType.PROJECTILE, new ProjectileFactory(game));

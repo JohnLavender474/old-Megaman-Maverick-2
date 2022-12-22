@@ -36,7 +36,7 @@ public class ConveyorBelt extends Block {
     public final Fixture forceFixture;
 
     public ConveyorBelt(MegamanGame game) {
-        super(game);
+        super(game, true);
         TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.CONVEYOR_BELT);
         if (lLeft == null) {
             lLeft = atlas.findRegion("LeftPart-MoveLeft");

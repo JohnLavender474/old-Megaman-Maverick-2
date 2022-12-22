@@ -2,19 +2,21 @@ package com.megaman.game.movement.trajectory;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.WorldVals;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class Trajectory implements Updatable {
 
     private final Body body;
     private final Array<KeyValuePair<Vector2, Timer>> defs = new Array<>();
+
+    private final Vector2 prevCenter;
+    private final Vector2 currCenter;
 
     private int index;
 
@@ -24,6 +26,8 @@ public class Trajectory implements Updatable {
 
     public Trajectory(Body body, Array<KeyValuePair<Vector2, Float>> defs, Vector2 startCenterPoint) {
         this.body = body;
+        prevCenter = new Vector2();
+        currCenter = new Vector2();
         Vector2 temp = new Vector2(startCenterPoint);
         for (KeyValuePair<Vector2, Float> def : defs) {
             Vector2 dest = new Vector2(temp).add(def.key());
@@ -44,7 +48,13 @@ public class Trajectory implements Updatable {
                 index = 0;
             }
         }
+        prevCenter.set(ShapeUtils.getCenterPoint(body.bounds));
+        currCenter.set(center);
         body.bounds.setCenter(center);
+    }
+
+    public Vector2 getPosDelta() {
+        return currCenter.cpy().sub(prevCenter);
     }
 
     private Vector2 getPrevDest() {

@@ -81,7 +81,11 @@ public class Body implements Updatable {
     }
 
     public void setPrevPos(Vector2 prevPos) {
-        this.prevPos.set(prevPos);
+        setPrevPos(prevPos.x, prevPos.y);
+    }
+
+    public void setPrevPos(float x, float y) {
+        prevPos.set(x, y);
     }
 
     public Vector2 getPosDelta() {

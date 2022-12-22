@@ -14,8 +14,8 @@ import java.util.function.Supplier;
 public class LevelSpawn {
 
     private final Rectangle bounds;
+    private final ObjectMap<String, Object> data;
     private final Supplier<Entity> entitySupplier;
-    private final Supplier<ObjectMap<String, Object>> dataSupplier;
 
     private Entity entity;
     private boolean inCamBounds;
@@ -28,7 +28,7 @@ public class LevelSpawn {
         inCamBounds = cam.frustum.boundsInFrustum(ShapeUtils.rectToBBox(bounds));
         if (entity == null && !wasInCamBounds && inCamBounds) {
             entity = entitySupplier.get();
-            engine.spawnEntity(entity, bounds, dataSupplier.get());
+            engine.spawnEntity(entity, bounds, data);
         }
     }
 

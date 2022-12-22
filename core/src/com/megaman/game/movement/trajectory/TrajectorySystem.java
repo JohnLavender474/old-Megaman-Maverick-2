@@ -11,10 +11,8 @@ public class TrajectorySystem extends System {
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        TrajectoryComponent tc = e.getComponent(TrajectoryComponent.class);
-        for (Trajectory t : tc.trajectories) {
-            t.update(delta);
-        }
+        TrajectoryComponent c = e.getComponent(TrajectoryComponent.class);
+        c.trajectory.update(delta);
     }
 
 }

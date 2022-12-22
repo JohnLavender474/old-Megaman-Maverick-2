@@ -13,6 +13,10 @@ public class CullOutOfBoundsComponent implements Component {
     public Supplier<Rectangle> boundsSupplier;
     public Timer timer;
 
+    public CullOutOfBoundsComponent(Rectangle bounds) {
+        this(() -> bounds);
+    }
+
     public CullOutOfBoundsComponent(Supplier<Rectangle> boundsSupplier) {
         this(boundsSupplier, DEFAULT_CULL_DUR);
     }

@@ -1,7 +1,6 @@
 package com.megaman.game.world;
 
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.System;
@@ -73,10 +72,9 @@ public class WorldSystem extends System {
             Entity e = eIter.next();
             if (e.dead || !qualifiesMembership(e)) {
                 eIter.remove();
-                continue;
             }
             BodyComponent c = e.getComponent(BodyComponent.class);
-            c.body.setPrevPos(new Vector2(c.body.bounds.x, c.body.bounds.y));
+            c.body.setPrevPos(c.body.bounds.x, c.body.bounds.y);
         }
     }
 
@@ -127,7 +125,6 @@ public class WorldSystem extends System {
             case 0 -> updateBody(bc.body, delta);
             case 1 -> resolve(bc.body);
         }
-
     }
 
     private void updateBody(Body body, float delta) {

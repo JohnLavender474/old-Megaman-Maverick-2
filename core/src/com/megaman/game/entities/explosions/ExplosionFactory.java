@@ -8,17 +8,17 @@ import com.megaman.game.entities.EntityPool;
 import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.explosions.impl.Disintegration;
 
-public class ExplosionFactory implements EntityFactory<Entity> {
+public class ExplosionFactory implements EntityFactory {
 
     public static final String DISINTEGRATION = "Disintegration";
     public static final String CHARGED_SHOT_EXPLOSION = "ChargedShotExplosion";
 
-    private final ObjectMap<String, EntityPool<Entity>> pools;
+    private final ObjectMap<String, EntityPool> pools;
 
     public ExplosionFactory(MegamanGame game) {
         pools = new ObjectMap<>() {{
-            put(DISINTEGRATION, new EntityPool<>(10, () -> new Disintegration(game)));
-            put(CHARGED_SHOT_EXPLOSION, new EntityPool<>(5, () -> new ChargedShotExplosion(game)));
+            put(DISINTEGRATION, new EntityPool(10, () -> new Disintegration(game)));
+            put(CHARGED_SHOT_EXPLOSION, new EntityPool(5, () -> new ChargedShotExplosion(game)));
         }};
     }
 

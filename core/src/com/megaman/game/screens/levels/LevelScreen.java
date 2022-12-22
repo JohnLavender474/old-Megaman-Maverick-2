@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -42,13 +43,14 @@ import com.megaman.game.screens.levels.map.LevelMapManager;
 import com.megaman.game.screens.levels.map.LevelMapObjParser;
 import com.megaman.game.screens.levels.spawns.LevelSpawn;
 import com.megaman.game.screens.levels.spawns.LevelSpawnManager;
+import com.megaman.game.screens.levels.spawns.LevelSpawnType;
+import com.megaman.game.screens.ui.BitsBar;
+import com.megaman.game.screens.ui.TextHandle;
 import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
-import com.megaman.game.screens.ui.BitsBar;
-import com.megaman.game.screens.ui.TextHandle;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.ShapeUtils;
@@ -137,13 +139,13 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
         engine.getSystem(WorldSystem.class).setWorldSize(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
-        Array<RectangleMapObject> playerSpawns = new Array<>();
+        Array<RectangleMapObject> playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
+        Array<RectangleMapObject> gameRoomsObjs = m.get(LevelMapLayer.GAME_ROOMS);
+        levelCamMan.set(gameRoomsObjs, game.getMegaman());
         Array<LevelSpawn> spawns = new Array<>();
         EntityFactories factories = game.getEntityFactories();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
             switch (e.getKey()) {
-                case GAME_ROOMS -> levelCamMan.set(e.getValue(), game.getMegaman());
-                case PLAYER_SPAWNS -> playerSpawns.addAll(e.getValue());
                 case ENEMY_SPAWNS, BLOCKS, HAZARDS, SENSORS, SPECIAL -> {
                     EntityType type = switch (e.getKey()) {
                         case ENEMY_SPAWNS -> EntityType.ENEMY;
@@ -151,13 +153,28 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         case HAZARDS -> EntityType.HAZARD;
                         case SENSORS -> EntityType.SENSOR;
                         case SPECIAL -> EntityType.SPECIAL;
-                        default -> throw new IllegalStateException("Incompatible state");
+                        default -> throw new IllegalStateException("No matching entity type for: " + e.getKey());
                     };
                     for (RectangleMapObject o : e.getValue()) {
-                        spawns.add(new LevelSpawn(
-                                o.getRectangle(),
-                                () -> factories.fetch(type, o.getName()),
-                                () -> LevelMapObjParser.parse(o)));
+                        ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
+                        Rectangle spawnBounds = null;
+                        if (data.containsKey(LevelSpawnType.SPAWN_ROOM)) {
+                            String roomName = (String) data.get(LevelSpawnType.SPAWN_ROOM);
+                            for (RectangleMapObject room : gameRoomsObjs) {
+                                if (roomName.equals(room.getName())) {
+                                    spawnBounds = room.getRectangle();
+                                    data.put(ConstKeys.SPAWN, o.getRectangle());
+                                    data.put(ConstKeys.ROOM, spawnBounds);
+                                    break;
+                                }
+                            }
+                        } else {
+                            spawnBounds = o.getRectangle();
+                        }
+                        if (spawnBounds == null) {
+                            throw new IllegalStateException("Spawn bounds is null for obj: " + o.getName());
+                        }
+                        spawns.add(new LevelSpawn(spawnBounds, data, () -> factories.fetch(type, o.getName())));
                     }
                 }
             }
