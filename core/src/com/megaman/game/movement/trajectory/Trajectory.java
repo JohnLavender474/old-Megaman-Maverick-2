@@ -4,13 +4,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.WorldVals;
 
-public class Trajectory implements Updatable {
+public class Trajectory implements Updatable, Resettable {
 
     private final Body body;
     private final Array<KeyValuePair<Vector2, Timer>> defs = new Array<>();
@@ -19,6 +20,10 @@ public class Trajectory implements Updatable {
     private final Vector2 currCenter;
 
     private int index;
+
+    public Trajectory(Body body, String trajectory) {
+        this(body, trajectory, ShapeUtils.getCenterPoint(body.bounds));
+    }
 
     public Trajectory(Body body, String trajectory, Vector2 startCenterPoint) {
         this(body, TrajectoryParser.parse(trajectory, WorldVals.PPM), startCenterPoint);
@@ -68,6 +73,14 @@ public class Trajectory implements Updatable {
 
     private Timer getCurrentTimer() {
         return defs.get(index).value();
+    }
+
+    @Override
+    public void reset() {
+        index = 0;
+        for (KeyValuePair<Vector2, Timer> def : defs) {
+            def.value().reset();
+        }
     }
 
 }

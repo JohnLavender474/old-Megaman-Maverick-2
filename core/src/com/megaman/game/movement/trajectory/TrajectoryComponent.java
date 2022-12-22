@@ -15,7 +15,10 @@ public class TrajectoryComponent implements Component {
     }
 
     public void reset() {
-        trajectory = null;
+        if (trajectory == null) {
+            return;
+        }
+        trajectory.reset();
     }
 
 }

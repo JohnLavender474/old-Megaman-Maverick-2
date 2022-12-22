@@ -12,35 +12,38 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.blocks.Block;
+import com.megaman.game.events.Event;
+import com.megaman.game.events.EventListener;
 import com.megaman.game.movement.trajectory.Trajectory;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
-import com.megaman.game.movement.trajectory.TrajectoryParser;
 import com.megaman.game.shapes.ShapeComponent;
-import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.WorldVals;
 
-public class GearTrolley extends Block {
+public class GearTrolley extends Block implements EventListener {
 
     private static TextureRegion gearTrolleyReg;
 
     public static final float WIDTH = 1.25f;
     public static final float HEIGHT = .35f;
 
-    public final Sprite sprite;
+    public final SpriteHandle spriteHandle;
 
     public GearTrolley(MegamanGame game) {
         super(game, false);
         if (gearTrolleyReg == null) {
             gearTrolleyReg = game.getAssMan().getTextureRegion(TextureAsset.CUSTOM_TILES_1, "GearTrolleyPlatform");
         }
-        sprite = new Sprite();
+        spriteHandle = new SpriteHandle(new Sprite(), 2);
         putComponent(shapeComponent());
         putComponent(spriteComponent());
         putComponent(animationComponent());
+        putComponent(new TrajectoryComponent());
+        game.getEventMan().add(this);
+        runOnDeath.add(() -> game.getEventMan().remove(this));
     }
 
     @Override
@@ -52,22 +55,33 @@ public class GearTrolley extends Block {
         Rectangle gameRoom = (Rectangle) data.get(ConstKeys.ROOM);
         putComponent(new CullOutOfBoundsComponent(gameRoom));
         String trajStr = (String) data.get(ConstKeys.TRAJECTORY);
-        putComponent(new TrajectoryComponent(body, trajStr));
+        TrajectoryComponent t = getComponent(TrajectoryComponent.class);
+        t.trajectory = new Trajectory(body, trajStr);
+    }
+
+    @Override
+    public void listenForEvent(Event event) {
+        switch (event.eventType) {
+            case BEGIN_GAME_ROOM_TRANS -> {
+                spriteHandle.hidden = true;
+                getComponent(TrajectoryComponent.class).reset();
+            }
+            case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
+        }
     }
 
     private SpriteComponent spriteComponent() {
-        sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
-        SpriteHandle h = new SpriteHandle(sprite, 2);
-        h.updatable = delta -> {
-            h.setPosition(body.bounds, Position.CENTER);
-            h.sprite.translateY(-WorldVals.PPM / 16f);
+        spriteHandle.sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
+        spriteHandle.updatable = delta -> {
+            spriteHandle.setPosition(body.bounds, Position.CENTER);
+            spriteHandle.sprite.translateY(-WorldVals.PPM / 16f);
         };
-        return new SpriteComponent(h);
+        return new SpriteComponent(spriteHandle);
     }
 
     private AnimationComponent animationComponent() {
         Animation anim = new Animation(gearTrolleyReg, 2, .15f);
-        return new AnimationComponent(sprite, anim);
+        return new AnimationComponent(spriteHandle.sprite, anim);
     }
 
     private ShapeComponent shapeComponent() {

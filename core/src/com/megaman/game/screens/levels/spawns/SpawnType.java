@@ -1,6 +1,6 @@
 package com.megaman.game.screens.levels.spawns;
 
-public class LevelSpawnType {
+public class SpawnType {
 
     public static final String SPAWN_ROOM = "SpawnRoom";
 

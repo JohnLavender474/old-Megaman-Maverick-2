@@ -26,6 +26,7 @@ public class ConstKeys {
 
     public static final String TRAJECTORY = "Trajectory";
     public static final String SPAWN = "Spawn";
+    public static final String EVENT = "Event";
     public static final String ROOM = "Room";
     public static final String RECT = "Rect";
     public static final String POS = "Pos";

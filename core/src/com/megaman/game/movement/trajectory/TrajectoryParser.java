@@ -6,14 +6,6 @@ import com.megaman.game.utils.objs.KeyValuePair;
 
 public class TrajectoryParser {
 
-    public static Array<KeyValuePair<Vector2, Float>> parse(String trajectory) {
-        return parse(trajectory, 1f);
-    }
-
-    public static Array<KeyValuePair<Vector2, Float>> parse(String[] tokens) {
-        return parse(tokens, 1f);
-    }
-
     public static Array<KeyValuePair<Vector2, Float>> parse(String trajectory, float scale) {
         String[] tokens = trajectory.split(";");
         return parse(tokens, scale);

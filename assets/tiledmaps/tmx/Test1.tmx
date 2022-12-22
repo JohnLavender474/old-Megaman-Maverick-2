@@ -67,10 +67,10 @@
     <property name="Left" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="13" name="GearTrolley" x="1312" y="1504" width="32" height="32">
+  <object id="13" name="GearTrolley" x="1152" y="1504" width="32" height="32">
    <properties>
     <property name="SpawnRoom" value="Room2"/>
-    <property name="Trajectory" value="-5,0,1.5;0,5,1.5;5,0,1.5;0,-5,3"/>
+    <property name="Trajectory" value="0,5,1.5;5,0,1.5;0,-5,3;-5,0,1.5"/>
    </properties>
   </object>
  </objectgroup>

@@ -9,7 +9,7 @@ import lombok.Setter;
 
 public class CullOnOutOfBoundsSystem extends System {
 
-    private static final Logger logger = new Logger(CullOnOutOfBoundsSystem.class, false);
+    private static final Logger logger = new Logger(CullOnOutOfBoundsSystem.class, true);
 
     @Setter
     private Camera gameCam;

@@ -41,9 +41,11 @@ import com.megaman.game.screens.levels.camera.LevelCamManager;
 import com.megaman.game.screens.levels.map.LevelMapLayer;
 import com.megaman.game.screens.levels.map.LevelMapManager;
 import com.megaman.game.screens.levels.map.LevelMapObjParser;
-import com.megaman.game.screens.levels.spawns.LevelSpawn;
-import com.megaman.game.screens.levels.spawns.LevelSpawnManager;
-import com.megaman.game.screens.levels.spawns.LevelSpawnType;
+import com.megaman.game.screens.levels.spawns.Spawn;
+import com.megaman.game.screens.levels.spawns.SpawnManager;
+import com.megaman.game.screens.levels.spawns.SpawnType;
+import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
+import com.megaman.game.screens.levels.spawns.player.PlayerSpawnManager;
 import com.megaman.game.screens.ui.BitsBar;
 import com.megaman.game.screens.ui.TextHandle;
 import com.megaman.game.shapes.LineSystem;
@@ -68,7 +70,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private static final float ON_PLAYER_DEATH_DELAY = 4f;
 
     private final MegamanGame game;
-    private final LevelSpawnManager spawnMan;
+    private final SpawnManager spawnMan;
+    private final PlayerSpawnManager playerSpawnMan;
+
     private final LevelMapManager levelMapMan;
     private final LevelCamManager levelCamMan;
 
@@ -76,6 +80,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final OrthographicCamera uiCam;
     private final Viewport gameViewport;
     private final Viewport uiViewport;
+
+    private final Array<Runnable> runOnDispose = new Array<>();
 
     private final Sound playerDeathSound;
     private final Timer playerDeathDelayTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
@@ -106,7 +112,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         gameViewport = new FitViewport(screenWidth, screenHeight, gameCam);
         uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
         // level managers
-        spawnMan = new LevelSpawnManager();
+        spawnMan = new SpawnManager();
+        playerSpawnMan = new PlayerSpawnManager();
         levelCamMan = new LevelCamManager(gameCam);
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
         // drawables
@@ -124,25 +131,34 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     megaman::getCurrentAmmo, assMan, weapon.weaponBitSrc);
             addUiDrawable(() -> weapon == megaman.currWeapon, weaponBar);
         }
-        // sounds
         playerDeathSound = assMan.getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
     public void set(String tmxFile) {
+        // reset player death delay timer
+        playerDeathDelayTimer.setToEnd();
+        // reset cam positions
         uiCam.position.set(ConstFuncs.getCamInitPos());
         gameCam.position.set(ConstFuncs.getCamInitPos());
+        // set systems
         GameEngine engine = game.getGameEngine();
         engine.setAllSystemsOn();
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(ShapeSystem.class).setShapeRenderQs(shapeRenderQs);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
+        // set level map, get layer objs
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
+        // set world system
         engine.getSystem(WorldSystem.class).setWorldSize(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
-        Array<RectangleMapObject> playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
+        // set game rooms
         Array<RectangleMapObject> gameRoomsObjs = m.get(LevelMapLayer.GAME_ROOMS);
         levelCamMan.set(gameRoomsObjs, game.getMegaman());
-        Array<LevelSpawn> spawns = new Array<>();
+        // set player spawns
+        Array<RectangleMapObject> playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
+        playerSpawnMan.set(gameCam, playerSpawns);
+        // set spawns
+        Array<Spawn> spawns = new Array<>();
         EntityFactories factories = game.getEntityFactories();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
             switch (e.getKey()) {
@@ -157,30 +173,42 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     };
                     for (RectangleMapObject o : e.getValue()) {
                         ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
-                        Rectangle spawnBounds = null;
-                        if (data.containsKey(LevelSpawnType.SPAWN_ROOM)) {
-                            String roomName = (String) data.get(LevelSpawnType.SPAWN_ROOM);
-                            for (RectangleMapObject room : gameRoomsObjs) {
-                                if (roomName.equals(room.getName())) {
-                                    spawnBounds = room.getRectangle();
-                                    data.put(ConstKeys.SPAWN, o.getRectangle());
-                                    data.put(ConstKeys.ROOM, spawnBounds);
-                                    break;
-                                }
-                            }
+                        if (data.containsKey(ConstKeys.SPAWN) && ConstKeys.EVENT.equals(data.get(ConstKeys.SPAWN))) {
+
+                            // TODO: create spawns based on events
+                            // TODO: add to event listeners
+                            // TODO: add to runOnDispose to remove from event listeners
+
                         } else {
-                            spawnBounds = o.getRectangle();
+                            Rectangle spawnBounds = null;
+                            if (data.containsKey(SpawnType.SPAWN_ROOM)) {
+                                String roomName = (String) data.get(SpawnType.SPAWN_ROOM);
+                                for (RectangleMapObject room : gameRoomsObjs) {
+                                    if (roomName.equals(room.getName())) {
+                                        spawnBounds = room.getRectangle();
+                                        data.put(ConstKeys.SPAWN, o.getRectangle());
+                                        data.put(ConstKeys.ROOM, spawnBounds);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                spawnBounds = o.getRectangle();
+                            }
+                            if (spawnBounds == null) {
+                                throw new IllegalStateException("Spawn bounds is null for obj: " + o.getName());
+                            }
+                            spawns.add(new SpawnWhenInBounds(
+                                    engine,
+                                    gameCam,
+                                    spawnBounds,
+                                    data,
+                                    () -> factories.fetch(type, o.getName())));
                         }
-                        if (spawnBounds == null) {
-                            throw new IllegalStateException("Spawn bounds is null for obj: " + o.getName());
-                        }
-                        spawns.add(new LevelSpawn(spawnBounds, data, () -> factories.fetch(type, o.getName())));
                     }
                 }
             }
         }
-        spawnMan.set(playerSpawns, spawns);
-        playerDeathDelayTimer.setToEnd();
+        spawnMan.set(spawns);
         set = true;
     }
 
@@ -260,7 +288,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         if (!paused) {
             levelCamMan.update(delta);
             if (levelCamMan.getTransState() == null) {
-                spawnMan.update(engine, gameCam);
+                playerSpawnMan.run();
+                spawnMan.update(delta);
             } else {
                 switch (levelCamMan.getTransState()) {
                     case BEGIN -> {
@@ -378,13 +407,17 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         set = false;
         stopMusic();
         spawnMan.reset();
+        playerSpawnMan.reset();
         levelMapMan.dispose();
         game.getGameEngine().reset();
         game.getEventMan().remove(this);
+        for (Runnable r : runOnDispose) {
+            r.run();
+        }
     }
 
     private void spawnMegaman() {
-        KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = spawnMan.getCurrPlayerCheckpoint();
+        KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = playerSpawnMan.getCurrPlayerCheckpoint();
         game.getGameEngine().spawnEntity(game.getMegaman(), spawn.key(), spawn.value());
         game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_SPAWN, new ObjectMap<>() {{
             put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
