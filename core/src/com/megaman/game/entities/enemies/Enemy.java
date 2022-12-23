@@ -22,9 +22,15 @@ import java.util.Set;
 
 public abstract class Enemy extends Entity implements Damager, Damageable {
 
+    private static final float DEFAULT_DMG_DUR = .05f;
+
     protected final Body body;
     protected final Timer dmgTimer;
     protected final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs;
+
+    public Enemy(MegamanGame game, BodyType bodyType) {
+        this(game, DEFAULT_DMG_DUR, bodyType);
+    }
 
     public Enemy(MegamanGame game, float damageDuration, BodyType bodyType) {
         this(game, damageDuration, CullOutOfBoundsComponent.DEFAULT_CULL_DUR, bodyType);

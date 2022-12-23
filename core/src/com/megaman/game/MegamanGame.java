@@ -5,8 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.animations.AnimationSystem;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.audio.AudioManager;
@@ -35,6 +38,7 @@ import com.megaman.game.utils.Logger;
 import com.megaman.game.world.WorldContactListener;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
+import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 
 import java.util.EnumMap;
@@ -49,6 +53,11 @@ public class MegamanGame extends Game {
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+
+    private OrthographicCamera gameCam;
+    private OrthographicCamera uiCam;
+    private Viewport gameViewport;
+    private Viewport uiViewport;
     private Map<ScreenEnum, Screen> screens;
 
     private AssetsManager assMan;
@@ -100,6 +109,12 @@ public class MegamanGame extends Game {
         // megaman
         megaman = new Megaman(this);
         // put screens
+        float screenWidth = ViewVals.VIEW_WIDTH * WorldVals.PPM;
+        float screenHeight = ViewVals.VIEW_HEIGHT * WorldVals.PPM;
+        gameCam = new OrthographicCamera();
+        uiCam = new OrthographicCamera();
+        gameViewport = new FitViewport(screenWidth, screenHeight, gameCam);
+        uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
         screens = new EnumMap<>(ScreenEnum.class);
         screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
         // set screen
@@ -137,6 +152,14 @@ public class MegamanGame extends Game {
         }
         ctrlMan.update();
         super.render();
+        gameViewport.apply();
+        uiViewport.apply();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        gameViewport.update(width, height);
+        uiViewport.update(width, height);
     }
 
     @Override

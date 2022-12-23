@@ -76,6 +76,9 @@ public class WorldSystem extends System {
             }
             BodyComponent c = e.getComponent(BodyComponent.class);
             c.body.setPrevPos(c.body.bounds.x, c.body.bounds.y);
+            if (c.body.preProcess != null) {
+                c.body.preProcess.update(delta);
+            }
         }
     }
 
@@ -131,11 +134,19 @@ public class WorldSystem extends System {
 
     @Override
     protected void postProcess(float delta) {
-        for (Entity e : entities) {
+        Iterator<Entity> eIter = entities.iterator();
+        while (eIter.hasNext()) {
+            Entity e = eIter.next();
+            if (e.dead || !qualifiesMembership(e)) {
+                eIter.remove();
+            }
             BodyComponent c = e.getComponent(BodyComponent.class);
-            // worldGraph.addBody(c.body);
+            worldGraph.addBody(c.body);
             for (Fixture f : c.body.fixtures) {
                 worldGraph.addFixture(f);
+            }
+            if (c.body.postProcess != null) {
+                c.body.postProcess.update(delta);
             }
         }
     }

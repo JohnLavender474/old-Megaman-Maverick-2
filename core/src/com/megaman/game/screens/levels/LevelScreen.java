@@ -10,12 +10,9 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
-import com.megaman.game.ViewVals;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
@@ -48,7 +45,10 @@ import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
 import com.megaman.game.screens.levels.spawns.player.PlayerSpawnManager;
 import com.megaman.game.screens.ui.BitsBar;
 import com.megaman.game.screens.ui.TextHandle;
-import com.megaman.game.shapes.*;
+import com.megaman.game.shapes.LineSystem;
+import com.megaman.game.shapes.RenderableShape;
+import com.megaman.game.shapes.ShapeSystem;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
@@ -60,7 +60,10 @@ import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.function.Supplier;
 
 public class LevelScreen extends ScreenAdapter implements EventListener {
@@ -76,8 +79,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     private final OrthographicCamera gameCam;
     private final OrthographicCamera uiCam;
-    private final Viewport gameViewport;
-    private final Viewport uiViewport;
 
     private final Array<Runnable> runOnDispose = new Array<>();
 
@@ -97,14 +98,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     public LevelScreen(MegamanGame game) {
         this.game = game;
-        // cameras and viewports
-        float screenWidth = ViewVals.VIEW_WIDTH * WorldVals.PPM;
-        float screenHeight = ViewVals.VIEW_HEIGHT * WorldVals.PPM;
-        gameCam = new OrthographicCamera();
-        uiCam = new OrthographicCamera();
-        gameViewport = new FitViewport(screenWidth, screenHeight, gameCam);
-        uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
-        // level managers
+        uiCam = game.getUiCam();
+        gameCam = game.getGameCam();
         spawnMan = new SpawnManager();
         playerSpawnMan = new PlayerSpawnManager();
         levelCamMan = new LevelCamManager(gameCam);
@@ -365,8 +360,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             gameShapesQ.poll().render(shapeRenderer);
         }
         shapeRenderer.end();
-        gameViewport.apply();
-        uiViewport.apply();
     }
 
     @Override
@@ -393,12 +386,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         audioMan.scaleMusicVolume(2f);
         Sound pauseSound = game.getAssMan().getSound(SoundAsset.PAUSE_SOUND);
         audioMan.playSound(pauseSound, false);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        gameViewport.update(width, height);
-        uiViewport.update(width, height);
     }
 
     @Override

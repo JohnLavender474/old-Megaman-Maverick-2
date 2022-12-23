@@ -10,12 +10,14 @@ import com.megaman.game.entities.enemies.impl.Bat;
 public class EnemyFactory implements EntityFactory {
 
     public static final String BAT = "Bat";
+    public static final String DRAGON_FLY = "DragonFly";
 
     private final ObjectMap<String, EntityPool> pools;
 
     public EnemyFactory(MegamanGame game) {
         pools = new ObjectMap<>() {{
-             put(BAT, new EntityPool(10, () -> new Bat(game)));
+             put(BAT, new EntityPool(5, () -> new Bat(game)));
+             put(DRAGON_FLY, new EntityPool(5, () -> new DragonFly(game)));
         }};
     }
 

@@ -15,6 +15,7 @@ public enum FixtureType {
     SHIELD,
     BOUNCER,
     SCANNER,
+    CUSTOM,
     DEATH,
     DAMAGER,
     DAMAGEABLE,

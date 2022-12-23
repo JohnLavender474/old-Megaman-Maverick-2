@@ -17,6 +17,9 @@ public class Body implements Updatable {
     public BodyType bodyType;
     public Array<Fixture> fixtures;
 
+    public Updatable preProcess;
+    public Updatable postProcess;
+
     public Vector2 gravity;
     public Vector2 velocity;
     public Vector2 friction;
