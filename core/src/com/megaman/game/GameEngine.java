@@ -18,7 +18,7 @@ import java.util.Queue;
 
 public class GameEngine implements Updatable, Resettable {
 
-    private static final Logger logger = new Logger(GameEngine.class, MegamanGame.DEBUG);
+    private static final Logger logger = new Logger(GameEngine.class, MegamanGame.DEBUG && false);
 
     private final OrderedMap<Class<? extends System>, System> systems = new OrderedMap<>();
 

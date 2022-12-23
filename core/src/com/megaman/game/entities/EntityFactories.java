@@ -3,6 +3,7 @@ package com.megaman.game.entities;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.blocks.BlockFactory;
 import com.megaman.game.entities.decorations.DecorationFactory;
+import com.megaman.game.entities.enemies.EnemyFactory;
 import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.hazards.HazardFactory;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
@@ -19,6 +20,7 @@ public class EntityFactories {
 
     public EntityFactories(MegamanGame game) {
         factories = new EnumMap<>(EntityType.class) {{
+            put(EntityType.ENEMY, new EnemyFactory(game));
             put(EntityType.BLOCK, new BlockFactory(game));
             put(EntityType.SENSOR, new SensorFactory(game));
             put(EntityType.HAZARD, new HazardFactory(game));
@@ -31,7 +33,7 @@ public class EntityFactories {
 
     public Entity fetch(EntityType entityType, String key) {
         if (entityType == EntityType.MEGAMAN) {
-            throw new IllegalStateException("Megaman should not be fetched via a factory");
+            throw new IllegalStateException("Megaman should not be fetched via factory");
         }
         return factories.get(entityType).fetch(key);
     }

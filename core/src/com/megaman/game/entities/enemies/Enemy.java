@@ -10,42 +10,42 @@ import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.BodyComponent;
+import com.megaman.game.world.BodySense;
 import com.megaman.game.world.BodyType;
 
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class Enemy extends Entity implements Damager, Damageable, Updatable {
+public abstract class Enemy extends Entity implements Damager, Damageable {
 
+    protected final Body body;
     protected final Timer dmgTimer;
     protected final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs;
 
-    protected final Body body = new Body(BodyType.DYNAMIC);
-
-    public Enemy(MegamanGame game, float damageDuration) {
-        this(game, damageDuration, CullOutOfBoundsComponent.DEFAULT_CULL_DUR);
+    public Enemy(MegamanGame game, float damageDuration, BodyType bodyType) {
+        this(game, damageDuration, CullOutOfBoundsComponent.DEFAULT_CULL_DUR, bodyType);
     }
 
-    public Enemy(MegamanGame game, float dmgDur, float cullDur) {
+    public Enemy(MegamanGame game, float dmgDur, float cullDur, BodyType bodyType) {
         super(game, EntityType.ENEMY);
-        this.dmgTimer = new Timer(dmgDur, true);
-        this.dmgNegs = defineDamageNegotiations();
+        body = new Body(bodyType);
+        dmgTimer = new Timer(dmgDur, true);
+        dmgNegs = defineDamageNegotiations();
         defineBody(body);
         putComponent(new BodyComponent(body));
-        UpdatableComponent uc = new UpdatableComponent();
-        defineUpdateComponent(uc);
-        putComponent(uc);
-        CullOnEventComponent coec = new CullOnEventComponent();
-        defineCullOnEventComponent(coec);
-        putComponent(coec);
-        putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
+        UpdatableComponent u = new UpdatableComponent();
+        defineUpdateComponent(u);
+        putComponent(u);
+        CullOnEventComponent c = new CullOnEventComponent();
+        defineCullOnEventComponent(c);
+        putComponent(c);
         putComponent(new SoundComponent());
         putComponent(new HealthComponent(this::disintegrate));
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
     }
 
     protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations();
@@ -84,6 +84,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable, Updat
         dmgNeg.runOnDamage();
         getComponent(HealthComponent.class).translateHealth(-dmgNeg.getDamage(damager));
         getComponent(SoundComponent.class).request(SoundAsset.ENEMY_DAMAGE_SOUND);
+    }
+
+    public boolean is(BodySense sense) {
+        return body.is(sense);
     }
 
     protected void disintegrate() {

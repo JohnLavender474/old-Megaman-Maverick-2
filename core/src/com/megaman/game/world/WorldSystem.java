@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
+import lombok.Setter;
 
 import java.util.*;
 
@@ -48,9 +49,11 @@ public class WorldSystem extends System {
 
     private OrderedSet<Contact> priorContacts;
     private OrderedSet<Contact> currContacts;
-    private WorldGraph worldGraph;
     private float accumulator;
     private int currCycle;
+
+    @Setter
+    private WorldGraph worldGraph;
 
     public WorldSystem(WorldContactListener listener) {
         super(BodyComponent.class);
@@ -59,12 +62,9 @@ public class WorldSystem extends System {
         this.currContacts = new OrderedSet<>();
     }
 
-    public void setWorldSize(int worldWidth, int worldHeight) {
-        worldGraph = new WorldGraph(worldWidth, worldHeight);
-    }
-
     @Override
     protected void preProcess(float delta) {
+        worldGraph.reset();
         while (!entitiesToAddQueue.isEmpty()) {
             entities.add(entitiesToAddQueue.poll());
         }
@@ -116,6 +116,7 @@ public class WorldSystem extends System {
         }
         priorContacts = currContacts;
         currContacts = new OrderedSet<>();
+        postProcess(delta);
         updating = false;
     }
 
@@ -128,8 +129,23 @@ public class WorldSystem extends System {
         }
     }
 
+    @Override
+    protected void postProcess(float delta) {
+        for (Entity e : entities) {
+            BodyComponent c = e.getComponent(BodyComponent.class);
+            // worldGraph.addBody(c.body);
+            for (Fixture f : c.body.fixtures) {
+                worldGraph.addFixture(f);
+            }
+        }
+    }
+
     private void updateBody(Body body, float delta) {
         body.update(delta);
+        addToGraph(body);
+    }
+
+    private void addToGraph(Body body) {
         worldGraph.addBody(body);
         for (Fixture f : body.fixtures) {
             if (!f.active) {

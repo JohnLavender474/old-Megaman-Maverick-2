@@ -10,8 +10,9 @@ import com.megaman.game.utils.interfaces.Resettable;
 
 public class WorldGraph implements Resettable {
 
-    private final int width;
-    private final int height;
+    public final int width;
+    public final int height;
+
     private final OrderedMap<WorldCoordinate, Array<Body>> bodies;
     private final OrderedMap<WorldCoordinate, Array<Fixture>> fixtures;
 
@@ -33,6 +34,14 @@ public class WorldGraph implements Resettable {
                 Integer.min(width, maxX),
                 Integer.min(height, maxY)
         };
+    }
+
+    public Array<Fixture> getFixtures(int x, int y) {
+        return fixtures.get(new WorldCoordinate(x, y), new Array<>());
+    }
+
+    public Array<Body> getBodies(int x, int y) {
+        return bodies.get(new WorldCoordinate(x, y), new Array<>());
     }
 
     public void addBody(Body body) {

@@ -1,5 +1,6 @@
 package com.megaman.game.pathfinding;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
 import com.megaman.game.System;
@@ -17,8 +18,8 @@ import java.util.concurrent.Future;
 public class PathfindingSystem extends System implements Disposable {
 
     private final ExecutorService execServ = Executors.newCachedThreadPool();
-    private final List<PathfindingComponent> pcs = new ArrayList<>();
-    private final List<Pathfinder> pfs = new ArrayList<>();
+    private final List<PathfindingComponent> pCompList = new ArrayList<>();
+    private final List<Pathfinder> pfinderList = new ArrayList<>();
 
     @Setter
     private WorldGraph worldGraph;
@@ -29,41 +30,40 @@ public class PathfindingSystem extends System implements Disposable {
 
     @Override
     protected void preProcess(float delta) {
-        pcs.clear();
-        pfs.clear();
+        pCompList.clear();
+        pfinderList.clear();
     }
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        PathfindingComponent pc = e.getComponent(PathfindingComponent.class);
-        LinkedList<Vector2> path = pc.currPath;
-        if (path != null) {
-            while (!path.isEmpty() && pc.isPointReached(path.getFirst())) {
+        PathfindingComponent c = e.getComponent(PathfindingComponent.class);
+        PathfindParams params = c.params;
+        LinkedList<Rectangle> path = c.currentPath;
+        if (path == null) {
+            c.currentTrajectory = Vector2.Zero;
+        } else {
+            while (!path.isEmpty() && params.isTargetReached(path.getFirst())) {
                 path.poll();
             }
             if (path.peek() != null) {
-                pc.consume(path.getFirst());
+                c.currentTrajectory = params.apply(path.getFirst());
             }
         }
-        pc.refreshTimer.update(delta);
-        if (pc.refreshTimer.isFinished()) {
-            pc.refreshTimer.reset();
-            pcs.add(pc);
-            pfs.add(new Pathfinder(worldGraph, pc));
+        params.refreshTimer.update(delta);
+        if (params.refreshTimer.isFinished()) {
+            params.refreshTimer.reset();
+            pCompList.add(c);
+            pfinderList.add(new Pathfinder(worldGraph, params));
         }
     }
 
     @Override
     protected void postProcess(float delta) {
         try {
-            List<Future<LinkedList<Vector2>>> res = execServ.invokeAll(pfs);
+            List<Future<LinkedList<Rectangle>>> res = execServ.invokeAll(pfinderList);
             for (int i = 0; i < res.size(); i++) {
-                PathfindingComponent pc = pcs.get(i);
-                LinkedList<Vector2> pfRes = res.get(i).get();
-                if (pfRes == null && pc.persistOldPath) {
-                    continue;
-                }
-                pc.currPath = pfRes;
+                PathfindingComponent c = pCompList.get(i);
+                c.currentPath = res.get(i).get();
             }
         } catch (Exception ignore) {
         }

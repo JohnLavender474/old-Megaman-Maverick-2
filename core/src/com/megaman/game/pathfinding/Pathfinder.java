@@ -1,100 +1,159 @@
 package com.megaman.game.pathfinding;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectSet;
-import com.megaman.game.world.WorldVals;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.world.WorldGraph;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import com.megaman.game.world.WorldVals;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
 
-@RequiredArgsConstructor
-public class Pathfinder implements Callable<LinkedList<Vector2>> {
+public class Pathfinder implements Callable<LinkedList<Rectangle>> {
 
-    private final WorldGraph graph;
-    private final PathfindingComponent pc;
+    private static final Logger logger = new Logger(Pathfinder.class, MegamanGame.DEBUG && false);
 
-    @Override
-    public LinkedList<Vector2> call() {
-        /*
-        LinkedList<Vector2> path = new LinkedList<>();
-        // get start node
-        WorldNode sNode = graph.getNode(pc.getStart());
-        if (sNode == null) {
-            return path;
-        }
-        // get target node
-        WorldNode tNode = graph.getNode(pc.getTarget());
-        if (tNode == null) {
-            return path;
-        }
-        // node handles, open and closed
-        NodeHandle[][] nodeHandles = new NodeHandle[graph.width][graph.height];
-        ObjectSet<WorldNode> closed = new ObjectSet<>();
-        PriorityQueue<NodeHandle> open = new PriorityQueue<>();
-        open.add(new NodeHandle(sNode, 0, null));
-        // while there are open nodes
-        while (!open.isEmpty()) {
-            NodeHandle currNHandle = open.poll();
-            closed.add(currNHandle.node);
-            if (currNHandle.node.equals(tNode)) {
-                while (currNHandle != null) {
-                    path.addFirst(currNHandle.node.getPosition().cpy().scl(WorldVals.PPM));
-                    currNHandle = currNHandle.pred;
-                }
-                break;
-            }
-            Array<WorldNode> neighbors = graph.getNeighbors(currNHandle.node, pc.allowDiagonal);
-            for (WorldNode neighbor : neighbors) {
-                if (closed.contains(neighbor) || pc.isReject(neighbor)) {
-                    continue;
-                }
-                int totalDist = currNHandle.dist + (int) currNHandle.node.getPosition().dst(neighbor.getPosition());
-                NodeHandle neighborNHandle = nodeHandles[neighbor.x][neighbor.y];
-                if (neighborNHandle == null) {
-                    neighborNHandle = new NodeHandle(neighbor, totalDist, currNHandle);
-                    nodeHandles[neighbor.x][neighbor.y] = neighborNHandle;
-                    open.add(neighborNHandle);
-                } else if (totalDist < neighborNHandle.dist) {
-                    neighborNHandle.dist = totalDist;
-                    neighborNHandle.pred = currNHandle;
-                    open.remove(neighborNHandle);
-                    open.add(neighborNHandle);
-                }
-            }
-        }
-        return path;
-         */
-        return new LinkedList<>();
+    private Node[][] nodes;
+    private WorldGraph graph;
+    private PathfindParams params;
+
+    public Pathfinder(WorldGraph graph, PathfindParams params) {
+        this.graph = graph;
+        this.params = params;
+        this.nodes = new Node[graph.width][graph.height];
     }
 
-    /*
-    @AllArgsConstructor
-    private static final class NodeHandle implements Comparable<NodeHandle> {
+    @Override
+    public LinkedList<Rectangle> call() {
+        int[] targetCoords = toGraphCoords(params.getTarget());
+        int[] startCoords = toGraphCoords(params.getStart());
+        Node startNode = nodes[startCoords[0]][startCoords[1]] = new Node(startCoords[0], startCoords[1]);
+        PriorityQueue<Node> open = new PriorityQueue<>();
+        open.add(startNode);
+        while (!open.isEmpty()) {
+            Node curr = open.poll();
+            curr.disc = true;
+            if (curr.x == targetCoords[0] && curr.y == targetCoords[1]) {
+                LinkedList<Rectangle> path = new LinkedList<>();
+                while (curr != null) {
+                    path.addFirst(curr.worldBounds);
+                    curr = curr.prev;
+                }
+                logger.log("Path: " + path);
+                return path;
+            }
+            for (int x = curr.x - 1; x <= curr.x + 1; x++) {
+                for (int y = curr.y - 1; y <= curr.y + 1; y++) {
+                    if (isOutOfBounds(x, y)) {
+                        continue;
+                    }
+                    if (!params.allowDiagonal) {
+                        if (x == curr.x - 1 || x == curr.x + 1) {
+                            if (y == curr.y - 1 || y == curr.y + 1) {
+                                continue;
+                            }
+                        }
+                    }
+                    Node neighbor = nodes[x][y];
+                    if (params.reject(graph.getFixtures(x, y))) {
+                        continue;
+                    }
+                    if (neighbor != null && neighbor.disc) {
+                        continue;
+                    }
+                    // int totalDist = curr.dist + dist(curr.x, curr.y, x, y);
+                    int totalDist = curr.dist + cost(curr.x, curr.y, x, y);
+                    if (neighbor == null) {
+                        neighbor = nodes[x][y] = new Node(x, y);
+                        neighbor.dist = totalDist;
+                        neighbor.prev = curr;
+                        open.add(neighbor);
+                    } else if (totalDist < neighbor.dist) {
+                        neighbor.dist = totalDist;
+                        neighbor.prev = curr;
+                        open.remove(neighbor);
+                        open.add(neighbor);
+                    }
+                }
+            }
+        }
+        logger.log("Return null");
+        return null;
+    }
 
-        private WorldNode node;
-        private Integer dist;
-        private NodeHandle pred;
+    private int[] toGraphCoords(Vector2 pos) {
+        int x = (int) (pos.x / WorldVals.PPM);
+        int y = (int) (pos.y / WorldVals.PPM);
+        if (x < 0) {
+            x = 0;
+        } else if (x >= nodes.length) {
+            x = nodes.length - 1;
+        }
+        if (y < 0) {
+            y = 0;
+        } else if (y >= nodes[0].length) {
+            y = nodes[0].length - 1;
+        }
+        return new int[]{x, y};
+    }
+
+    private boolean isOutOfBounds(int x, int y) {
+        return x < 0 || x >= nodes.length || y < 0 || y >= nodes[0].length;
+    }
+
+    private int dist(int x1, int y1, int x2, int y2) {
+        int xd = x2 - x1;
+        int yd = y2 - y1;
+        return xd * xd + yd * yd;
+    }
+
+    public int cost(int x1, int y1, int x2, int y2) {
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+    }
+
+    private static final class Node implements Comparable<Node> {
+
+        private final int x;
+        private final int y;
+        private final Rectangle worldBounds;
+
+        private int dist;
+        private Node prev;
+        private boolean disc;
+
+        private Node(int x, int y) {
+            this.x = x;
+            this.y = y;
+            worldBounds = new Rectangle()
+                    .setPosition(x * WorldVals.PPM, y * WorldVals.PPM)
+                    .setSize(WorldVals.PPM);
+        }
 
         @Override
-        public int compareTo(NodeHandle o) {
-            return dist.compareTo(o.dist);
+        public int compareTo(Node o) {
+            return Integer.compare(dist, o.dist);
         }
 
         @Override
         public int hashCode() {
-            return node.hashCode();
+            int hash = 49;
+            hash += 7 * x;
+            hash += 7 * y;
+            return hash;
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof NodeHandle nHandle && node.equals(nHandle.node);
+            return o instanceof Node n && x == n.x && y == n.y;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + x + ", " + y + "]: " + worldBounds;
         }
 
     }
-     */
 
 }

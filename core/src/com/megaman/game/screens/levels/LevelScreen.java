@@ -36,6 +36,7 @@ import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
+import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.levels.camera.LevelCamManager;
 import com.megaman.game.screens.levels.map.LevelMapLayer;
 import com.megaman.game.screens.levels.map.LevelMapManager;
@@ -55,6 +56,7 @@ import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
+import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
 
@@ -141,7 +143,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         // set level map, get layer objs
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
         // set world system
-        engine.getSystem(WorldSystem.class).setWorldSize(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
+        WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
+        engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
+        engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
         // set game rooms
         Array<RectangleMapObject> gameRoomsObjs = m.get(LevelMapLayer.GAME_ROOMS);
         levelCamMan.set(gameRoomsObjs, game.getMegaman());
