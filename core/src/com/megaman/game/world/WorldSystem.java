@@ -41,6 +41,9 @@ public class WorldSystem extends System {
     }};
 
     private static boolean filter(Fixture f1, Fixture f2) {
+        if (f1.entity.equals(f2.entity)) {
+            return false;
+        }
         return (masks.containsKey(f1.fixtureType) && masks.get(f1.fixtureType).contains(f2.fixtureType)) ||
                 (masks.containsKey(f2.fixtureType) && masks.get(f2.fixtureType).contains(f1.fixtureType));
     }

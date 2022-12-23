@@ -57,6 +57,14 @@ public class Body implements Updatable {
         return Intersector.intersectRectangles(b1.bounds, b2.bounds, overlap);
     }
 
+    public boolean isRightOf(Body body) {
+        return getCenter().x > body.getCenter().x;
+    }
+
+    public boolean isAbove(Body body) {
+        return getCenter().y > body.getCenter().y;
+    }
+
     public boolean is(BodySense sense) {
         return senses[sense.ordinal()];
     }

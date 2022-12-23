@@ -23,6 +23,8 @@ import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
 import com.megaman.game.world.WorldVals;
 
+import java.util.function.Function;
+
 public class ConveyorBelt extends Block {
 
     private static final float FORCE_AMOUNT = .75f;
@@ -71,7 +73,8 @@ public class ConveyorBelt extends Block {
         if (left) {
             force.x *= -1f;
         }
-        forceFixture.putUserData(ConstKeys.VAL, force);
+        Function<Fixture, Vector2> forceFunc = f -> force;
+        forceFixture.putUserData(ConstKeys.FUNCTION, forceFunc);
         Array<SpriteHandle> handles = new Array<>();
         Array<Animator> animators = new Array<>();
         int numParts = (int) (bounds.width / WorldVals.PPM);

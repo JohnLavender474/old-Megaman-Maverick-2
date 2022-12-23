@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
@@ -96,7 +97,8 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Sound splashSound = game.getAssMan().getSound(SoundAsset.SPLASH_SOUND);
             game.getAudioMan().playSound(splashSound, false);
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
-            Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
+            Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(contact.mask.getFirst());
             contact.mask1stBody().velocity.add(force);
         } else if (contact.acceptMask(FixtureType.PROJECTILE, w,
                 FixtureType.BLOCK,
@@ -155,7 +157,8 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 megaman.body.velocity.set(0f, -12.5f);
             }
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
-            Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
+            Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(contact.mask.getFirst());
             contact.mask1stBody().velocity.add(force);
         } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK) &&
                 !contact.mask1stEntity().equals(contact.mask2ndEntity())) {
