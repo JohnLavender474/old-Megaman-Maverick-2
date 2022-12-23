@@ -167,14 +167,13 @@ public class Bat extends Enemy {
         return new PathfindingComponent(new PathfindParams(
                 this, body, () -> ShapeUtils.getTopCenterPoint(game.getMegaman().body.bounds),
                 f -> f.fixtureType == FixtureType.BLOCK ||
-                        (f.fixtureType == FixtureType.BODY && f.entity.entityType == EntityType.ENEMY),
-                r -> body.bounds.overlaps(r),
-                FLY_TO_ATTACK_SPEED, false));
+                        (f.fixtureType == FixtureType.BODY && f.entity instanceof Bat),
+                r -> body.bounds.overlaps(r), FLY_TO_ATTACK_SPEED, false));
     }
 
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
-        SpriteHandle h = new SpriteHandle(sprite);
+        SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);
     }

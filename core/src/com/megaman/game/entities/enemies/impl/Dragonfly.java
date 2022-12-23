@@ -1,4 +1,4 @@
-package com.megaman.game.entities.enemies;
+package com.megaman.game.entities.enemies.impl;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,6 +13,7 @@ import com.megaman.game.entities.DamageNegotiation;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
+import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
@@ -26,9 +27,9 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DragonFly extends Enemy implements Faceable {
+public class Dragonfly extends Enemy implements Faceable {
 
-    public enum DragonFlyBehavior {
+    public enum DragonflyBehavior {
         MOVE_UP,
         MOVE_DOWN,
         MOVE_HORIZONTAL
@@ -46,14 +47,14 @@ public class DragonFly extends Enemy implements Faceable {
     private final Timer changeBehavTimer;
 
     private boolean toLeftBounds;
-    private DragonFlyBehavior currBehavior;
-    private DragonFlyBehavior prevBehavior;
+    private DragonflyBehavior currBehavior;
+    private DragonflyBehavior prevBehavior;
 
     @Getter
     @Setter
     private Facing facing;
 
-    public DragonFly(MegamanGame game) {
+    public Dragonfly(MegamanGame game) {
         super(game, BodyType.ABSTRACT);
         if (dragonFlyReg == null) {
             dragonFlyReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "Dragonfly");
@@ -68,7 +69,7 @@ public class DragonFly extends Enemy implements Faceable {
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         Vector2 center = ShapeUtils.getCenterPoint(bounds);
         body.bounds.setCenter(center);
-        currBehavior = prevBehavior = DragonFlyBehavior.MOVE_UP;
+        currBehavior = prevBehavior = DragonflyBehavior.MOVE_UP;
         changeBehavTimer.reset();
     }
 
@@ -131,22 +132,22 @@ public class DragonFly extends Enemy implements Faceable {
             switch (currBehavior) {
                 case MOVE_UP -> {
                     if (!UtilMethods.isInCamBounds(game.getGameCam(), (Rectangle) oobScanner.shape)) {
-                        changeBehavior(DragonFlyBehavior.MOVE_HORIZONTAL);
+                        changeBehavior(DragonflyBehavior.MOVE_HORIZONTAL);
                         toLeftBounds = isMegamanLeft();
                     }
                 }
                 case MOVE_HORIZONTAL -> {
                     boolean doChange = (toLeftBounds && !isMegamanLeft()) || (!toLeftBounds && isMegamanLeft());
                     if (doChange && !UtilMethods.isInCamBounds(game.getGameCam(), (Rectangle) oobScanner.shape)) {
-                        changeBehavior(prevBehavior == DragonFlyBehavior.MOVE_UP ?
-                                DragonFlyBehavior.MOVE_DOWN : DragonFlyBehavior.MOVE_UP);
+                        changeBehavior(prevBehavior == DragonflyBehavior.MOVE_UP ?
+                                DragonflyBehavior.MOVE_DOWN : DragonflyBehavior.MOVE_UP);
                     }
                 }
                 case MOVE_DOWN -> {
                     if (megamanScanner.shape.contains(getMegamanCenter()) ||
                             (!isMegamanBelow() && !UtilMethods.isInCamBounds(
                                     game.getGameCam(), (Rectangle) oobScanner.shape))) {
-                        changeBehavior(DragonFlyBehavior.MOVE_HORIZONTAL);
+                        changeBehavior(DragonflyBehavior.MOVE_HORIZONTAL);
                         toLeftBounds = isMegamanLeft();
                     }
                 }
@@ -156,10 +157,10 @@ public class DragonFly extends Enemy implements Faceable {
 
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
-        SpriteHandle h = new SpriteHandle(sprite, 2);
+        SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> {
             h.setPosition(body.bounds, Position.CENTER);
-            if (currBehavior == DragonFlyBehavior.MOVE_UP || currBehavior == DragonFlyBehavior.MOVE_DOWN) {
+            if (currBehavior == DragonflyBehavior.MOVE_UP || currBehavior == DragonflyBehavior.MOVE_DOWN) {
                 setFacing(isMegamanLeft() ? Facing.LEFT : Facing.RIGHT);
             }
             sprite.setFlip(is(Facing.LEFT), false);
@@ -171,7 +172,7 @@ public class DragonFly extends Enemy implements Faceable {
         return new AnimationComponent(sprite, new Animation(dragonFlyReg, 2, .1f));
     }
 
-    private void changeBehavior(DragonFlyBehavior behavior) {
+    private void changeBehavior(DragonflyBehavior behavior) {
         changeBehavTimer.reset();
         prevBehavior = currBehavior;
         currBehavior = behavior;
