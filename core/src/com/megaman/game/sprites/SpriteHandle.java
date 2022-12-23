@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Positional;
@@ -77,6 +77,16 @@ public class SpriteHandle implements Drawable, Positional, Updatable, Comparable
             }
             case TOP_RIGHT -> sprite.setPosition(p.x - sprite.getWidth(), p.y - sprite.getHeight());
         }
+    }
+
+    public void setPosition(Vector2 p, Position pos, float xOffset, float yOffset) {
+        setPosition(p, pos);
+        sprite.translate(xOffset, yOffset);
+    }
+
+    public void setPosition(Rectangle bounds, Position pos, float xOffset, float yOffset) {
+        setPosition(bounds, pos);
+        sprite.translate(xOffset, yOffset);
     }
 
     @Override

@@ -10,7 +10,7 @@ public class Logger {
 
     public void log(String s) {
         if (logging) {
-            System.out.println(aClass.getSimpleName().toUpperCase() + ": " + s);
+            System.out.println("[" + aClass.getSimpleName() + "] : " + s);
         }
     }
 

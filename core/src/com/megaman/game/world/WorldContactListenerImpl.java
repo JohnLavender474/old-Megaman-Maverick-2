@@ -1,6 +1,8 @@
 package com.megaman.game.world;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.math.Polyline;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
@@ -8,26 +10,37 @@ import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.Damager;
-import com.megaman.game.entities.decorations.Splash;
+import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.objs.Wrapper;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
+
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
 
-    private static final Logger logger = new Logger(WorldContactListener.class, true);
+    private static final Logger logger = new Logger(WorldContactListener.class, MegamanGame.DEBUG);
 
     private final MegamanGame game;
 
+    // TODO: Death and Body contact
+
     @Override
+    @SuppressWarnings("unchecked")
     public void beginContact(Contact contact, float delta) {
         Wrapper<FixtureType> w = Wrapper.empty();
-        if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
+        if (contact.acceptMask(FixtureType.SCANNER, false)) {
+            Consumer<Fixture> c = (Consumer<Fixture>) contact.mask1stData(ConstKeys.CONSUMER);
+            c.accept(contact.mask.getSecond());
+        } else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
             Damager dmgr = (Damager) contact.mask1stEntity();
             Damageable dmgbl = (Damageable) contact.mask2ndEntity();
             if (dmgr.canDamage(dmgbl) && dmgbl.canBeDamagedBy(dmgr)) {
@@ -102,8 +115,12 @@ public class WorldContactListenerImpl implements WorldContactListener {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void continueContact(Contact contact, float delta) {
-        if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
+        if (contact.acceptMask(FixtureType.SCANNER, false)) {
+            Consumer<Fixture> c = (Consumer<Fixture>) contact.mask1stData(ConstKeys.CONSUMER);
+            c.accept(contact.mask.getSecond());
+        } else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
             Damager dmgr = (Damager) contact.mask1stEntity();
             Damageable dmgbl = (Damageable) contact.mask2ndEntity();
             if (dmgr.canDamage(dmgbl) && dmgbl.canBeDamagedBy(dmgr)) {
@@ -140,8 +157,17 @@ public class WorldContactListenerImpl implements WorldContactListener {
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Vector2 force = contact.mask2ndData(ConstKeys.VAL, Vector2.class);
             contact.mask1stBody().velocity.add(force);
-        } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK)) {
-
+        } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK) &&
+                !contact.mask1stEntity().equals(contact.mask2ndEntity())) {
+            Fixture first = contact.mask.getFirst();
+            Fixture second = contact.mask.getSecond();
+            Collection<Vector2> contactPoints = first.getUserData(ConstKeys.COLLECTION, Collection.class);
+            Collection<Vector2> temp = new ArrayList<>();
+            if (ShapeUtils.intersectLineRect(
+                    (Polyline) first.shape,
+                    (Rectangle) second.shape, temp)) {
+                contactPoints.addAll(temp);
+            }
         }
     }
 

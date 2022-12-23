@@ -13,6 +13,7 @@ public class WorldSystem extends System {
     private static final int PROCESS_CYCLES = 2;
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
+        put(FixtureType.SCANNER, EnumSet.allOf(FixtureType.class));
         put(FixtureType.DAMAGER, EnumSet.of(
                 FixtureType.DAMAGEABLE));
         put(FixtureType.BODY, EnumSet.of(

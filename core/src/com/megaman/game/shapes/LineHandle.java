@@ -3,6 +3,7 @@ package com.megaman.game.shapes;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,18 +22,16 @@ import static com.badlogic.gdx.math.Vector2.Y;
 @AllArgsConstructor
 public class LineHandle implements RenderableShape {
 
-    private Supplier<Pair<Vector2>> lineSupplier = () -> Pair.of(X, Y);
-    private Supplier<ShapeType> shapeTypeSupplier = () -> ShapeType.Line;
-    private Supplier<Boolean> doRenderSupplier = () -> true;
-    private Supplier<Float> thicknessSupplier = () -> 1f;
-    private Supplier<Color> colorSupplier = () -> Color.BLACK;
+    public Updatable updatable;
+    public Supplier<Pair<Vector2>> lineSupplier = () -> Pair.of(X, Y);
+    public Supplier<ShapeType> shapeTypeSupplier = () -> ShapeType.Line;
+    public Supplier<Boolean> doRenderSupplier = () -> true;
+    public Supplier<Float> thicknessSupplier = () -> 1f;
+    public Supplier<Integer> prioritySupplier = () -> 0;
+    public Supplier<Color> colorSupplier = () -> Color.BLACK;
 
     public Pair<Vector2> getLine() {
         return lineSupplier.get();
-    }
-
-    public ShapeType getShapeType() {
-        return shapeTypeSupplier.get();
     }
 
     public Color getColor() {
@@ -48,11 +47,21 @@ public class LineHandle implements RenderableShape {
     }
 
     @Override
+    public ShapeType getShapeType() {
+        return shapeTypeSupplier.get();
+    }
+
+    @Override
+    public int getPriority() {
+        return prioritySupplier.get();
+    }
+
+    @Override
     public void render(ShapeRenderer renderer) {
+        renderer.set(getShapeType());
         renderer.setColor(getColor());
         Pair<Vector2> line = getLine();
-        float thickness = getThickness();
-        renderer.rectLine(line.getFirst(), line.getSecond(), thickness);
+        renderer.rectLine(line.getFirst(), line.getSecond(), getThickness());
     }
 
 }

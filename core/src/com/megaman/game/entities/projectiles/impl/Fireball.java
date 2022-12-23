@@ -3,6 +3,7 @@ package com.megaman.game.entities.projectiles.impl;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -17,12 +18,13 @@ import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.decorations.DecorationFactory;
-import com.megaman.game.entities.decorations.SmokePuff;
+import com.megaman.game.entities.decorations.impl.SmokePuff;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
@@ -39,7 +41,7 @@ import java.util.PriorityQueue;
 
 public class Fireball extends Projectile {
 
-    private static final Logger logger = new Logger(Fireball.class, false);
+    private static final Logger logger = new Logger(Fireball.class, MegamanGame.DEBUG);
 
     private static final float ROTATION = 1000f;
     private static final float CULL_DUR = 1f;
@@ -108,16 +110,23 @@ public class Fireball extends Projectile {
         dead = true;
         SmokePuff puff = (SmokePuff) game.getEntityFactories()
                 .fetch(EntityType.DECORATION, DecorationFactory.SMOKE_PUFF);
-        Vector2 pos = new Vector2(
-                body.getCenter().x,
-                waterFixture.bounds.y + waterFixture.bounds.height);
+        Rectangle r = ShapeUtils.getBoundingRect(waterFixture.shape);
+        Vector2 pos = new Vector2(body.getCenter().x, r.y + r.height);
         game.getGameEngine().spawnEntity(puff, pos);
         Sound steamSound = game.getAssMan().getSound(SoundAsset.WHOOSH_SOUND);
         game.getAudioMan().playSound(steamSound, false);
     }
 
     private void hitBlockOrShield(Fixture fixture) {
-        Fixture f = getFixtureWithMostOverlap(fixture.bounds);
+        Rectangle bounds;
+        if (fixture.shape instanceof Rectangle r) {
+            bounds = r;
+        } else if (fixture.shape instanceof Circle c) {
+            bounds = new Rectangle().setSize(c.radius * 2f).setCenter(c.x, c.y);
+        } else {
+            return;
+        }
+        Fixture f = getFixtureWithMostOverlap(bounds);
         if (f.equals(leftFixture)) {
             xVel = X_VEL * WorldVals.PPM;
         } else if (f.equals(rightFixture)) {
@@ -141,9 +150,9 @@ public class Fireball extends Projectile {
     private Fixture getFixtureWithMostOverlap(Rectangle bounds) {
         PriorityQueue<Fixture> p = new PriorityQueue<>((f1, f2) -> {
             Rectangle o1 = new Rectangle();
-            Intersector.intersectRectangles(f1.bounds, bounds, o1);
+            Intersector.intersectRectangles((Rectangle) f1.shape, bounds, o1);
             Rectangle o2 = new Rectangle();
-            Intersector.intersectRectangles(f2.bounds, bounds, o2);
+            Intersector.intersectRectangles((Rectangle) f2.shape, bounds, o2);
             return Float.compare(o2.area(), o1.area());
         });
         p.add(leftFixture);
@@ -158,35 +167,37 @@ public class Fireball extends Projectile {
         putComponent(s);
         body.gravity.y = -.5f * WorldVals.PPM;
         body.bounds.setSize(.9f * WorldVals.PPM, .9f * WorldVals.PPM);
-        Fixture headFixture = new Fixture(this, FixtureType.HEAD);
-        headFixture.bounds.setSize(WorldVals.PPM / 2f, WorldVals.PPM / 32f);
+        Fixture headFixture = new Fixture(this, FixtureType.HEAD,
+                new Rectangle().setSize(WorldVals.PPM / 2f, WorldVals.PPM / 32f));
         headFixture.offset.y = WorldVals.PPM / 2f;
         body.fixtures.add(headFixture);
         this.headFixture = headFixture;
-        s.shapeHandles.add(new ShapeHandle(headFixture.bounds, Color.BLUE));
-        Fixture feetFixture = new Fixture(this, FixtureType.FEET);
-        feetFixture.bounds.setSize(WorldVals.PPM / 2f, WorldVals.PPM / 32f);
+        s.shapeHandles.add(new ShapeHandle(headFixture.shape, Color.BLUE));
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET,
+                new Rectangle().setSize(WorldVals.PPM / 2f, WorldVals.PPM / 32f));
         feetFixture.offset.y = -WorldVals.PPM / 2f;
         body.fixtures.add(feetFixture);
         this.feetFixture = feetFixture;
-        s.shapeHandles.add(new ShapeHandle(feetFixture.bounds, Color.BLUE));
-        Fixture leftFixture = new Fixture(this, FixtureType.SIDE);
-        leftFixture.bounds.setSize(WorldVals.PPM / 32f, WorldVals.PPM);
+        s.shapeHandles.add(new ShapeHandle(feetFixture.shape, Color.BLUE));
+        Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         leftFixture.offset.x = -WorldVals.PPM / 2f;
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.fixtures.add(leftFixture);
         this.leftFixture = leftFixture;
-        s.shapeHandles.add(new ShapeHandle(leftFixture.bounds, Color.BLUE));
-        Fixture rightFixture = new Fixture(this, FixtureType.SIDE);
-        rightFixture.bounds.setSize(WorldVals.PPM / 32f, WorldVals.PPM);
+        s.shapeHandles.add(new ShapeHandle(leftFixture.shape, Color.BLUE));
+        Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         rightFixture.offset.x = WorldVals.PPM / 2f;
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         body.fixtures.add(rightFixture);
         this.rightFixture = rightFixture;
-        s.shapeHandles.add(new ShapeHandle(rightFixture.bounds, Color.BLUE));
-        Fixture projFixture = new Fixture(this, FixtureType.PROJECTILE, .9f * WorldVals.PPM);
+        s.shapeHandles.add(new ShapeHandle(rightFixture.shape, Color.BLUE));
+        Fixture projFixture = new Fixture(this, FixtureType.PROJECTILE,
+                new Rectangle().setSize(.9f * WorldVals.PPM));
         body.fixtures.add(projFixture);
-        Fixture dmgrFixture = new Fixture(this, FixtureType.DAMAGER, .9f * WorldVals.PPM);
+        Fixture dmgrFixture = new Fixture(this, FixtureType.DAMAGER,
+                new Rectangle().setSize(.9f * WorldVals.PPM));
         body.fixtures.add(dmgrFixture);
     }
 

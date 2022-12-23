@@ -1,28 +1,18 @@
 package com.megaman.game.shapes;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.utils.interfaces.Updatable;
 import lombok.Setter;
 
-import java.util.Map;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class ShapeSystem extends System {
 
     @Setter
-    private Map<ShapeRenderer.ShapeType, Queue<RenderableShape>> shapeRenderQs;
+    private PriorityQueue<RenderableShape> gameShapesQ;
 
     public ShapeSystem() {
         super(ShapeComponent.class);
-    }
-
-    @Override
-    protected void preProcess(float delta) {
-        if (shapeRenderQs == null) {
-            throw new IllegalStateException("Must first set render shape queue");
-        }
     }
 
     @Override
@@ -32,15 +22,10 @@ public class ShapeSystem extends System {
             if (!h.doRender()) {
                 continue;
             }
-            Updatable u = h.updatable;
-            if (u != null) {
-                u.update(delta);
+            if (h.updatable != null) {
+                h.updatable.update(delta);
             }
-            Queue<RenderableShape> q = shapeRenderQs.get(h.getShapeType());
-            if (q == null) {
-                continue;
-            }
-            q.add(h);
+            gameShapesQ.add(h);
         }
     }
 

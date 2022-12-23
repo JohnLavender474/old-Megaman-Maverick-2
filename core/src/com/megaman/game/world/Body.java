@@ -1,10 +1,8 @@
 package com.megaman.game.world;
 
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Updatable;
 
@@ -80,10 +78,6 @@ public class Body implements Updatable {
         return new Vector2(bounds.x, bounds.y);
     }
 
-    public void setPrevPos(Vector2 prevPos) {
-        setPrevPos(prevPos.x, prevPos.y);
-    }
-
     public void setPrevPos(float x, float y) {
         prevPos.set(x, y);
     }
@@ -98,14 +92,12 @@ public class Body implements Updatable {
 
     @Override
     public void update(float delta) {
-        // if at or below min, then set to zero
         if (Math.abs(velocity.x) <= MIN_VEL * WorldVals.PPM) {
             velocity.x = 0f;
         }
         if (Math.abs(velocity.y) <= MIN_VEL * WorldVals.PPM) {
             velocity.y = 0f;
         }
-        // apply resistance
         if (affectedByResistance) {
             if (resistance.x > 0f) {
                 velocity.x /= resistance.x;
@@ -115,11 +107,9 @@ public class Body implements Updatable {
             }
         }
         resistance.set(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
-        // apply gravity
         if (gravityOn) {
             velocity.add(gravity);
         }
-        // clamp velocity
         if (velocity.x > 0f && velocity.x > Math.abs(velClamp.x)) {
             velocity.x = Math.abs(velClamp.x);
         } else if (velocity.x < 0f && velocity.x < -Math.abs(velClamp.x)) {
@@ -130,13 +120,18 @@ public class Body implements Updatable {
         } else if (velocity.y < 0f && velocity.y < -Math.abs(velClamp.y)) {
             velocity.y = -Math.abs(velClamp.y);
         }
-        // move bounds
         bounds.x += velocity.x * delta;
         bounds.y += velocity.y * delta;
-        // move fixtures
         for (Fixture f : fixtures) {
             Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);
-            f.bounds.setCenter(p);
+            Shape2D shape = f.shape;
+            if (shape instanceof Rectangle r) {
+                r.setCenter(p);
+            } else if (shape instanceof Circle c) {
+                c.setPosition(p);
+            } else if (shape instanceof Polyline l) {
+                l.setOrigin(p.x, p.y);
+            }
         }
     }
 

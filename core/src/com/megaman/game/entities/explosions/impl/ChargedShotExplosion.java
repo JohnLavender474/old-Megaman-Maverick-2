@@ -2,6 +2,7 @@ package com.megaman.game.entities.explosions.impl;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
@@ -91,7 +92,8 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
 
     private BodyComponent bodyComponent() {
         body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
-        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, WorldVals.PPM);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
+                new Rectangle().setSize(WorldVals.PPM));
         body.fixtures.add(damagerFixture);
         return new BodyComponent(body);
     }

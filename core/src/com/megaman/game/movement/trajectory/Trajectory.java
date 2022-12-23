@@ -2,7 +2,7 @@ package com.megaman.game.movement.trajectory;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;

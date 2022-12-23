@@ -4,6 +4,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.blocks.BlockFactory;
 import com.megaman.game.entities.decorations.DecorationFactory;
 import com.megaman.game.entities.explosions.ExplosionFactory;
+import com.megaman.game.entities.hazards.HazardFactory;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.entities.special.SpecialFactory;
@@ -20,6 +21,7 @@ public class EntityFactories {
         factories = new EnumMap<>(EntityType.class) {{
             put(EntityType.BLOCK, new BlockFactory(game));
             put(EntityType.SENSOR, new SensorFactory(game));
+            put(EntityType.HAZARD, new HazardFactory(game));
             put(EntityType.SPECIAL, new SpecialFactory(game));
             put(EntityType.EXPLOSION, new ExplosionFactory(game));
             put(EntityType.PROJECTILE, new ProjectileFactory(game));

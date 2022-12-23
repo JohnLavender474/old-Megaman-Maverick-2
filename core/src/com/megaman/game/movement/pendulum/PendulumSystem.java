@@ -2,7 +2,6 @@ package com.megaman.game.movement.pendulum;
 
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.utils.interfaces.UpdatableConsumer;
 
 public class PendulumSystem extends System {
 
@@ -12,17 +11,13 @@ public class PendulumSystem extends System {
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        PendulumComponent pc = e.getComponent(PendulumComponent.class);
-        Pendulum p = pc.pendulum;
-        if (p == null) {
-            return;
+        PendulumComponent c = e.getComponent(PendulumComponent.class);
+        if (c.pendulum != null) {
+            c.pendulum.update(delta);
         }
-        p.update(delta);
-        UpdatableConsumer<Pendulum> uc = pc.updatableConsumer;
-        if (uc == null) {
-            return;
+        if (c.updatable != null) {
+            c.updatable.update(delta);
         }
-        uc.consumeAndUpdate(p, delta);
     }
 
 }

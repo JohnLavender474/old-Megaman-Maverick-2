@@ -2,12 +2,10 @@ package com.megaman.game.pathfinding;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
-import com.megaman.game.world.Fixture;
 
 import java.util.LinkedList;
 import java.util.function.Consumer;

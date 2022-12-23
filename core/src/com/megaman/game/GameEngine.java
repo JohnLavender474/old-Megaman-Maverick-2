@@ -18,7 +18,7 @@ import java.util.Queue;
 
 public class GameEngine implements Updatable, Resettable {
 
-    private static final Logger logger = new Logger(GameEngine.class, false);
+    private static final Logger logger = new Logger(GameEngine.class, MegamanGame.DEBUG);
 
     private final OrderedMap<Class<? extends System>, System> systems = new OrderedMap<>();
 
@@ -98,8 +98,7 @@ public class GameEngine implements Updatable, Resettable {
             for (Component c : e.components.values()) {
                 c.reset();
             }
-            Runnable r = p.value();
-            r.run();
+            p.value().run();
             entities.add(e);
             for (System s : systems.values()) {
                 if (s.qualifiesMembership(e)) {

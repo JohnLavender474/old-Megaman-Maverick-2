@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.GameEngine;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.screens.levels.spawns.Spawn;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 
 import java.util.function.Supplier;
 

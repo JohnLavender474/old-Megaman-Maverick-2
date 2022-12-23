@@ -42,6 +42,10 @@ public class Entity {
         return components.containsKey(cClass);
     }
 
+    public void removeComponent(Class<? extends Component> cClass) {
+        components.remove(cClass);
+    }
+
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder(getClass().getSimpleName() + ": ");

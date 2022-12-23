@@ -61,16 +61,14 @@ public abstract class System implements Updatable, Resettable {
 
     @Override
     public void update(float delta) {
-        if (!on) {
-            updating = false;
-            return;
-        }
         updating = true;
         while (!entitiesToAddQueue.isEmpty()) {
             Entity e = entitiesToAddQueue.poll();
             entities.add(e);
         }
-        preProcess(delta);
+        if (on) {
+            preProcess(delta);
+        }
         Iterator<Entity> eIter = entities.iterator();
         while (eIter.hasNext()) {
             Entity e = eIter.next();
@@ -78,12 +76,16 @@ public abstract class System implements Updatable, Resettable {
                 eIter.remove();
                 continue;
             }
-            if (e.asleep) {
+            if (!on || e.asleep) {
                 continue;
             }
             processEntity(e, delta);
         }
-        postProcess(delta);
+
+
+        if (on) {
+            postProcess(delta);
+        }
         updating = false;
     }
 

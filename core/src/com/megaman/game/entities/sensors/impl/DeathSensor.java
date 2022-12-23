@@ -1,4 +1,4 @@
-package com.megaman.game.entities.sensors;
+package com.megaman.game.entities.sensors.impl;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -18,14 +18,14 @@ public class DeathSensor extends Entity {
     public DeathSensor(MegamanGame game) {
         super(game, EntityType.SENSOR);
         body = new Body(BodyType.ABSTRACT);
-        deathFixture = new Fixture(this, FixtureType.DEATH);
+        deathFixture = new Fixture(this, FixtureType.DEATH, new Rectangle());
         body.fixtures.add(deathFixture);
     }
 
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         body.bounds.set(bounds);
-        deathFixture.bounds.set(bounds);
+        ((Rectangle) deathFixture.shape).set(bounds);
     }
 
 }

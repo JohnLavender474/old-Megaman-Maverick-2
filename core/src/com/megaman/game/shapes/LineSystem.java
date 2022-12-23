@@ -1,27 +1,18 @@
 package com.megaman.game.shapes;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
 import lombok.Setter;
 
-import java.util.Map;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class LineSystem extends System {
 
     @Setter
-    private Map<ShapeRenderer.ShapeType, Queue<RenderableShape>> shapeRenderQs;
+    private PriorityQueue<RenderableShape> gameShapesQ;
 
     public LineSystem() {
         super(LineComponent.class);
-    }
-
-    @Override
-    protected void preProcess(float delta) {
-        if (shapeRenderQs == null) {
-            throw new IllegalStateException("Must first set shape render queues");
-        }
     }
 
     @Override
@@ -31,8 +22,10 @@ public class LineSystem extends System {
             if (!h.doRender()) {
                 continue;
             }
-            Queue<RenderableShape> q = shapeRenderQs.get(h.getShapeType());
-            q.add(h);
+            if (h.updatable != null) {
+                h.updatable.update(delta);
+            }
+            gameShapesQ.add(h);
         }
     }
 

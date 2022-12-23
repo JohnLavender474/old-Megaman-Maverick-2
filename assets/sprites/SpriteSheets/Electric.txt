@@ -1,7 +1,7 @@
 Electric.png
-size: 256, 32
+size: 384, 32
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 BigElectric
   rotate: false
@@ -10,23 +10,30 @@ BigElectric
   orig: 64, 32
   offset: 0, 0
   index: -1
-PurpleShockBalls
+ElectricBallPulse
   rotate: false
   xy: 64, 0
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+PurpleShockBalls
+  rotate: false
+  xy: 192, 0
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 SmallElectric
   rotate: false
-  xy: 128, 0
+  xy: 256, 0
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 Zap
   rotate: false
-  xy: 192, 0
+  xy: 320, 0
   size: 64, 32
   orig: 64, 32
   offset: 0, 0

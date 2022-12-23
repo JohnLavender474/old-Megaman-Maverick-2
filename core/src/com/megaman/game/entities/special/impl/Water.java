@@ -1,4 +1,4 @@
-package com.megaman.game.entities.special;
+package com.megaman.game.entities.special.impl;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -15,7 +15,6 @@ import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
-import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.world.*;
@@ -48,7 +47,7 @@ public class Water extends Entity {
             surfaceReg = atlas.findRegion(SURFACE_REG);
         }
         this.body = new Body(BodyType.ABSTRACT);
-        this.water = new Fixture(this, FixtureType.WATER);
+        this.water = new Fixture(this, FixtureType.WATER, new Rectangle());
         this.body.fixtures.add(water);
         putComponent(new BodyComponent(body));
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
@@ -57,7 +56,7 @@ public class Water extends Entity {
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         body.bounds.set(bounds);
-        water.bounds.set(bounds);
+        ((Rectangle) water.shape).set(bounds);
         Array<SpriteHandle> handles = new Array<>();
         Array<Animator> animators = new Array<>();
         Sprite waterSprite = new Sprite(waterReg);

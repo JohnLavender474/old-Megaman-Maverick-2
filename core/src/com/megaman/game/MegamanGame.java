@@ -43,7 +43,9 @@ import java.util.Map;
 @Getter
 public class MegamanGame extends Game {
 
-    private static final Logger logger = new Logger(MegamanGame.class, false);
+    public static final boolean DEBUG = true;
+
+    private static final Logger logger = new Logger(MegamanGame.class, DEBUG);
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
@@ -66,6 +68,7 @@ public class MegamanGame extends Game {
         // renderers
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setAutoShapeType(true);
         // managers
         ctrlMan = new ControllerManager();
         audioMan = new AudioManager();
@@ -127,7 +130,6 @@ public class MegamanGame extends Game {
 
     @Override
     public void render() {
-        logger.log("FPS: " + Gdx.graphics.getFramesPerSecond());
         Gdx.gl20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Gdx.graphics.getGL20().glClear(GL20.GL_COLOR_BUFFER_BIT);
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

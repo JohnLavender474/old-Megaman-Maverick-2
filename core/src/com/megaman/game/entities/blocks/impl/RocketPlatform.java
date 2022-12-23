@@ -23,19 +23,20 @@ import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.WorldVals;
 
-public class GearTrolley extends Block implements EventListener {
+public class RocketPlatform extends Block implements EventListener {
 
-    private static final float WIDTH = 1.25f;
-    private static final float HEIGHT = .35f;
+    private static final float WIDTH = .85f;
+    private static final float HEIGHT = 3f;
 
-    private static TextureRegion gearTrolleyReg;
+    private static TextureRegion rocketPlatformReg;
 
     private final SpriteHandle spriteHandle;
 
-    public GearTrolley(MegamanGame game) {
+    public RocketPlatform(MegamanGame game) {
         super(game, false);
-        if (gearTrolleyReg == null) {
-            gearTrolleyReg = game.getAssMan().getTextureRegion(TextureAsset.CUSTOM_TILES_1, "GearTrolleyPlatform");
+        if (rocketPlatformReg == null) {
+            rocketPlatformReg = game.getAssMan().getTextureRegion(
+                    TextureAsset.CUSTOM_TILES_1, "JeffBezosLittleDickRocket");
         }
         spriteHandle = new SpriteHandle(new Sprite(), 2);
         putComponent(shapeComponent());
@@ -48,7 +49,7 @@ public class GearTrolley extends Block implements EventListener {
 
     @Override
     public void init(Rectangle ignore, ObjectMap<String, Object> data) {
-        Vector2 pos = ShapeUtils.getCenterPoint((Rectangle) data.get(ConstKeys.SPAWN));
+        Vector2 pos = ShapeUtils.getBottomCenterPoint((Rectangle) data.get(ConstKeys.SPAWN));
         Rectangle bounds = new Rectangle().setSize(WIDTH * WorldVals.PPM, HEIGHT * WorldVals.PPM);
         ShapeUtils.setBottomCenterToPoint(bounds, pos);
         super.init(bounds, data);
@@ -71,16 +72,16 @@ public class GearTrolley extends Block implements EventListener {
     }
 
     private SpriteComponent spriteComponent() {
-        spriteHandle.sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
+        spriteHandle.sprite.setSize(4f * WorldVals.PPM, 4f * WorldVals.PPM);
         spriteHandle.updatable = delta -> {
-            spriteHandle.setPosition(body.bounds, Position.CENTER);
-            spriteHandle.sprite.translateY(-WorldVals.PPM / 16f);
+            spriteHandle.setPosition(body.bounds, Position.TOP_CENTER);
+            spriteHandle.sprite.translateY(WorldVals.PPM / 16f);
         };
         return new SpriteComponent(spriteHandle);
     }
 
     private AnimationComponent animationComponent() {
-        Animation anim = new Animation(gearTrolleyReg, 2, .15f);
+        Animation anim = new Animation(rocketPlatformReg, 7, .05f);
         return new AnimationComponent(spriteHandle.sprite, anim);
     }
 
@@ -89,3 +90,5 @@ public class GearTrolley extends Block implements EventListener {
     }
 
 }
+
+

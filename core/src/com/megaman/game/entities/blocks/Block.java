@@ -20,7 +20,7 @@ public class Block extends Entity {
     public Block(MegamanGame game, boolean cullOnBodyOOB) {
         super(game, EntityType.BLOCK);
         body = new Body(BodyType.STATIC);
-        blockFixture = new Fixture(this, FixtureType.BLOCK);
+        blockFixture = new Fixture(this, FixtureType.BLOCK, new Rectangle());
         body.fixtures.add(blockFixture);
         putComponent(new BodyComponent(body));
         putComponent(new ShapeComponent(body.bounds));
@@ -32,7 +32,7 @@ public class Block extends Entity {
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         body.bounds.set(bounds);
-        blockFixture.bounds.set(body.bounds);
+        ((Rectangle) blockFixture.shape).set(body.bounds);
         if (data.containsKey(BlockDataKey.FRICTION_X.key)) {
             body.friction.x = (float) data.get(BlockDataKey.FRICTION_X.key);
         } else {

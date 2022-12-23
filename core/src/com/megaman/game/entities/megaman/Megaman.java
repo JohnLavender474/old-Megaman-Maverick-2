@@ -35,7 +35,7 @@ import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Positional;
 import com.megaman.game.utils.objs.TimeMarkedRunnable;
@@ -388,36 +388,37 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 aButtonTask = AButtonTask.AIR_DASH;
             }
         };
-        Fixture bodyFixture = new Fixture(this, FixtureType.BODY);
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle());
         body.fixtures.add(bodyFixture);
-        shapeHandles.add(new ShapeHandle(bodyFixture.bounds, Color.BLUE));
-        Fixture feetFixture = new Fixture(this, FixtureType.FEET, m1);
+        shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
         feetFixture.offset.y = -WorldVals.PPM / 2f;
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.fixtures.add(feetFixture);
-        shapeHandles.add(new ShapeHandle(feetFixture.bounds, Color.GREEN));
-        Fixture headFixture = new Fixture(this, FixtureType.HEAD, m1);
+        shapeHandles.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
+        Fixture headFixture = new Fixture(this, FixtureType.HEAD, new Rectangle(m1));
         headFixture.offset.y = WorldVals.PPM / 2f;
         headFixture.putUserData(ConstKeys.RUN, onBounce);
         body.fixtures.add(headFixture);
-        shapeHandles.add(new ShapeHandle(headFixture.bounds, Color.ORANGE));
+        shapeHandles.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
         Rectangle m2 = new Rectangle();
         m2.setSize(WorldVals.PPM / 16f, WorldVals.PPM / 16f);
-        Fixture leftFixture = new Fixture(this, FixtureType.SIDE, m2);
+        Fixture leftFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
         leftFixture.offset.set(-.4f * WorldVals.PPM, .15f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.fixtures.add(leftFixture);
-        shapeHandles.add(new ShapeHandle(leftFixture.bounds, Color.PINK));
-        Fixture rightFixture = new Fixture(this, FixtureType.SIDE, m2);
+        shapeHandles.add(new ShapeHandle(leftFixture.shape, Color.PINK));
+        Fixture rightFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
         rightFixture.offset.set(.4f * WorldVals.PPM, .15f * WorldVals.PPM);
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         body.fixtures.add(rightFixture);
-        shapeHandles.add(new ShapeHandle(rightFixture.bounds, Color.PINK));
-        Fixture hitboxFixture = new Fixture(this, FixtureType.DAMAGEABLE, .8f * WorldVals.PPM);
+        shapeHandles.add(new ShapeHandle(rightFixture.shape, Color.PINK));
+        Fixture hitboxFixture = new Fixture(this, FixtureType.DAMAGEABLE,
+                new Rectangle().setSize(.8f * WorldVals.PPM));
         body.fixtures.add(hitboxFixture);
-        shapeHandles.add(new ShapeHandle(hitboxFixture.bounds, Color.RED));
+        shapeHandles.add(new ShapeHandle(hitboxFixture.shape, Color.RED));
         UpdatableComponent u = getComponent(UpdatableComponent.class);
         u.add(delta -> {
             if (is(BehaviorType.GROUND_SLIDING)) {
@@ -427,7 +428,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 body.bounds.height = .95f * WorldVals.PPM;
                 feetFixture.offset.y = -WorldVals.PPM / 2f;
             }
-            bodyFixture.bounds.set(body.bounds);
+            ((Rectangle) bodyFixture.shape).set(body.bounds);
             if (body.velocity.y < 0f && !body.is(BodySense.FEET_ON_GROUND)) {
                 body.gravity.y =
                         (is(BodySense.IN_WATER) ? WATER_UNGROUNDED_GRAVITY : UNGROUNDED_GRAVITY) * WorldVals.PPM;

@@ -5,9 +5,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.Predicate;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.interfaces.Resettable;
-import com.megaman.game.utils.objs.KeyValuePair;
-import com.sun.nio.sctp.NotificationHandler;
 
 public class WorldGraph implements Resettable {
 
@@ -28,7 +27,7 @@ public class WorldGraph implements Resettable {
         int minY = (int) Math.floor(bounds.y / WorldVals.PPM);
         int maxX = (int) Math.ceil((bounds.x + bounds.width) / WorldVals.PPM);
         int maxY = (int) Math.ceil((bounds.y + bounds.height) / WorldVals.PPM);
-        return new int[] {
+        return new int[]{
                 Integer.max(0, minX),
                 Integer.max(0, minY),
                 Integer.min(width, maxX),
@@ -58,7 +57,7 @@ public class WorldGraph implements Resettable {
     }
 
     public void addFixture(Fixture fixture) {
-        int[] m = getMinsAndMaxes(fixture.bounds);
+        int[] m = getMinsAndMaxes(ShapeUtils.getBoundingRect(fixture.shape));
         int xMin = m[0];
         int yMin = m[1];
         int xMax = m[2];
@@ -107,7 +106,7 @@ public class WorldGraph implements Resettable {
     }
 
     public Array<Fixture> getFixturesOverlapping(Fixture fixture, Predicate<Fixture> pred) {
-        int[] m = getMinsAndMaxes(fixture.bounds);
+        int[] m = getMinsAndMaxes(ShapeUtils.getBoundingRect(fixture.shape));
         int xMin = m[0];
         int yMin = m[1];
         int xMax = m[2];

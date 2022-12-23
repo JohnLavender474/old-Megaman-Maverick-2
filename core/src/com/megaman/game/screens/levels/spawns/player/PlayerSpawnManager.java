@@ -5,11 +5,10 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.screens.levels.map.LevelMapObjParser;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.objs.KeyValuePair;
-import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

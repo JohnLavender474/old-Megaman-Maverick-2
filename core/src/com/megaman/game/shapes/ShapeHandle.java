@@ -4,20 +4,24 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.*;
-import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Pair;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.function.Supplier;
 
 import static com.badlogic.gdx.graphics.Color.RED;
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Line;
 
+@Setter
+@NoArgsConstructor
 public class ShapeHandle implements RenderableShape {
 
     public Updatable updatable;
-    public Supplier<Color> colorSupplier;
-    public Supplier<Shape2D> shapeSupplier;
+    public Supplier<Color> colorSupplier = () -> RED;
+    public Supplier<Integer> prioritySupplier = () -> 0;
+    public Supplier<Shape2D> shapeSupplier = () -> null;
     public Supplier<Boolean> doRenderSupplier = () -> true;
     public Supplier<ShapeType> shapeTypeSupplier = () -> Line;
 
@@ -55,7 +59,13 @@ public class ShapeHandle implements RenderableShape {
     }
 
     @Override
+    public int getPriority() {
+        return prioritySupplier.get();
+    }
+
+    @Override
     public void render(ShapeRenderer renderer) {
+        renderer.set(getShapeType());
         renderer.setColor(getColor());
         Shape2D s = getShape();
         if (s instanceof Rectangle rectangle) {

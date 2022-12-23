@@ -1,6 +1,7 @@
 package com.megaman.game.entities.projectiles.impl;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
@@ -16,7 +17,7 @@ import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.Fixture;
@@ -26,6 +27,7 @@ import com.megaman.game.world.WorldVals;
 public class Bullet extends Projectile {
 
     private static final float CLAMP = 10f;
+    private static final float REFLECT_VEL = 5f;
 
     private static TextureRegion bulletReg;
 
@@ -75,11 +77,10 @@ public class Bullet extends Projectile {
         String reflectDir = shieldFixture.getUserData(ConstKeys.DIR, String.class);
         if (reflectDir == null || reflectDir.equals(ConstKeys.STRAIGHT)) {
             traj.y = 0f;
+        } else if (reflectDir.equals(ConstKeys.UP)) {
+            traj.y = REFLECT_VEL * WorldVals.PPM;
         } else {
-            traj.y = 5f;
-            if (reflectDir.equals(ConstKeys.DOWN)) {
-                traj.y *= -1f;
-            }
+            traj.y = -REFLECT_VEL * WorldVals.PPM;
         }
         getComponent(SoundComponent.class).request(SoundAsset.DINK_SOUND);
     }
@@ -90,11 +91,11 @@ public class Bullet extends Projectile {
 
     private void defineBody() {
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
-        // projectile fixture
-        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, .2f * WorldVals.PPM);
+        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE,
+                new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
         body.fixtures.add(projectileFixture);
-        // damager fixture
-        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, .2f * WorldVals.PPM);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
+                new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
         body.fixtures.add(damagerFixture);
     }
 

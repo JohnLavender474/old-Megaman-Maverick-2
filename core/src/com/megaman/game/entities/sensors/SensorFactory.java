@@ -5,6 +5,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactory;
 import com.megaman.game.entities.EntityPool;
+import com.megaman.game.entities.sensors.impl.DeathSensor;
 
 public class SensorFactory implements EntityFactory {
 

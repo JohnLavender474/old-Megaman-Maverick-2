@@ -1,6 +1,7 @@
 package com.megaman.game.cull;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.megaman.game.MegamanGame;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.Logger;
@@ -9,7 +10,7 @@ import lombok.Setter;
 
 public class CullOnOutOfBoundsSystem extends System {
 
-    private static final Logger logger = new Logger(CullOnOutOfBoundsSystem.class, true);
+    private static final Logger logger = new Logger(CullOnOutOfBoundsSystem.class, false);
 
     @Setter
     private Camera gameCam;

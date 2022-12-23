@@ -1,6 +1,7 @@
 package com.megaman.game.entities.projectiles.impl;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
@@ -21,7 +22,7 @@ import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.utils.ShapeUtils;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
@@ -72,9 +73,9 @@ public class ChargedShot extends Projectile implements Faceable {
             spriteDim *= 1.25f;
         }
         sprite.setSize(spriteDim, spriteDim);
-        body.bounds.setSize(bodyDim, bodyDim);
+        body.bounds.setSize(bodyDim);
         for (Fixture f : body.fixtures) {
-            f.bounds.set(body.bounds);
+            ((Rectangle) f.shape).set(body.bounds);
         }
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
         facing = traj.x > 0f ? Facing.RIGHT : Facing.LEFT;
@@ -168,10 +169,10 @@ public class ChargedShot extends Projectile implements Faceable {
         if (!fullyCharged) {
             size /= 2f;
         }
-        body.bounds.setSize(size, size);
-        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE);
+        body.bounds.setSize(size);
+        Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, new Rectangle());
         body.fixtures.add(projectileFixture);
-        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle());
         body.fixtures.add(damagerFixture);
     }
 

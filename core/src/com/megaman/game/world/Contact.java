@@ -33,6 +33,20 @@ public class Contact {
         return false;
     }
 
+    public boolean acceptMask(FixtureType t, boolean bothMatch) {
+        if (bothMatch) {
+            return acceptMask(t, t);
+        }
+        if (f1.fixtureType == t) {
+            mask = new Pair<>(f1, f2);
+            return true;
+        } else if (f2.fixtureType == t) {
+            mask = new Pair<>(f2, f1);
+            return true;
+        }
+        return false;
+    }
+
     public Entity mask1stEntity() {
         return mask.getFirst().entity;
     }
@@ -49,12 +63,20 @@ public class Contact {
         return mask2ndEntity().getComponent(BodyComponent.class).body;
     }
 
+    public Object mask1stData(String key) {
+        return mask.getFirst().userData.get(key);
+    }
+
+    public Object mask2ndData(String key) {
+        return mask.getSecond().userData.get(key);
+    }
+
     public <T> T mask1stData(String key, Class<T> tClass) {
-        return tClass.cast(mask.getFirst().userData.get(key));
+        return tClass.cast(mask1stData(key));
     }
 
     public <T> T mask2ndData(String key, Class<T> tClass) {
-        return tClass.cast(mask.getSecond().userData.get(key));
+        return tClass.cast(mask2ndData(key));
     }
 
     @Override

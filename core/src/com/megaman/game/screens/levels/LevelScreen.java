@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -48,14 +47,11 @@ import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
 import com.megaman.game.screens.levels.spawns.player.PlayerSpawnManager;
 import com.megaman.game.screens.ui.BitsBar;
 import com.megaman.game.screens.ui.TextHandle;
-import com.megaman.game.shapes.LineSystem;
-import com.megaman.game.shapes.RenderableShape;
-import com.megaman.game.shapes.ShapeSystem;
+import com.megaman.game.shapes.*;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.ConstFuncs;
-import com.megaman.game.utils.ShapeUtils;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
@@ -88,12 +84,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     private final Array<Background> backgrounds = new Array<>();
     private final PriorityQueue<SpriteHandle> gameSpritesQ = new PriorityQueue<>();
-    private final Map<ShapeRenderer.ShapeType, Queue<RenderableShape>> shapeRenderQs =
-            new EnumMap<>(ShapeRenderer.ShapeType.class) {{
-                for (ShapeRenderer.ShapeType s : ShapeRenderer.ShapeType.values()) {
-                    put(s, new LinkedList<>());
-                }
-            }};
+    private final PriorityQueue<RenderableShape> gameShapesQ = new PriorityQueue<>();
 
     private final Queue<TextHandle> uiText = new LinkedList<>();
     private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables = new Array<>();
@@ -144,8 +135,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         GameEngine engine = game.getGameEngine();
         engine.setAllSystemsOn();
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
-        engine.getSystem(LineSystem.class).setShapeRenderQs(shapeRenderQs);
-        engine.getSystem(ShapeSystem.class).setShapeRenderQs(shapeRenderQs);
+        engine.getSystem(LineSystem.class).setGameShapesQ(gameShapesQ);
+        engine.getSystem(ShapeSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         // set level map, get layer objs
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
@@ -173,34 +164,41 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     };
                     for (RectangleMapObject o : e.getValue()) {
                         ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
-                        if (data.containsKey(ConstKeys.SPAWN) && ConstKeys.EVENT.equals(data.get(ConstKeys.SPAWN))) {
-
-                            // TODO: create spawns based on events
-                            // TODO: add to event listeners
-                            // TODO: add to runOnDispose to remove from event listeners
-
-                        } else {
-                            Rectangle spawnBounds = null;
-                            if (data.containsKey(SpawnType.SPAWN_ROOM)) {
-                                String roomName = (String) data.get(SpawnType.SPAWN_ROOM);
-                                for (RectangleMapObject room : gameRoomsObjs) {
-                                    if (roomName.equals(room.getName())) {
-                                        spawnBounds = room.getRectangle();
-                                        data.put(ConstKeys.SPAWN, o.getRectangle());
-                                        data.put(ConstKeys.ROOM, spawnBounds);
-                                        break;
+                        if (data.containsKey(SpawnType.SPAWN_TYPE)) {
+                            String spawnType = (String) data.get(SpawnType.SPAWN_TYPE);
+                            switch (spawnType) {
+                                case SpawnType.SPAWN_ROOM -> {
+                                    String roomName = (String) data.get(SpawnType.SPAWN_ROOM);
+                                    boolean roomFound = false;
+                                    for (RectangleMapObject room : gameRoomsObjs) {
+                                        if (roomName.equals(room.getName())) {
+                                            data.put(ConstKeys.SPAWN, o.getRectangle());
+                                            data.put(ConstKeys.ROOM, room.getRectangle());
+                                            spawns.add(new SpawnWhenInBounds(
+                                                    engine,
+                                                    gameCam,
+                                                    room.getRectangle(),
+                                                    data,
+                                                    () -> factories.fetch(type, o.getName())));
+                                            roomFound = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!roomFound) {
+                                        throw new IllegalStateException("Failed to create spawn for room: " + roomName);
                                     }
                                 }
-                            } else {
-                                spawnBounds = o.getRectangle();
+                                case SpawnType.SPAWN_EVENT -> {
+
+                                    // TODO: create spawn by event
+
+                                }
                             }
-                            if (spawnBounds == null) {
-                                throw new IllegalStateException("Spawn bounds is null for obj: " + o.getName());
-                            }
+                        } else {
                             spawns.add(new SpawnWhenInBounds(
                                     engine,
                                     gameCam,
-                                    spawnBounds,
+                                    o.getRectangle(),
                                     data,
                                     () -> factories.fetch(type, o.getName())));
                         }
@@ -358,14 +356,11 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         batch.end();
         ShapeRenderer shapeRenderer = game.getShapeRenderer();
         shapeRenderer.setProjectionMatrix(gameCam.combined);
-        for (Map.Entry<ShapeRenderer.ShapeType, Queue<RenderableShape>> e : shapeRenderQs.entrySet()) {
-            shapeRenderer.begin(e.getKey());
-            Queue<RenderableShape> q = e.getValue();
-            while (!q.isEmpty()) {
-                q.poll().render(shapeRenderer);
-            }
-            shapeRenderer.end();
+        shapeRenderer.begin();
+        while (!gameShapesQ.isEmpty()) {
+            gameShapesQ.poll().render(shapeRenderer);
         }
+        shapeRenderer.end();
         gameViewport.apply();
         uiViewport.apply();
     }

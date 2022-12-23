@@ -53,10 +53,10 @@ public class ConveyorBelt extends Block {
         if (middle == null) {
             middle = atlas.findRegion("MiddlePart");
         }
-        forceFixture = new Fixture(this, FixtureType.FORCE);
+        forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
         body.fixtures.add(forceFixture);
-        ShapeHandle h = new ShapeHandle(forceFixture.bounds);
-        h.colorSupplier = () -> Color.BLUE;
+        ShapeHandle h = new ShapeHandle(forceFixture.shape);
+        h.setColorSupplier(() -> Color.BLUE);
         putComponent(new ShapeComponent(h));
     }
 
@@ -65,7 +65,7 @@ public class ConveyorBelt extends Block {
         super.init(bounds, data);
         boolean left = (boolean) data.get(ConstKeys.LEFT);
         Rectangle forceBounds = new Rectangle().setSize(bounds.width - WorldVals.PPM / 4f, bounds.height);
-        forceFixture.bounds.set(forceBounds);
+        ((Rectangle) forceFixture.shape).set(forceBounds);
         forceFixture.offset.y += WorldVals.PPM / 8f;
         Vector2 force = new Vector2(FORCE_AMOUNT * WorldVals.PPM, 0f);
         if (left) {

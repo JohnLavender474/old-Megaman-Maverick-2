@@ -8,7 +8,7 @@ import java.util.Set;
 public interface Damageable {
 
     /**
-     * DamagerDef mask setBounds.
+     * DamagerDef maskShapeTypes setBounds.
      *
      * @return the setBounds
      */
