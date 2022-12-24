@@ -16,10 +16,9 @@ import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.movement.trajectory.Trajectory;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
-import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.WorldVals;
 
@@ -83,10 +82,6 @@ public class RocketPlatform extends Block implements EventListener {
     private AnimationComponent animationComponent() {
         Animation anim = new Animation(rocketPlatformReg, 7, .05f);
         return new AnimationComponent(spriteHandle.sprite, anim);
-    }
-
-    private ShapeComponent shapeComponent() {
-        return new ShapeComponent(body.bounds);
     }
 
 }

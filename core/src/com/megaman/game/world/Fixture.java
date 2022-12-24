@@ -13,9 +13,9 @@ public class Fixture {
     public final FixtureType fixtureType;
 
     public Shape2D shape;
-    public boolean active = true;
-    public Vector2 offset = new Vector2();
-    public ObjectMap<String, Object> userData = new ObjectMap<>();
+    public boolean active;
+    public Vector2 offset;
+    public ObjectMap<String, Object> userData;
 
     public Fixture(Entity entity, FixtureType fixtureType) {
         this(entity, fixtureType, new Rectangle());
@@ -25,6 +25,9 @@ public class Fixture {
         this.shape = shape;
         this.entity = entity;
         this.fixtureType = fixtureType;
+        active = true;
+        offset = new Vector2();
+        userData = new ObjectMap<>();
     }
 
     public boolean overlaps(Fixture fixture) {

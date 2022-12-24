@@ -2,6 +2,7 @@ package com.megaman.game.world;
 
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Updatable;
@@ -16,6 +17,7 @@ public class Body implements Updatable {
     public boolean[] senses;
     public BodyType bodyType;
     public Array<Fixture> fixtures;
+    public ObjectMap<String, Object> userData;
 
     public Updatable preProcess;
     public Updatable postProcess;
@@ -53,8 +55,20 @@ public class Body implements Updatable {
         this.resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
     }
 
-    public static boolean intersect(Body b1, Body b2, Rectangle overlap) {
-        return Intersector.intersectRectangles(b1.bounds, b2.bounds, overlap);
+    public boolean hasUserData(String key) {
+        return userData.containsKey(key);
+    }
+
+    public void putUserData(String key, Object o) {
+        userData.put(key, o);
+    }
+
+    public <T> T getUserData(String key, Class<T> tClass) {
+        return tClass.cast(getUserData(key));
+    }
+
+    public Object getUserData(String key) {
+        return userData.get(key);
     }
 
     public boolean isRightOf(Body body) {
@@ -73,12 +87,20 @@ public class Body implements Updatable {
         senses[sense.ordinal()] = is;
     }
 
+    public boolean intersects(Rectangle rect, Rectangle overlap) {
+        return Intersector.intersectRectangles(bounds, rect, overlap);
+    }
+
     public boolean intersects(Body body, Rectangle overlap) {
-        return Body.intersect(this, body, overlap);
+        return intersects(body.bounds, overlap);
+    }
+
+    public boolean overlaps(Rectangle rect) {
+        return bounds.overlaps(rect);
     }
 
     public boolean overlaps(Body body) {
-        return bounds.overlaps(body.bounds);
+        return overlaps(body.bounds);
     }
 
     public void setPos(Vector2 pos, Position position) {

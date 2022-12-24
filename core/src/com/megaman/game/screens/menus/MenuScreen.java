@@ -79,13 +79,13 @@ public abstract class MenuScreen extends ScreenAdapter {
         if (menuButton != null) {
             Direction dir = null;
             if (ctrlMan.isJustPressed(ControllerBtn.DPAD_UP)) {
-                dir = Direction.DIR_UP;
+                dir = Direction.UP;
             } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_DOWN)) {
-                dir = Direction.DIR_DOWN;
+                dir = Direction.DOWN;
             } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_LEFT)) {
-                dir = Direction.DIR_LEFT;
+                dir = Direction.LEFT;
             } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_RIGHT)) {
-                dir = Direction.DIR_RIGHT;
+                dir = Direction.RIGHT;
             }
             if (dir != null) {
                 onAnyMovement();

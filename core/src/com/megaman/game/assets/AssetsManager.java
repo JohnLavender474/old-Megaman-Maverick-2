@@ -6,6 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.OrderedMap;
 
 public class AssetsManager implements Disposable {
 
@@ -36,12 +37,28 @@ public class AssetsManager implements Disposable {
         return getTextureAtlas(t).findRegion(region);
     }
 
-    public Sound getSound(SoundAsset s) {
-        return getAsset(s.getSrc(), Sound.class);
+    public Sound getSound(SoundAsset ass) {
+        return getAsset(ass.getSrc(), Sound.class);
     }
 
-    public Music getMusic(MusicAsset m) {
-        return getAsset(m.getSrc(), Music.class);
+    public Music getMusic(MusicAsset ass) {
+        return getAsset(ass.getSrc(), Music.class);
+    }
+
+    public OrderedMap<SoundAsset, Sound> getSound() {
+        OrderedMap<SoundAsset, Sound> sounds = new OrderedMap<>();
+        for (SoundAsset ass : SoundAsset.values()) {
+            sounds.put(ass, getSound(ass));
+        }
+        return sounds;
+    }
+
+    public OrderedMap<MusicAsset, Music> getMusic() {
+        OrderedMap<MusicAsset, Music> music = new OrderedMap<>();
+        for (MusicAsset ass : MusicAsset.values()) {
+            music.put(ass, getMusic(ass));
+        }
+        return music;
     }
 
     @Override

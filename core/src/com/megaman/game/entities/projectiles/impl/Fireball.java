@@ -1,6 +1,5 @@
 package com.megaman.game.entities.projectiles.impl;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Circle;
@@ -88,7 +87,7 @@ public class Fireball extends Projectile {
     public void hitBody(Fixture bodyFixture) {
         if (UtilMethods.mask(owner, bodyFixture.entity, o -> o instanceof Megaman, o -> o instanceof Enemy)) {
             bounces = MAX_BOUNCES;
-            getComponent(SoundComponent.class).request(SoundAsset.ATOMIC_FIRE_SOUND);
+            getComponent(SoundComponent.class).requestToPlay(SoundAsset.ATOMIC_FIRE_SOUND);
         }
     }
 
@@ -101,7 +100,7 @@ public class Fireball extends Projectile {
     @Override
     public void hitShield(Fixture shieldFixture) {
         hitBlockOrShield(shieldFixture);
-        getComponent(SoundComponent.class).request(SoundAsset.DINK_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
     @Override
@@ -113,8 +112,7 @@ public class Fireball extends Projectile {
         Rectangle r = ShapeUtils.getBoundingRect(waterFixture.shape);
         Vector2 pos = new Vector2(body.getCenter().x, r.y + r.height);
         game.getGameEngine().spawnEntity(puff, pos);
-        Sound steamSound = game.getAssMan().getSound(SoundAsset.WHOOSH_SOUND);
-        game.getAudioMan().playSound(steamSound, false);
+        game.getAudioMan().playSound(SoundAsset.WHOOSH_SOUND);
     }
 
     private void hitBlockOrShield(Fixture fixture) {
@@ -138,7 +136,7 @@ public class Fireball extends Projectile {
         }
         bounces++;
         if (bounces == MAX_BOUNCES) {
-            getComponent(SoundComponent.class).request(SoundAsset.ATOMIC_FIRE_SOUND);
+            getComponent(SoundComponent.class).requestToPlay(SoundAsset.ATOMIC_FIRE_SOUND);
         }
     }
 

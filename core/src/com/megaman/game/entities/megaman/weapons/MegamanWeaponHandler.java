@@ -260,10 +260,10 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         };
         Vector2 s = getSpawnCenter();
         if (stat == ChargeStatus.NOT_CHARGED) {
-            megaman.request(SoundAsset.MEGA_BUSTER_BULLET_SHOT_SOUND);
+            megaman.request(SoundAsset.MEGA_BUSTER_BULLET_SHOT_SOUND, true);
         } else {
-            megaman.request(SoundAsset.MEGA_BUSTER_CHARGED_SHOT_SOUND);
-            megaman.stopLoop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
+            megaman.request(SoundAsset.MEGA_BUSTER_CHARGED_SHOT_SOUND, true);
+            megaman.request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
             s.y += WorldVals.PPM / 10f;
         }
         engine.spawnEntity(proj, s, data);
@@ -293,7 +293,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         engine.spawnEntity(proj, getSpawnCenter(), data);
 
         // TODO: play different sounds
-        megaman.request(SoundAsset.CRASH_BOMBER_SOUND);
+        megaman.request(SoundAsset.CRASH_BOMBER_SOUND, true);
 
         return proj;
     }

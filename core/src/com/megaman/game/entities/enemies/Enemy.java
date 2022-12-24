@@ -75,6 +75,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         return dmgNegs.keySet();
     }
 
+    public boolean isDamaged() {
+        return !dmgTimer.isFinished();
+    }
+
     @Override
     public boolean isInvincible() {
         return !dmgTimer.isFinished();
@@ -89,7 +93,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         dmgTimer.reset();
         dmgNeg.runOnDamage();
         getComponent(HealthComponent.class).translateHealth(-dmgNeg.getDamage(damager));
-        getComponent(SoundComponent.class).request(SoundAsset.ENEMY_DAMAGE_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_DAMAGE_SOUND);
     }
 
     public boolean is(BodySense sense) {
@@ -97,12 +101,12 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     protected void disintegrate() {
-        getComponent(SoundComponent.class).request(SoundAsset.ENEMY_DAMAGE_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_DAMAGE_SOUND);
         // gameContext.addEntity(new Disintegration(gameContext, getComponent(BodyComponent.class).getCenter()));
     }
 
     protected void explode() {
-        getComponent(SoundComponent.class).request(SoundAsset.EXPLOSION_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.EXPLOSION_SOUND);
         // gameContext.addEntity(new Explosion(gameContext, getComponent(BodyComponent.class).getCenter()));
     }
 

@@ -116,7 +116,7 @@ public class LaserBeamer extends Entity implements Damager {
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM, WorldVals.PPM * .85f));
         shieldFixture.offset.y = WorldVals.PPM / 2f;
-        shieldFixture.putUserData(ConstKeys.DIR, ConstKeys.UP);
+        shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         body.fixtures.add(shieldFixture);
         return new BodyComponent(body);
     }

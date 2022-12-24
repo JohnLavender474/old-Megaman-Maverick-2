@@ -124,13 +124,13 @@ public class Saw extends Entity {
         Fixture shieldFixture1 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture1.offset.y = WorldVals.PPM / 2f;
-        shieldFixture1.putUserData(ConstKeys.DIR, ConstKeys.UP);
+        shieldFixture1.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         body.fixtures.add(shieldFixture1);
         s.shapeHandles.add(new ShapeHandle(shieldFixture1.shape, Color.PURPLE));
         Fixture shieldFixture2 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture2.offset.y = -WorldVals.PPM / 2f;
-        shieldFixture2.putUserData(ConstKeys.DIR, ConstKeys.DOWN);
+        shieldFixture2.putUserData(ConstKeys.REFLECT, ConstKeys.DOWN);
         body.fixtures.add(shieldFixture2);
         s.shapeHandles.add(new ShapeHandle(shieldFixture2.shape, Color.PURPLE));
         return new BodyComponent(body);

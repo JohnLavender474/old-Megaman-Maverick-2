@@ -124,7 +124,7 @@ public class ChargedShot extends Projectile implements Faceable {
         } else {
             traj.y = 0f;
         }
-        getComponent(SoundComponent.class).request(SoundAsset.DINK_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.megaman.game.screens.levels;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,13 +9,14 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.System;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
-import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
 import com.megaman.game.behaviors.BehaviorSystem;
@@ -53,6 +53,7 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.ConstFuncs;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
@@ -68,31 +69,26 @@ import java.util.function.Supplier;
 
 public class LevelScreen extends ScreenAdapter implements EventListener {
 
+    private static final Logger logger = new Logger(LevelScreen.class, MegamanGame.DEBUG && true);
+
     private static final float ON_PLAYER_DEATH_DELAY = 4f;
 
     private final MegamanGame game;
-    private final SpawnManager spawnMan;
-    private final PlayerSpawnManager playerSpawnMan;
-
     private final LevelMapManager levelMapMan;
     private final LevelCamManager levelCamMan;
-
-    private final OrthographicCamera gameCam;
+    private final SpawnManager spawnMan;
+    private final PlayerSpawnManager playerSpawnMan;
     private final OrthographicCamera uiCam;
-
+    private final OrthographicCamera gameCam;
     private final Array<Runnable> runOnDispose = new Array<>();
-
-    private final Sound playerDeathSound;
     private final Timer playerDeathDelayTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
-
     private final Array<Background> backgrounds = new Array<>();
     private final PriorityQueue<SpriteHandle> gameSpritesQ = new PriorityQueue<>();
     private final PriorityQueue<RenderableShape> gameShapesQ = new PriorityQueue<>();
-
     private final Queue<TextHandle> uiText = new LinkedList<>();
     private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables = new Array<>();
 
-    private boolean paused;
+    private OrderedMap<Class<? extends System>, Boolean> sysStatesOnPause;
     private boolean set;
     private Music music;
 
@@ -104,7 +100,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         playerSpawnMan = new PlayerSpawnManager();
         levelCamMan = new LevelCamManager(gameCam);
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
-        // drawables
         AssetsManager assMan = game.getAssMan();
         Megaman megaman = game.getMegaman();
         float healthBarX = WorldVals.PPM * .4f;
@@ -119,24 +114,27 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     megaman::getCurrentAmmo, assMan, weapon.weaponBitSrc);
             addUiDrawable(() -> weapon == megaman.currWeapon, weaponBar);
         }
-        playerDeathSound = assMan.getSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
-    public void set(String tmxFile) {
-        // reset player death delay timer
+    public void set(Level level) {
+        dispose();
+        if (level.getMusicAsset() != null) {
+            setMusic(level.getMusicAsset());
+            playMusic(true);
+        }
         playerDeathDelayTimer.setToEnd();
         // reset cam positions
         uiCam.position.set(ConstFuncs.getCamInitPos());
         gameCam.position.set(ConstFuncs.getCamInitPos());
         // set systems
         GameEngine engine = game.getGameEngine();
-        engine.setAllSystemsOn();
+        engine.setAllSystemsOn(true);
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(ShapeSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
         // set level map, get layer objs
-        Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(tmxFile);
+        Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(level.getTmxFile());
         // set world system
         WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
         engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
@@ -229,6 +227,12 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         }
     }
 
+    public void pauseMusic() {
+        if (music != null) {
+            music.pause();
+        }
+    }
+
     @Override
     public void listenForEvent(Event event) {
         GameEngine engine = game.getGameEngine();
@@ -237,8 +241,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             case GAME_RESUME -> resume();
             case PLAYER_DEAD -> {
                 playerDeathDelayTimer.reset();
-                engine.getSystem(SoundSystem.class).reqStopAllLoops();
-                game.getAudioMan().playSound(playerDeathSound, false);
+                game.getAudioMan().playSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
                 stopMusic();
             }
             case GATE_INIT_OPENING -> {
@@ -247,7 +250,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         TrajectorySystem.class,
                         BehaviorSystem.class,
                         WorldSystem.class);
-                engine.getSystem(SoundSystem.class).reqStopAllLoops();
             }
             case NEXT_GAME_ROOM_REQ -> {
                 String n = event.getInfo(ConstKeys.ROOM, RectangleMapObject.class).getName();
@@ -261,7 +263,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     @Override
     public void show() {
         spawnMegaman();
-        paused = false;
         game.getEventMan().add(this);
     }
 
@@ -273,16 +274,16 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         super.render(delta);
         ControllerManager ctrlMan = game.getCtrlMan();
         if (ctrlMan.isJustPressed(ControllerBtn.START)) {
-            if (paused) {
-                resume();
+            if (game.isPaused()) {
+                game.resume();
             } else {
-                pause();
+                game.pause();
             }
         }
+        Megaman megaman = game.getMegaman();
         GameEngine engine = game.getGameEngine();
         EventManager eventMan = game.getEventMan();
-        Megaman megaman = game.getMegaman();
-        if (!paused) {
+        if (!game.isPaused()) {
             levelCamMan.update(delta);
             if (levelCamMan.getTransState() == null) {
                 playerSpawnMan.run();
@@ -297,7 +298,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                                 BehaviorSystem.class,
                                 WorldSystem.class,
                                 SoundSystem.class);
-                        engine.getSystem(SoundSystem.class).reqStopAllLoops();
                         eventMan.dispatchEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.POS, levelCamMan.getTransInterpolation());
                         }}));
@@ -364,28 +364,20 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     @Override
     public void pause() {
-        if (paused) {
-            return;
-        }
-        paused = true;
-        AudioManager audioMan = game.getAudioMan();
-        audioMan.scaleSoundVolume(.5f);
-        audioMan.scaleMusicVolume(.5f);
-        Sound pauseSound = game.getAssMan().getSound(SoundAsset.PAUSE_SOUND);
-        audioMan.playSound(pauseSound, false);
+        logger.log("Level screen pause method called");
+        GameEngine engine = game.getGameEngine();
+        sysStatesOnPause = engine.getCurrSysStates();
+        engine.setAllSystemsOn(false);
+        engine.setSystemsOn(true, SpriteSystem.class);
+        game.getAudioMan().playSound(SoundAsset.PAUSE_SOUND);
     }
 
     @Override
     public void resume() {
-        if (!paused) {
-            return;
-        }
-        paused = false;
-        AudioManager audioMan = game.getAudioMan();
-        audioMan.scaleSoundVolume(2f);
-        audioMan.scaleMusicVolume(2f);
-        Sound pauseSound = game.getAssMan().getSound(SoundAsset.PAUSE_SOUND);
-        audioMan.playSound(pauseSound, false);
+        logger.log("Level screen resume method called");
+        GameEngine engine = game.getGameEngine();
+        engine.setSysStates(sysStatesOnPause);
+        game.getAudioMan().playSound(SoundAsset.PAUSE_SOUND);
     }
 
     @Override
@@ -393,8 +385,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         set = false;
         stopMusic();
         spawnMan.reset();
-        playerSpawnMan.reset();
         levelMapMan.dispose();
+        playerSpawnMan.reset();
         game.getGameEngine().reset();
         game.getEventMan().remove(this);
         for (Runnable r : runOnDispose) {

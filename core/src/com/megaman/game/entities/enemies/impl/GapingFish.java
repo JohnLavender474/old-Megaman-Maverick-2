@@ -4,7 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
@@ -16,7 +18,6 @@ import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
-import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
@@ -25,6 +26,7 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class GapingFish extends Enemy implements Faceable {
@@ -32,6 +34,7 @@ public class GapingFish extends Enemy implements Faceable {
     private static final float HORIZ_SPEED = 2f;
     private static final float VERT_SPEED = 1.25f;
     private static final float CHOMP_DUR = 1.25f;
+    private static final float OUT_OF_WATER_GRAVITY = -1f;
 
     private final Sprite sprite;
     private final Timer chompTimer;
@@ -74,9 +77,13 @@ public class GapingFish extends Enemy implements Faceable {
 
     @Override
     protected void defineBody(Body body) {
-        body.bounds.setSize(WorldVals.PPM);
-        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(bodyFixture);
+        body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
+        Array<Fixture> scanner = new Array<>();
+        Fixture scannerFixture = new Fixture(this, FixtureType.SCANNER,
+                new Rectangle().setSize(WorldVals.PPM, WorldVals.PPM / 2f));
+        scannerFixture.putUserData(ConstKeys.CONSUMER, (Consumer<Fixture>) scanner::add);
+        scannerFixture.offset.y += WorldVals.PPM / 4f;
+        body.fixtures.add(scannerFixture);
         Rectangle m1 = new Rectangle().setSize(.75f * WorldVals.PPM, .2f * WorldVals.PPM);
         Fixture headFixture = new Fixture(this, FixtureType.HEAD, new Rectangle(m1));
         headFixture.offset.y = .375f * WorldVals.PPM;
@@ -89,19 +96,14 @@ public class GapingFish extends Enemy implements Faceable {
         body.fixtures.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle(m2));
         body.fixtures.add(damagerFixture);
-    }
-
-    @Override
-    protected void defineUpdateComponent(UpdatableComponent c) {
-        super.defineUpdateComponent(c);
-        c.add(delta -> {
+        body.preProcess = delta -> {
             Body megaBody = game.getMegaman().getComponent(BodyComponent.class).body;
             if (body.bounds.x >= megaBody.bounds.x + megaBody.bounds.width) {
                 setFacing(Facing.LEFT);
             } else if (body.bounds.x + body.bounds.width <= megaBody.bounds.x) {
                 setFacing(Facing.RIGHT);
             }
-            if (isChomping() || !dmgTimer.isFinished()) {
+            if (isDamaged() || isChomping()) {
                 body.velocity.setZero();
             } else {
                 Vector2 vel = body.velocity;
@@ -109,25 +111,32 @@ public class GapingFish extends Enemy implements Faceable {
                 if (is(Facing.LEFT)) {
                     vel.x *= -1f;
                 }
-                if (body.is(BodySense.IN_WATER)) {
-                    vel.y = VERT_SPEED;
-                    if (megaBody.bounds.y <= body.bounds.y + body.bounds.height) {
+                boolean inWater = false;
+                for (Fixture f : scanner) {
+                    if (f.fixtureType == FixtureType.WATER) {
+                        inWater = true;
+                        break;
+                    }
+                }
+                scanner.clear();
+                if (inWater || !megaBody.isAbove(body)) {
+                    vel.y = VERT_SPEED * WorldVals.PPM;
+                    if (!megaBody.isAbove(body)) {
                         vel.y *= -1f;
                     }
-                    vel.y *= WorldVals.PPM;
                 } else {
                     vel.y = 0f;
                 }
             }
             chompTimer.update(delta);
-        });
+        };
     }
 
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
         SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> {
-            h.setPosition(body.bounds, Position.CENTER);
+            h.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
         };
         return new SpriteComponent(h);

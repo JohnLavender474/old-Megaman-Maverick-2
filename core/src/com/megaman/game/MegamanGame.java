@@ -1,9 +1,6 @@
 package com.megaman.game;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -45,7 +42,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 @Getter
-public class MegamanGame extends Game {
+public class MegamanGame implements ApplicationListener {
 
     public static final boolean DEBUG = true;
 
@@ -69,20 +66,21 @@ public class MegamanGame extends Game {
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
 
-    private boolean debug;
+    private Level level;
+    private Screen screen;
+    private boolean paused;
 
     @Override
     public void create() {
-        debug = false;
         // renderers
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
         // managers
         ctrlMan = new ControllerManager();
-        audioMan = new AudioManager();
         assMan = new AssetsManager();
         assMan.loadAssets();
+        audioMan = new AudioManager(assMan.getSound(), assMan.getMusic());
         // events
         eventMan = new EventManager();
         // entity factories
@@ -105,7 +103,7 @@ public class MegamanGame extends Game {
                 new SpriteSystem(),
                 new LineSystem(),
                 new ShapeSystem(),
-                new SoundSystem(assMan, audioMan));
+                new SoundSystem(audioMan));
         // megaman
         megaman = new Megaman(this);
         // put screens
@@ -118,21 +116,23 @@ public class MegamanGame extends Game {
         screens = new EnumMap<>(ScreenEnum.class);
         screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
         // set screen
-        setLevelScreen(Level.TEST);
+        setLevel(Level.TEST);
+        setScreen(ScreenEnum.LEVEL);
     }
 
-    public void setLevelScreen(Level level) {
-        LevelScreen levelScreen = (LevelScreen) screens.get(ScreenEnum.LEVEL);
-        levelScreen.set(level.getTmxFile());
-        setScreen(levelScreen);
-        if (level.getMusicAsset() != null) {
-            levelScreen.setMusic(level.getMusicAsset());
-            levelScreen.playMusic(true);
+    public void setScreen(ScreenEnum screenEnum) {
+        Screen s = screens.get(screenEnum);
+        if (s instanceof LevelScreen levelScreen && level != null) {
+            levelScreen.set(level);
         }
+        setScreen(s);
     }
 
-    @Override
-    public void setScreen(Screen screen) {
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    private void setScreen(Screen screen) {
         if (this.screen != null) {
             this.screen.dispose();
         }
@@ -150,21 +150,50 @@ public class MegamanGame extends Game {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
-        ctrlMan.update();
-        super.render();
+        float delta = Gdx.graphics.getDeltaTime();
+        ctrlMan.run();
+        audioMan.update(delta);
+        if (screen != null) {
+            screen.render(delta);
+        }
         gameViewport.apply();
         uiViewport.apply();
+    }
+
+    @Override
+    public void pause() {
+        logger.log("Game pause method called");
+        if (paused) {
+            return;
+        }
+        logger.log("Game pause actuated");
+        paused = true;
+        audioMan.pause();
+        screen.pause();
+    }
+
+    @Override
+    public void resume() {
+        logger.log("Game resume method called");
+        if (!paused) {
+            return;
+        }
+        logger.log("Game resume actuated");
+        paused = false;
+        audioMan.resume();
+        screen.pause();
     }
 
     @Override
     public void resize(int width, int height) {
         gameViewport.update(width, height);
         uiViewport.update(width, height);
+        screen.resize(width, height);
     }
 
     @Override
     public void dispose() {
-        super.dispose();
+        screen.dispose();
         batch.dispose();
         assMan.dispose();
         screen.dispose();

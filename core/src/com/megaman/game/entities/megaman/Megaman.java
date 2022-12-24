@@ -1,6 +1,5 @@
 package com.megaman.game.entities.megaman;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
@@ -53,15 +52,19 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float CLAMP_X = 25f;
     public static final float CLAMP_Y = 35f;
 
-    public static final float RUN_SPEED = 4f;
+    public static final float RUN_SPEED = 5f;
     public static final float RUN_IMPULSE = 50f;
     public static final float WATER_RUN_SPEED = 2.25f;
 
-    public static final float JUMP_VEL = 17.5f;
-
-    public static final float WALL_JUMP_VEL = 30f;
-    public static final float WALL_JUMP_HORIZ = 12f;
-    public static final float WALL_JUMP_IMPETUS_TIME = .2f;
+    public static final float JUMP_VEL = 22f;
+    public static final float WATER_JUMP_VEL = 15f;
+    public static final float WALL_JUMP_VEL = 42f;
+    public static final float WALL_JUMP_HORIZ = 12.5f;
+    public static final float WALL_JUMP_IMPETUS_TIME = .1f;
+    public static final float GRAVITY = -.35f;
+    public static final float ICE_GRAVITY = -1f;
+    public static final float WATER_GRAVITY = -.25f;
+    public static final float WATER_ICE_GRAVITY = -.4f;
 
     public static final float AIR_DASH_VEL = 12f;
     public static final float AIR_DASH_END_BUMP = 3f;
@@ -73,12 +76,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float WATER_GROUND_SLIDE_VEL = 6f;
     public static final float MAX_GROUND_SLIDE_TIME = .35f;
 
-    public static final float GROUNDED_GRAVITY = -.125f;
-    public static final float UNGROUNDED_GRAVITY = -.5f;
-    public static final float WATER_UNGROUNDED_GRAVITY = -.25f;
-
-    public static final float SHOOT_ANIM_TIME = .5f;
-
     public static final float DAMAGE_DURATION = .75f;
     public static final float DAMAGE_RECOVERY_TIME = 1.5f;
     public static final float DAMAGE_RECOVERY_FLASH_DURATION = .05f;
@@ -88,6 +85,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public static final float EXPLOSION_ORB_SPEED = 3.5f;
 
+    public static final float SHOOT_ANIM_TIME = .5f;
     public static final float CHARGING_ANIM_TIME = .125f;
 
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
@@ -174,7 +172,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         dmgTimer.reset();
         damageNegotiation.runOnDamage();
         healthHandler.removeHealth(damageNegotiation.getDamage(damager));
-        request(SoundAsset.MEGAMAN_DAMAGE_SOUND);
+        request(SoundAsset.MEGAMAN_DAMAGE_SOUND, true);
     }
 
     @Override
@@ -212,7 +210,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public void stopCharging() {
         chargingTimer.reset();
-        stopLoop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
     }
 
     public boolean isShooting() {
@@ -266,16 +263,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return !dmgTimer.isFinished();
     }
 
-    public void request(SoundAsset s) {
-        request(s, false);
-    }
-
-    public void request(SoundAsset s, boolean loop) {
-        getComponent(SoundComponent.class).request(s, loop);
-    }
-
-    public void stopLoop(SoundAsset s) {
-        getComponent(SoundComponent.class).stopLoop(s);
+    public void request(SoundAsset ass, boolean play) {
+        SoundComponent c = getComponent(SoundComponent.class);
+        if (play) {
+            c.requestToPlay(ass);
+        } else {
+            c.requestToStop(ass);
+        }
     }
 
     private ControllerComponent controllerComponent() {
@@ -358,7 +352,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             public void onJustReleased() {
                 if (!canFireCurrWeapon() || !shoot()) {
-                    getComponent(SoundComponent.class).request(SoundAsset.ERROR_SOUND);
+                    getComponent(SoundComponent.class).requestToPlay(SoundAsset.ERROR_SOUND);
                 }
                 stopCharging();
             }
@@ -388,7 +382,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 aButtonTask = AButtonTask.AIR_DASH;
             }
         };
-        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle());
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setWidth(.8f * WorldVals.PPM));
+        bodyFixture.offset.y = .1f * WorldVals.PPM;
         body.fixtures.add(bodyFixture);
         shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
         Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
@@ -401,16 +396,15 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         headFixture.putUserData(ConstKeys.RUN, onBounce);
         body.fixtures.add(headFixture);
         shapeHandles.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
-        Rectangle m2 = new Rectangle();
-        m2.setSize(WorldVals.PPM / 16f, WorldVals.PPM / 16f);
+        Rectangle m2 = new Rectangle().setSize(WorldVals.PPM / 6f, WorldVals.PPM / 2.25f);
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
-        leftFixture.offset.set(-.4f * WorldVals.PPM, .15f * WorldVals.PPM);
+        leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.fixtures.add(leftFixture);
         shapeHandles.add(new ShapeHandle(leftFixture.shape, Color.PINK));
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
-        rightFixture.offset.set(.4f * WorldVals.PPM, .15f * WorldVals.PPM);
+        rightFixture.offset.set(.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         body.fixtures.add(rightFixture);
@@ -423,21 +417,19 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         u.add(delta -> {
             if (is(BehaviorType.GROUND_SLIDING)) {
                 body.bounds.height = .45f * WorldVals.PPM;
+                ((Rectangle) bodyFixture.shape).height = .35f * WorldVals.PPM;
                 feetFixture.offset.y = -WorldVals.PPM / 4f;
             } else {
                 body.bounds.height = .95f * WorldVals.PPM;
+                ((Rectangle) bodyFixture.shape).height = .75f * WorldVals.PPM;
                 feetFixture.offset.y = -WorldVals.PPM / 2f;
             }
-            ((Rectangle) bodyFixture.shape).set(body.bounds);
-            if (body.velocity.y < 0f && !body.is(BodySense.FEET_ON_GROUND)) {
-                body.gravity.y =
-                        (is(BodySense.IN_WATER) ? WATER_UNGROUNDED_GRAVITY : UNGROUNDED_GRAVITY) * WorldVals.PPM;
-            } else {
-                body.gravity.y = GROUNDED_GRAVITY * WorldVals.PPM;
-                if (body.is(BodySense.IN_WATER)) {
-                    body.gravity.y *= 1.75f;
-                }
-            }
+            boolean wallSlidingOnIce = is(BehaviorType.WALL_SLIDING) &&
+                    (is(BodySense.TOUCHING_ICE_LEFT) || is(BodySense.TOUCHING_ICE_RIGHT));
+            float gravityY = is(BodySense.IN_WATER) ?
+                    (wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY) :
+                    (wallSlidingOnIce ? ICE_GRAVITY : GRAVITY);
+            body.gravity.y = gravityY * WorldVals.PPM;
         });
         putComponent(new ShapeComponent(shapeHandles));
         return new BodyComponent(body);
@@ -544,8 +536,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 body.velocity.add(x, y);
                 c.set(BehaviorType.SWIMMING, true);
-                Sound swimSound = game.getAssMan().getSound(SoundAsset.SWIM_SOUND);
-                game.getAudioMan().playSound(swimSound, false);
+                game.getAudioMan().playSound(SoundAsset.SWIM_SOUND);
             }
 
             @Override
@@ -579,19 +570,22 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             protected void init() {
                 c.set(BehaviorType.JUMPING, true);
-                boolean wallSliding = is(BehaviorType.WALL_SLIDING);
-                float x;
-                if (wallSliding) {
-                    x = WALL_JUMP_HORIZ * WorldVals.PPM;
+                Vector2 v = new Vector2();
+                if (is(BehaviorType.WALL_SLIDING)) {
+                    v.x = WALL_JUMP_HORIZ * WorldVals.PPM;
                     if (is(Facing.LEFT)) {
-                        x *= -1f;
+                        v.x *= -1f;
                     }
                 } else {
-                    x = body.velocity.x;
+                    v.x = body.velocity.x;
                 }
-                float y = (wallSliding ? WALL_JUMP_VEL : JUMP_VEL) * WorldVals.PPM;
-                body.velocity.set(x, y);
-                if (wallSliding) {
+                if (is(BodySense.IN_WATER)) {
+                    v.y = WATER_JUMP_VEL * WorldVals.PPM;
+                } else {
+                    v.y = (is(BehaviorType.WALL_SLIDING) ? WALL_JUMP_VEL : JUMP_VEL) * WorldVals.PPM;
+                }
+                body.velocity.set(v);
+                if (is(BehaviorType.WALL_SLIDING)) {
                     wallJumpTimer.reset();
                 }
             }
@@ -629,7 +623,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             protected void init() {
                 body.gravityOn = false;
                 aButtonTask = AButtonTask.JUMP;
-                request(SoundAsset.WHOOSH_SOUND);
+                request(SoundAsset.WHOOSH_SOUND, true);
                 c.set(BehaviorType.AIR_DASHING, true);
             }
 
@@ -729,7 +723,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             dmgTimer.update(delta);
             if (isDamaged()) {
                 chargingTimer.reset();
-                stopLoop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
                 float dmgX = .15f * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     dmgX *= -1f;

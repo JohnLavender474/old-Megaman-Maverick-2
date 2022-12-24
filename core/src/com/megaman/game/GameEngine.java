@@ -38,9 +38,24 @@ public class GameEngine implements Updatable, Resettable {
         }
     }
 
-    public final void setAllSystemsOn() {
+    public OrderedMap<Class<? extends System>, Boolean> getCurrSysStates() {
+        OrderedMap<Class<? extends System>, Boolean> sysStates = new OrderedMap<>();
+        for (ObjectMap.Entry<Class<? extends System>, System> e : systems.entries()) {
+            boolean on = e.value.on;
+            sysStates.put(e.key, on);
+        }
+        return sysStates;
+    }
+
+    public void setSysStates(OrderedMap<Class<? extends System>, Boolean> sysStates) {
+        for (ObjectMap.Entry<Class<? extends System>, Boolean> e : sysStates) {
+            setSystemsOn(e.value, e.key);
+        }
+    }
+
+    public final void setAllSystemsOn(boolean on) {
         for (System s : systems.values()) {
-            s.on = true;
+            s.on = on;
         }
     }
 
@@ -48,7 +63,7 @@ public class GameEngine implements Updatable, Resettable {
     public final void setSystemsOn(boolean on, Class<? extends System>... sClasses) {
         for (Class<? extends System> sClass : sClasses) {
             if (!systems.containsKey(sClass)) {
-                continue;
+                throw new IllegalStateException("Not in engine: " + sClass);
             }
             getSystem(sClass).on = on;
         }

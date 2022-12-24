@@ -9,7 +9,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class ControllerManager {
+public class ControllerManager implements Runnable {
 
     private static final Map<ControllerBtn, Supplier<Integer>> defaultCtrlCodes = new EnumMap<>(ControllerBtn.class) {{
         put(ControllerBtn.DPAD_LEFT, () -> getController().getMapping().buttonDpadLeft);
@@ -46,6 +46,30 @@ public class ControllerManager {
         }
     }
 
+    @Override
+    public void run() {
+        if (!doUpdateController) {
+            return;
+        }
+        for (ControllerBtn btn : ControllerBtn.values()) {
+            boolean pressed = (isControllerConnected() && isCtrlBtnPressed(btn)) || isKeyboardBtnPressed(btn);
+            ControllerBtnStat stat = ctrlBtnStats.get(btn);
+            ControllerBtnStat newStat;
+            if (pressed) {
+                if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED) {
+                    newStat = ControllerBtnStat.JUST_PRESSED;
+                } else {
+                    newStat = ControllerBtnStat.PRESSED;
+                }
+            } else if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED) {
+                newStat = ControllerBtnStat.RELEASED;
+            } else {
+                newStat = ControllerBtnStat.JUST_RELEASED;
+            }
+            ctrlBtnStats.replace(btn, newStat);
+        }
+    }
+
     public static Controller getController() {
         if (Controllers.getControllers().isEmpty()) {
             return null;
@@ -75,30 +99,6 @@ public class ControllerManager {
 
     private boolean isKeyboardBtnPressed(ControllerBtn btn) {
         return Gdx.input.isKeyPressed(keyboardCodes.get(btn));
-    }
-
-    public void update() {
-        if (!doUpdateController) {
-            return;
-        }
-        for (ControllerBtn btn : ControllerBtn.values()) {
-            boolean pressed = (isControllerConnected() && isCtrlBtnPressed(btn)) || isKeyboardBtnPressed(btn);
-            // boolean pressed = isKeyboardBtnPressed(btn);
-            ControllerBtnStat stat = ctrlBtnStats.get(btn);
-            ControllerBtnStat newStat;
-            if (pressed) {
-                if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED) {
-                    newStat = ControllerBtnStat.JUST_PRESSED;
-                } else {
-                    newStat = ControllerBtnStat.PRESSED;
-                }
-            } else if (stat == ControllerBtnStat.RELEASED || stat == ControllerBtnStat.JUST_RELEASED) {
-                newStat = ControllerBtnStat.RELEASED;
-            } else {
-                newStat = ControllerBtnStat.JUST_RELEASED;
-            }
-            ctrlBtnStats.replace(btn, newStat);
-        }
     }
 
 }

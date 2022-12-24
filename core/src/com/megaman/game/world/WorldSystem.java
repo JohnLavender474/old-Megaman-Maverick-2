@@ -193,8 +193,8 @@ public class WorldSystem extends System {
             throw new IllegalStateException("First body must be dynamic, second must be static");
         }
         Rectangle overlap = new Rectangle();
-        boolean overlapping = dynamicBody.intersects(staticBody, overlap);
-        if (!overlapping) {
+        if (!dynamicBody.intersects(staticBody, overlap) ||
+                isSpecialCollision(dynamicBody, staticBody, overlap)) {
             return;
         }
         if (overlap.width > overlap.height) {
@@ -212,6 +212,13 @@ public class WorldSystem extends System {
                 dynamicBody.bounds.x -= overlap.width;
             }
         }
+    }
+
+    private boolean isSpecialCollision(Body dynamicBody, Body staticBody, Rectangle overlap) {
+
+        // TODO: megaman and ladder collision, only collide when megaman bounds.y >= ladder bounds.y + bounds.height
+
+        return false;
     }
 
 }

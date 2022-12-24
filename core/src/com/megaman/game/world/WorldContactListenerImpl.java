@@ -1,6 +1,5 @@
 package com.megaman.game.world;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -8,11 +7,12 @@ import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.behaviors.BehaviorType;
+import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.decorations.impl.Splash;
-import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.shapes.ShapeUtils;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
 
-    private static final Logger logger = new Logger(WorldContactListener.class, MegamanGame.DEBUG);
+    private static final Logger logger = new Logger(WorldContactListener.class, MegamanGame.DEBUG && false);
 
     private final MegamanGame game;
 
@@ -56,32 +56,34 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.TOUCHING_BLOCK_RIGHT, true);
             }
+        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
+            Body body = contact.mask1stBody();
+            String side = contact.mask1stData(ConstKeys.SIDE, String.class);
+            if (side.equals(ConstKeys.LEFT)) {
+                body.set(BodySense.TOUCHING_ICE_LEFT, true);
+            } else {
+                body.set(BodySense.TOUCHING_ICE_RIGHT, true);
+            }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
             if (contact.mask1stEntity() instanceof Megaman megaman) {
                 megaman.aButtonTask = AButtonTask.JUMP;
-                megaman.request(SoundAsset.MEGAMAN_LAND_SOUND);
+                megaman.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
             }
         } else if (contact.acceptMask(FixtureType.BOUNCER, w,
                 FixtureType.FEET,
                 FixtureType.HEAD,
                 FixtureType.SIDE)) {
-            float bounce = contact.mask1stData(ConstKeys.VAL, Float.class);
-            Vector2 v = new Vector2();
-            switch (w.data) {
-                case FEET -> v.y = bounce;
-                case HEAD -> v.y = -bounce;
-                case SIDE -> {
-                    switch (contact.mask2ndData(ConstKeys.SIDE, String.class)) {
-                        case ConstKeys.LEFT -> v.x = bounce;
-                        case ConstKeys.RIGHT -> v.x = -bounce;
-                        default -> throw new IllegalStateException("No side data set");
-                    }
-                }
-                default -> throw new IllegalStateException("Failed to get bounceable fixture type");
+            Vector2 bounce = contact.mask1stData(ConstKeys.VAL, Vector2.class).cpy();
+            if (w.data == FixtureType.FEET && contact.mask2ndEntity() instanceof Megaman &&
+                    game.getCtrlMan().isPressed(ControllerBtn.DPAD_UP)) {
+                bounce.y *= 2f;
             }
-            contact.mask2ndBody().velocity.set(v);
-            contact.mask2ndData(ConstKeys.RUN, Runnable.class).run();
+            contact.mask2ndBody().velocity.set(bounce);
+            Runnable r = contact.mask1stData(ConstKeys.RUN, Runnable.class);
+            if (r != null) {
+                r.run();
+            }
         } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
             Body headBody = contact.mask1stBody();
             headBody.set(BodySense.HEAD_TOUCHING_BLOCK, true);
@@ -94,11 +96,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 megaman.aButtonTask = AButtonTask.SWIM;
             }
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
-            Sound splashSound = game.getAssMan().getSound(SoundAsset.SPLASH_SOUND);
-            game.getAudioMan().playSound(splashSound, false);
+            game.getAudioMan().playSound(SoundAsset.SPLASH_SOUND);
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
-            Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
-            Vector2 force = forceFunc.apply(contact.mask.getFirst());
+            Vector2 force = ((Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION))
+                    .apply(contact.mask.getFirst());
             contact.mask1stBody().velocity.add(force);
         } else if (contact.acceptMask(FixtureType.PROJECTILE, w,
                 FixtureType.BLOCK,
@@ -151,11 +152,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 megaman.aButtonTask = AButtonTask.SWIM;
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
-            contact.mask1stBody().resistance.x = .95f;
-        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
-            if (contact.mask1stEntity() instanceof Megaman megaman && megaman.is(BehaviorType.WALL_SLIDING)) {
-                megaman.body.velocity.set(0f, -12.5f);
-            }
+            contact.mask1stBody().resistance.x = .925f;
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
             Vector2 force = forceFunc.apply(contact.mask.getFirst());
@@ -184,6 +181,14 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.TOUCHING_BLOCK_RIGHT, false);
             }
+        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
+            Body body = contact.mask1stBody();
+            String side = contact.mask1stData(ConstKeys.SIDE, String.class);
+            if (side.equals(ConstKeys.LEFT)) {
+                body.set(BodySense.TOUCHING_ICE_LEFT, false);
+            } else {
+                body.set(BodySense.TOUCHING_ICE_RIGHT, false);
+            }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, false);
             if (contact.mask1stEntity() instanceof Megaman megaman) {
@@ -196,8 +201,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman megaman) {
                 megaman.aButtonTask = AButtonTask.AIR_DASH;
             }
-            Sound splashSound = game.getAssMan().getSound(SoundAsset.SPLASH_SOUND);
-            game.getAudioMan().playSound(splashSound, false);
+            game.getAudioMan().playSound(SoundAsset.SPLASH_SOUND);
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
         }
     }

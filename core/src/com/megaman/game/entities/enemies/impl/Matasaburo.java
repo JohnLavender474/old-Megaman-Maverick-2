@@ -1,0 +1,116 @@
+package com.megaman.game.entities.enemies.impl;
+
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.animations.Animation;
+import com.megaman.game.animations.AnimationComponent;
+import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.entities.DamageNegotiation;
+import com.megaman.game.entities.Damager;
+import com.megaman.game.entities.Faceable;
+import com.megaman.game.entities.Facing;
+import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.shapes.ShapeUtils;
+import com.megaman.game.sprites.SpriteComponent;
+import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.updatables.UpdatableComponent;
+import com.megaman.game.utils.enums.Position;
+import com.megaman.game.world.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+public class Matasaburo extends Enemy implements Faceable {
+
+    private static final float DAMAGE_DUR = .35f;
+    private static final float BLOW_FORCE = .75f;
+
+    private static TextureRegion matasaburoReg;
+
+    private final Sprite sprite;
+
+    @Getter
+    @Setter
+    private Facing facing;
+
+    public Matasaburo(MegamanGame game) {
+        super(game, DAMAGE_DUR, BodyType.DYNAMIC);
+        if (matasaburoReg == null) {
+            matasaburoReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "Matasaburo");
+        }
+        sprite = new Sprite();
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+    }
+
+    @Override
+    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
+        Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
+        ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
+    }
+
+    @Override
+    protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
+        return new HashMap<>() {{
+
+        }};
+    }
+
+    @Override
+    protected void defineBody(Body body) {
+        body.bounds.setSize(WorldVals.PPM);
+        Fixture blowFixture = new Fixture(this, FixtureType.FORCE,
+                new Rectangle().setSize(10f * WorldVals.PPM, WorldVals.PPM));
+        Function<Fixture, Vector2> blowFunc = f -> {
+            float force = BLOW_FORCE * WorldVals.PPM;
+            if (is(Facing.LEFT)) {
+                force *= -1f;
+            }
+            return new Vector2(force, 0f);
+        };
+        blowFixture.putUserData(ConstKeys.FUNCTION, blowFunc);
+        body.fixtures.add(blowFixture);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
+                new Rectangle().setSize(.85f * WorldVals.PPM));
+        body.fixtures.add(damagerFixture);
+        Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
+                new Rectangle().setSize(WorldVals.PPM));
+        body.fixtures.add(damageableFixture);
+        body.preProcess = delta -> {
+            float offsetX = 5f * WorldVals.PPM;
+            if (is(Facing.LEFT)) {
+                offsetX *= -1f;
+            }
+            blowFixture.offset.x = offsetX;
+        };
+    }
+
+    @Override
+    protected void defineUpdateComponent(UpdatableComponent c) {
+        super.defineUpdateComponent(c);
+        c.add(delta -> setFacing(game.getMegaman().body.isRightOf(body) ? Facing.RIGHT : Facing.LEFT));
+    }
+
+    private SpriteComponent spriteComponent() {
+        sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
+        SpriteHandle h = new SpriteHandle(sprite, 3);
+        h.updatable = delta -> {
+            h.setPosition(body.bounds, Position.BOTTOM_CENTER);
+            sprite.setFlip(is(Facing.LEFT), false);
+        };
+        return new SpriteComponent(h);
+    }
+
+    private AnimationComponent animationComponent() {
+        return new AnimationComponent(sprite, new Animation(matasaburoReg, 6, .1f));
+    }
+
+}

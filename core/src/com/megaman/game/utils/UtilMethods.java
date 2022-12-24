@@ -36,9 +36,9 @@ public class UtilMethods {
         float x = target.x - start.x;
         float y = target.y - start.y;
         if (Math.abs(x) > Math.abs(y)) {
-            return x > 0 ? Direction.DIR_RIGHT : Direction.DIR_LEFT;
+            return x > 0 ? Direction.RIGHT : Direction.LEFT;
         } else {
-            return y > 0 ? Direction.DIR_UP : Direction.DIR_DOWN;
+            return y > 0 ? Direction.UP : Direction.DOWN;
         }
     }
 
@@ -121,9 +121,9 @@ public class UtilMethods {
             return null;
         }
         if (overlap.width > overlap.height) {
-            return toBePushed.y > other.y ? Direction.DIR_UP : Direction.DIR_DOWN;
+            return toBePushed.y > other.y ? Direction.UP : Direction.DOWN;
         } else {
-            return toBePushed.x > other.x ? Direction.DIR_RIGHT : Direction.DIR_LEFT;
+            return toBePushed.x > other.x ? Direction.RIGHT : Direction.LEFT;
         }
     }
 

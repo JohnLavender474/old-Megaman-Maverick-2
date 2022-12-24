@@ -80,7 +80,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
         return new UpdatableComponent(delta -> {
             soundTimer.update(delta);
             if (soundTimer.isFinished()) {
-                getComponent(SoundComponent.class).request(SoundAsset.ENEMY_DAMAGE_SOUND);
+                getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_DAMAGE_SOUND);
                 soundTimer.reset();
             }
             cullTimer.update(delta);

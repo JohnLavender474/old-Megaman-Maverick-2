@@ -1,12 +1,14 @@
 package com.megaman.game.entities.blocks;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.world.*;
 
 public class Block extends Entity {
@@ -23,10 +25,16 @@ public class Block extends Entity {
         blockFixture = new Fixture(this, FixtureType.BLOCK, new Rectangle());
         body.fixtures.add(blockFixture);
         putComponent(new BodyComponent(body));
-        putComponent(new ShapeComponent(body.bounds));
+        putComponent(shapeComponent());
         if (cullOnBodyOOB) {
             putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
         }
+    }
+
+    protected ShapeComponent shapeComponent() {
+        Array<ShapeHandle> h = new Array<>();
+        h.add(new ShapeHandle(body.bounds));
+        return new ShapeComponent(h);
     }
 
     @Override

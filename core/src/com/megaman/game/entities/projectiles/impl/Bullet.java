@@ -55,7 +55,7 @@ public class Bullet extends Projectile {
         game.getGameEngine().spawnEntity(
                 game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
                 ShapeUtils.getCenterPoint(body.bounds));
-        game.getAudioMan().playSound(game.getAssMan().getSound(SoundAsset.THUMP_SOUND), false);
+        game.getAudioMan().playSound(SoundAsset.THUMP_SOUND);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class Bullet extends Projectile {
     public void hitShield(Fixture shieldFixture) {
         owner = shieldFixture.entity;
         traj.x *= -1f;
-        String reflectDir = shieldFixture.getUserData(ConstKeys.DIR, String.class);
+        String reflectDir = shieldFixture.getUserData(ConstKeys.REFLECT, String.class);
         if (reflectDir == null || reflectDir.equals(ConstKeys.STRAIGHT)) {
             traj.y = 0f;
         } else if (reflectDir.equals(ConstKeys.UP)) {
@@ -82,7 +82,7 @@ public class Bullet extends Projectile {
         } else {
             traj.y = -REFLECT_VEL * WorldVals.PPM;
         }
-        getComponent(SoundComponent.class).request(SoundAsset.DINK_SOUND);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
     private UpdatableComponent updatableComponent() {
