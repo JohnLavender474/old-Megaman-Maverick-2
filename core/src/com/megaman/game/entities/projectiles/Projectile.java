@@ -23,6 +23,8 @@ import java.util.Set;
 
 public abstract class Projectile extends Entity implements Damager {
 
+    public static final float DEFAULT_CULL_DUR = .5f;
+
     public final Body body;
     public final Sprite sprite;
 
@@ -33,13 +35,17 @@ public abstract class Projectile extends Entity implements Damager {
     }
 
     public Projectile(MegamanGame game, BodyType bodyType) {
+        this(game, DEFAULT_CULL_DUR, bodyType);
+    }
+
+    public Projectile(MegamanGame game, float cullDur, BodyType bodyType) {
         super(game, EntityType.PROJECTILE);
         body = new Body(bodyType);
         sprite = new Sprite();
         putComponent(new SoundComponent());
         putComponent(new BodyComponent(body));
         putComponent(cullOnMessageComponent());
-        putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
     }
 
     @Override
@@ -50,7 +56,10 @@ public abstract class Projectile extends Entity implements Damager {
 
     @Override
     public boolean canDamage(Damageable damageable) {
-        return owner == null || !owner.equals(damageable);
+        if (owner == null) {
+            return true;
+        }
+        return damageable instanceof Entity e && entityType != e.entityType;
     }
 
     public void hitBody(Fixture bodyFixture) {

@@ -1,9 +1,11 @@
 package com.megaman.game.entities.enemies.impl;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
@@ -15,6 +17,9 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
@@ -67,9 +72,16 @@ public class Matasaburo extends Enemy implements Faceable {
     @Override
     protected void defineBody(Body body) {
         body.bounds.setSize(WorldVals.PPM);
+        Array<ShapeHandle> h = new Array<>();
         Fixture blowFixture = new Fixture(this, FixtureType.FORCE,
-                new Rectangle().setSize(10f * WorldVals.PPM, WorldVals.PPM));
+                new Rectangle().setSize(10f * WorldVals.PPM, WorldVals.PPM * 1.15f));
         Function<Fixture, Vector2> blowFunc = f -> {
+            if (f.entity instanceof Enemy) {
+                return Vector2.Zero;
+            }
+            if (f.entity instanceof Projectile p) {
+                p.owner = null;
+            }
             float force = BLOW_FORCE * WorldVals.PPM;
             if (is(Facing.LEFT)) {
                 force *= -1f;
@@ -77,12 +89,15 @@ public class Matasaburo extends Enemy implements Faceable {
             return new Vector2(force, 0f);
         };
         blowFixture.putUserData(ConstKeys.FUNCTION, blowFunc);
+        h.add(new ShapeHandle(blowFixture.shape, Color.BLUE));
         body.fixtures.add(blowFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.85f * WorldVals.PPM));
+        h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
         body.fixtures.add(damagerFixture);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(WorldVals.PPM));
+        h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
         body.fixtures.add(damageableFixture);
         body.preProcess = delta -> {
             float offsetX = 5f * WorldVals.PPM;
@@ -91,6 +106,7 @@ public class Matasaburo extends Enemy implements Faceable {
             }
             blowFixture.offset.x = offsetX;
         };
+        putComponent(new ShapeComponent(h));
     }
 
     @Override

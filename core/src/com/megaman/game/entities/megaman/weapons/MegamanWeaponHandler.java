@@ -225,7 +225,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
 
     private Vector2 getSpawnCenter() {
         Vector2 spawnCenter = new Vector2(megaman.body.getCenter());
-        float xOffset = WorldVals.PPM;
+        float xOffset = WorldVals.PPM * .85f;
         if (megaman.is(Facing.LEFT)) {
             xOffset *= -1f;
         }

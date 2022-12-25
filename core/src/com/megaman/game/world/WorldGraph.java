@@ -24,10 +24,10 @@ public class WorldGraph implements Resettable {
     }
 
     private int[] getMinsAndMaxes(Rectangle bounds) {
-        int minX = (int) Math.floor(bounds.x / WorldVals.PPM);
-        int minY = (int) Math.floor(bounds.y / WorldVals.PPM);
-        int maxX = (int) Math.ceil((bounds.x + bounds.width) / WorldVals.PPM);
-        int maxY = (int) Math.ceil((bounds.y + bounds.height) / WorldVals.PPM);
+        int minX = (int) Math.floor(bounds.x / WorldVals.PPM) - 1;
+        int minY = (int) Math.floor(bounds.y / WorldVals.PPM) - 1;
+        int maxX = (int) Math.ceil((bounds.x + bounds.width) / WorldVals.PPM) + 1;
+        int maxY = (int) Math.ceil((bounds.y + bounds.height) / WorldVals.PPM) + 1;
         return new int[]{
                 Integer.max(0, minX),
                 Integer.max(0, minY),

@@ -13,7 +13,6 @@ import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.DamageNegotiation;
 import com.megaman.game.entities.Damager;
-import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.pathfinding.PathfindParams;
 import com.megaman.game.pathfinding.PathfindingComponent;
@@ -27,7 +26,8 @@ import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 import lombok.RequiredArgsConstructor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

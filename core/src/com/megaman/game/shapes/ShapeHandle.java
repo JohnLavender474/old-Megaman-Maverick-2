@@ -30,7 +30,11 @@ public class ShapeHandle implements RenderableShape {
     }
 
     public ShapeHandle(Shape2D shape, Color color) {
-        this(() -> shape, () -> color);
+        this(shape, () -> color);
+    }
+
+    public ShapeHandle(Shape2D shape, Supplier<Color> colorSupplier) {
+        this(() -> shape, colorSupplier);
     }
 
     public ShapeHandle(Supplier<Shape2D> shapeSupplier) {

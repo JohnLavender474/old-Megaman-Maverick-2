@@ -54,6 +54,7 @@ import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.Logger;
+import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
@@ -376,6 +377,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     public void resume() {
         logger.log("Level screen resume method called");
         GameEngine engine = game.getGameEngine();
+        logger.log("Sys states on resume: " + UtilMethods.toString(sysStatesOnPause));
         engine.setSysStates(sysStatesOnPause);
         game.getAudioMan().playSound(SoundAsset.PAUSE_SOUND);
     }

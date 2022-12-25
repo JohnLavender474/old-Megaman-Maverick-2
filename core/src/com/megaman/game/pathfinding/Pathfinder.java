@@ -57,10 +57,12 @@ public class Pathfinder implements Callable<LinkedList<Rectangle>> {
                         }
                     }
                     Node neighbor = nodes[x][y];
-                    if (params.reject(graph.getFixtures(x, y))) {
+                    if (neighbor != null && neighbor.disc) {
                         continue;
                     }
-                    if (neighbor != null && neighbor.disc) {
+                    if (x != targetCoords[0] &&
+                            y != targetCoords[1] &&
+                            params.reject(graph.getFixtures(x, y))) {
                         continue;
                     }
                     // int totalDist = curr.dist + dist(curr.x, curr.y, x, y);
@@ -101,12 +103,6 @@ public class Pathfinder implements Callable<LinkedList<Rectangle>> {
 
     private boolean isOutOfBounds(int x, int y) {
         return x < 0 || x >= nodes.length || y < 0 || y >= nodes[0].length;
-    }
-
-    private int dist(int x1, int y1, int x2, int y2) {
-        int xd = x2 - x1;
-        int yd = y2 - y1;
-        return xd * xd + yd * yd;
     }
 
     public int cost(int x1, int y1, int x2, int y2) {

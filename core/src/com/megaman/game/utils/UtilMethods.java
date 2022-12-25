@@ -6,12 +6,22 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Direction;
 
 import java.util.function.Predicate;
 
 public class UtilMethods {
+
+    public static String toString(ObjectMap<?, ?> m) {
+        StringBuilder sb = new StringBuilder("{");
+        for (ObjectMap.Entry<?, ?> e : m.entries()) {
+            sb.append("[").append(e.key).append(" : ").append(e.value).append("]");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 
     public static <T> boolean mask(T o1, T o2, Predicate<T> p1, Predicate<T> p2) {
         return (p1.test(o1) && p2.test(o2)) || (p2.test(o1) && p1.test(o2));

@@ -20,6 +20,7 @@ import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Position;
+import com.megaman.game.world.BodyType;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
 import com.megaman.game.world.WorldVals;
@@ -27,6 +28,7 @@ import com.megaman.game.world.WorldVals;
 public class Bullet extends Projectile {
 
     private static final float CLAMP = 10f;
+    private static final float CULL_DUR = .2f;
     private static final float REFLECT_VEL = 5f;
 
     private static TextureRegion bulletReg;
@@ -34,19 +36,25 @@ public class Bullet extends Projectile {
     private final Vector2 traj;
 
     public Bullet(MegamanGame game) {
-        super(game);
+        super(game, CULL_DUR, BodyType.ABSTRACT);
         if (bulletReg == null) {
             bulletReg = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
         }
         this.traj = new Vector2();
         defineBody();
         putComponent(spriteComponent());
-        putComponent(updatableComponent());
+
+        // TODO: testing NOT using updatable comp
+        // putComponent(updatableComponent());
     }
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
+
+        // TODO: testing NOT using updatable comp
+        body.velocity.set(traj);
+
         super.init(spawn, data);
     }
 
@@ -82,6 +90,10 @@ public class Bullet extends Projectile {
         } else {
             traj.y = -REFLECT_VEL * WorldVals.PPM;
         }
+
+        // TODO: testing NOT using updatable comp
+        body.velocity.set(traj);
+
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
@@ -91,6 +103,8 @@ public class Bullet extends Projectile {
 
     private void defineBody() {
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle(body.bounds));
+        body.fixtures.add(bodyFixture);
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE,
                 new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
         body.fixtures.add(projectileFixture);
@@ -102,7 +116,7 @@ public class Bullet extends Projectile {
     private SpriteComponent spriteComponent() {
         sprite.setRegion(bulletReg);
         sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
-        SpriteHandle h = new SpriteHandle(sprite, 3);
+        SpriteHandle h = new SpriteHandle(sprite, 5);
         h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);
     }

@@ -18,8 +18,9 @@ public class WorldSystem extends System {
         put(FixtureType.DAMAGER, EnumSet.of(
                 FixtureType.DAMAGEABLE));
         put(FixtureType.BODY, EnumSet.of(
-                FixtureType.WATER,
                 FixtureType.FORCE));
+        put(FixtureType.WATER_LISTENER, EnumSet.of(
+                FixtureType.WATER));
         put(FixtureType.SIDE, EnumSet.of(
                 FixtureType.ICE,
                 FixtureType.BLOCK,

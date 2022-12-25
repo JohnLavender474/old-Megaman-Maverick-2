@@ -1,0 +1,165 @@
+package com.megaman.game.entities.enemies.impl;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.animations.Animation;
+import com.megaman.game.animations.AnimationComponent;
+import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.entities.DamageNegotiation;
+import com.megaman.game.entities.Damager;
+import com.megaman.game.entities.Faceable;
+import com.megaman.game.entities.Facing;
+import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
+import com.megaman.game.sprites.SpriteComponent;
+import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.updatables.UpdatableComponent;
+import com.megaman.game.utils.enums.Position;
+import com.megaman.game.world.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class SuctionRoller extends Enemy implements Faceable {
+
+    private static final float GRAVITY = -.15f;
+    private static final float VEL_X = 2.5f;
+    private static final float VEL_Y = 2.5f;
+
+    private static TextureRegion sucRollReg;
+
+    private final Sprite sprite;
+
+    private boolean onWall;
+    private boolean wasOnWall;
+    @Getter
+    @Setter
+    private Facing facing;
+
+    public SuctionRoller(MegamanGame game) {
+        super(game, BodyType.DYNAMIC);
+        if (sucRollReg == null) {
+            sucRollReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "SuctionRoller");
+        }
+        sprite = new Sprite();
+        putComponent(spriteComponent());
+        putComponent(animationComponent());
+    }
+
+    @Override
+    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
+        onWall = wasOnWall = false;
+        facing = game.getMegaman().body.bounds.x > body.bounds.x ? Facing.RIGHT : Facing.LEFT;
+        Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
+        ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
+    }
+
+    @Override
+    protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
+        return new HashMap<>() {{
+
+        }};
+    }
+
+    @Override
+    protected void defineUpdateComponent(UpdatableComponent c) {
+        super.defineUpdateComponent(c);
+        c.add(delta -> {
+            if (game.getMegaman().dead) {
+                return;
+            }
+            wasOnWall = onWall;
+            onWall = (is(Facing.LEFT) && body.is(BodySense.TOUCHING_BLOCK_LEFT)) ||
+                    (is(Facing.RIGHT) && body.is(BodySense.TOUCHING_BLOCK_RIGHT));
+            if (body.is(BodySense.FEET_ON_GROUND)) {
+                if (ShapeUtils.getBottomRightPoint(game.getMegaman().body.bounds).x < body.bounds.x) {
+                    setFacing(Facing.LEFT);
+                } else if (game.getMegaman().body.bounds.x > ShapeUtils.getBottomRightPoint(body.bounds).x) {
+                    setFacing(Facing.RIGHT);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void defineBody(Body body) {
+        Array<ShapeHandle> h = new Array<>();
+        body.gravityOn = true;
+        body.bounds.setSize(.75f * WorldVals.PPM, WorldVals.PPM);
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
+                new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
+        h.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
+        body.fixtures.add(bodyFixture);
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET,
+                new Rectangle().setSize(WorldVals.PPM / 4f, WorldVals.PPM / 32f));
+        feetFixture.offset.y = .6f * -WorldVals.PPM;
+        h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
+        body.fixtures.add(feetFixture);
+        Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
+        leftFixture.offset.x = -.375f * WorldVals.PPM;
+        leftFixture.offset.y = WorldVals.PPM / 5f;
+        leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
+        h.add(new ShapeHandle(leftFixture.shape, Color.ORANGE));
+        body.fixtures.add(leftFixture);
+        Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
+        rightFixture.offset.x = .375f * WorldVals.PPM;
+        rightFixture.offset.y = WorldVals.PPM / 5f;
+        rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
+        h.add(new ShapeHandle(rightFixture.shape, Color.ORANGE));
+        body.fixtures.add(rightFixture);
+        Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
+                new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
+        h.add(new ShapeHandle(damageableFixture.shape, Color.RED));
+        body.fixtures.add(damageableFixture);
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
+                new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
+        body.fixtures.add(damagerFixture);
+        body.preProcess = delta -> {
+            body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY * WorldVals.PPM;
+            // body.gravityOn = !is(BodySense.FEET_ON_GROUND);
+            if (onWall) {
+                if (!wasOnWall) {
+                    body.velocity.x = 0f;
+                }
+                body.velocity.y = VEL_Y * WorldVals.PPM;
+            } else {
+                if (wasOnWall) {
+                    body.bounds.y += WorldVals.PPM / 10f;
+                }
+                body.velocity.x = (is(Facing.RIGHT) ? VEL_X : -VEL_X) * WorldVals.PPM;
+            }
+        };
+        putComponent(new ShapeComponent(h));
+    }
+
+    private SpriteComponent spriteComponent() {
+        sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
+        sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);
+        SpriteHandle h = new SpriteHandle(sprite, 3);
+        h.updatable = delta -> {
+            sprite.setFlip(is(Facing.RIGHT), false);
+            sprite.setRotation(onWall ? (is(Facing.LEFT) ? -90f : 90f) : 0f);
+            h.setPosition(body.bounds, onWall ?
+                    (is(Facing.LEFT) ? Position.CENTER_LEFT : Position.CENTER_RIGHT) : Position.BOTTOM_CENTER);
+        };
+        return new SpriteComponent(h);
+    }
+
+    private AnimationComponent animationComponent() {
+        return new AnimationComponent(sprite, new Animation(sucRollReg, 5, .1f));
+    }
+
+}

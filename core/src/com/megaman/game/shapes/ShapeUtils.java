@@ -11,6 +11,17 @@ import java.util.List;
 
 public class ShapeUtils {
 
+    public static Vector2 getCenter(Shape2D s) {
+        if (s instanceof Rectangle r) {
+            return getCenterPoint(r);
+        } else if (s instanceof Circle c) {
+            return new Vector2(c.x, c.y);
+        } else if (s instanceof Polyline l) {
+            return getCenterPoint(l.getBoundingRectangle());
+        }
+        return Vector2.Zero;
+    }
+
     public static boolean intersectLineRect(Polyline polyline, Rectangle rectangle, Collection<Vector2> interPoints) {
         float[] v = polyline.getTransformedVertices();
         return intersectLineRect(v, rectangle, interPoints);

@@ -22,6 +22,7 @@ import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class SpringBouncer extends Entity {
@@ -76,7 +77,7 @@ public class SpringBouncer extends Entity {
             }
             default -> throw new IllegalArgumentException("Incompatible dir: " + dirStr);
         };
-        bounceFixture.putUserData(ConstKeys.VAL, bounce);
+        bounceFixture.putUserData(ConstKeys.FUNCTION, (Function<Fixture, Vector2>) f -> bounce.cpy());
     }
 
     private void onBounce() {

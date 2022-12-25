@@ -31,10 +31,10 @@ import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Positional;
 import com.megaman.game.utils.objs.TimeMarkedRunnable;
@@ -56,12 +56,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float RUN_IMPULSE = 50f;
     public static final float WATER_RUN_SPEED = 2.25f;
 
-    public static final float JUMP_VEL = 22f;
+    public static final float JUMP_VEL = 24f;
     public static final float WATER_JUMP_VEL = 15f;
     public static final float WALL_JUMP_VEL = 42f;
     public static final float WALL_JUMP_HORIZ = 12.5f;
     public static final float WALL_JUMP_IMPETUS_TIME = .1f;
-    public static final float GRAVITY = -.35f;
+    public static final float GROUNDED_GRAVITY = -.0015f;
+    public static final float GRAVITY = -.375f;
     public static final float ICE_GRAVITY = -1f;
     public static final float WATER_GRAVITY = -.25f;
     public static final float WATER_ICE_GRAVITY = -.4f;
@@ -125,10 +126,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
         wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
         dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
-        chargingTimer = new Timer(
-                TIME_TO_FULLY_CHARGED,
-                new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
-                        () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
+        chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
+                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler = new MegamanWeaponHandler(this);
         weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
@@ -382,10 +381,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 aButtonTask = AButtonTask.AIR_DASH;
             }
         };
-        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setWidth(.8f * WorldVals.PPM));
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setWidth(.915f * WorldVals.PPM));
         bodyFixture.offset.y = .1f * WorldVals.PPM;
         body.fixtures.add(bodyFixture);
-        shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
+        shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.YELLOW));
         Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
         feetFixture.offset.y = -WorldVals.PPM / 2f;
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
@@ -413,24 +412,37 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 new Rectangle().setSize(.8f * WorldVals.PPM));
         body.fixtures.add(hitboxFixture);
         shapeHandles.add(new ShapeHandle(hitboxFixture.shape, Color.RED));
-        UpdatableComponent u = getComponent(UpdatableComponent.class);
-        u.add(delta -> {
+        Fixture waterListenerFixture = new Fixture(this, FixtureType.WATER_LISTENER,
+                new Rectangle().setSize(.8f * WorldVals.PPM, WorldVals.PPM / 4f));
+        shapeHandles.add(new ShapeHandle(waterListenerFixture.shape, Color.BLUE));
+        body.fixtures.add(waterListenerFixture);
+        body.preProcess = delta -> {
             if (is(BehaviorType.GROUND_SLIDING)) {
                 body.bounds.height = .45f * WorldVals.PPM;
-                ((Rectangle) bodyFixture.shape).height = .35f * WorldVals.PPM;
                 feetFixture.offset.y = -WorldVals.PPM / 4f;
             } else {
                 body.bounds.height = .95f * WorldVals.PPM;
-                ((Rectangle) bodyFixture.shape).height = .75f * WorldVals.PPM;
                 feetFixture.offset.y = -WorldVals.PPM / 2f;
             }
+            ((Rectangle) bodyFixture.shape).set(body.bounds);
             boolean wallSlidingOnIce = is(BehaviorType.WALL_SLIDING) &&
                     (is(BodySense.TOUCHING_ICE_LEFT) || is(BodySense.TOUCHING_ICE_RIGHT));
+            float gravityY;
+            if (is(BodySense.IN_WATER)) {
+                gravityY = wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY;
+            } else if (wallSlidingOnIce) {
+                gravityY = ICE_GRAVITY;
+            } else {
+                gravityY = is(BodySense.FEET_ON_GROUND) ? GROUNDED_GRAVITY : GRAVITY;
+            }
+            /*
             float gravityY = is(BodySense.IN_WATER) ?
                     (wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY) :
                     (wallSlidingOnIce ? ICE_GRAVITY : GRAVITY);
+             */
             body.gravity.y = gravityY * WorldVals.PPM;
-        });
+            // body.gravityOn = !is(BodySense.FEET_ON_GROUND) && !is(BehaviorType.AIR_DASHING);
+        };
         putComponent(new ShapeComponent(shapeHandles));
         return new BodyComponent(body);
     }
@@ -621,7 +633,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             protected void init() {
+
+                // TODO: gravity on toggled only in body pre-process
                 body.gravityOn = false;
+
                 aButtonTask = AButtonTask.JUMP;
                 request(SoundAsset.WHOOSH_SOUND, true);
                 c.set(BehaviorType.AIR_DASHING, true);
@@ -645,7 +660,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             protected void end() {
                 airDashTimer.reset();
+
+                // TODO: gravity on toggled only in body pre-process
                 body.gravityOn = true;
+
                 c.set(BehaviorType.AIR_DASHING, false);
                 float x = (is(BodySense.IN_WATER) ? WATER_AIR_DASH_END_BUMP : AIR_DASH_END_BUMP) * WorldVals.PPM;
                 if (is(Facing.LEFT)) {

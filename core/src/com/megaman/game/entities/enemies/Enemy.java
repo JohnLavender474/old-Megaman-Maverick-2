@@ -22,6 +22,7 @@ import java.util.Set;
 
 public abstract class Enemy extends Entity implements Damager, Damageable {
 
+    private static final float DEFAULT_CULL_DUR = .75f;
     private static final float DEFAULT_DMG_DUR = .05f;
 
     protected final Body body;
@@ -33,7 +34,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     public Enemy(MegamanGame game, float damageDuration, BodyType bodyType) {
-        this(game, damageDuration, CullOutOfBoundsComponent.DEFAULT_CULL_DUR, bodyType);
+        this(game, damageDuration, DEFAULT_CULL_DUR, bodyType);
     }
 
     public Enemy(MegamanGame game, float dmgDur, float cullDur, BodyType bodyType) {

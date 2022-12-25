@@ -17,6 +17,7 @@ import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -32,6 +33,7 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static com.badlogic.gdx.graphics.Color.GRAY;
 
@@ -41,7 +43,7 @@ public class MagFly extends Enemy implements Faceable {
     private static final float X_VEL_NORMAL = 3f;
     private static final float X_VEL_SLOW = 1f;
     private static final float PULL_FORCE_X = .1f;
-    private static final float PULL_FORCE_Y = .75f;
+    private static final float PULL_FORCE_Y = 1.15f;
 
     private static TextureRegion magFlyReg;
 
@@ -99,8 +101,11 @@ public class MagFly extends Enemy implements Faceable {
                 new Rectangle().setSize(WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM));
         forceFixture.offset.y = -ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f;
         Function<Fixture, Vector2> forceFunc = f -> {
-            if (f.entity instanceof Megaman megaman && megaman.isDamaged()) {
+            if (f.entity instanceof Enemy || (f.entity instanceof Megaman m && m.isDamaged())) {
                 return Vector2.Zero;
+            }
+            if (f.entity instanceof Projectile p) {
+                p.owner = null;
             }
             float x = PULL_FORCE_X * WorldVals.PPM;
             if (is(Facing.LEFT)) {

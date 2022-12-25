@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -40,11 +39,11 @@ public class Timer {
         this(duration, setToEnd, Arrays.asList(tmRunnables));
     }
 
-    public Timer(float duration, Collection<TimeMarkedRunnable> tmRunnables) {
+    public Timer(float duration, Iterable<TimeMarkedRunnable> tmRunnables) {
         this(duration, false, tmRunnables);
     }
 
-    public Timer(float duration, boolean setToEnd, Collection<TimeMarkedRunnable> tmRunnables) {
+    public Timer(float duration, boolean setToEnd, Iterable<TimeMarkedRunnable> tmRunnables) {
         this.tmRunnables = new Array<>();
         this.tmrQ = new PriorityQueue<>();
         setDuration(duration);

@@ -35,11 +35,12 @@ public class Dragonfly extends Enemy implements Faceable {
         MOVE_HORIZONTAL
     }
 
+    private static final float CULL_DUR = 2f;
     private static final float VERT_SPEED = 18f;
     private static final float HORIZ_SPEED = 14f;
+    private static final float CHANGE_BEHAV_DUR = .35f;
     private static final float VERT_SCANNER_OFFSET = 2f;
     private static final float HORIZ_SCANNER_OFFSET = 3f;
-    private static final float CHANGE_BEHAV_DUR = .35f;
 
     private static TextureRegion dragonFlyReg;
 
@@ -55,7 +56,7 @@ public class Dragonfly extends Enemy implements Faceable {
     private Facing facing;
 
     public Dragonfly(MegamanGame game) {
-        super(game, BodyType.ABSTRACT);
+        super(game, CULL_DUR, BodyType.ABSTRACT);
         if (dragonFlyReg == null) {
             dragonFlyReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "Dragonfly");
         }

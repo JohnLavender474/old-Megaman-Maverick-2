@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public class CullOutOfBoundsComponent implements Component {
 
-    public static final float DEFAULT_CULL_DUR = 1f;
+    public static final float DEFAULT_CULL_DUR = .5f;
 
     public Supplier<Rectangle> boundsSupplier;
     public Timer timer;

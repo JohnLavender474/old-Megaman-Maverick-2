@@ -149,7 +149,7 @@ public class ChargedShot extends Projectile implements Faceable {
     }
 
     private SpriteComponent spriteComponent() {
-        SpriteHandle handle = new SpriteHandle(sprite, 3);
+        SpriteHandle handle = new SpriteHandle(sprite, 5);
         handle.updatable = delta -> {
             sprite.setFlip(is(Facing.LEFT), false);
             handle.setPosition(body.bounds, Position.CENTER);

@@ -34,7 +34,6 @@ public class GapingFish extends Enemy implements Faceable {
     private static final float HORIZ_SPEED = 2f;
     private static final float VERT_SPEED = 1.25f;
     private static final float CHOMP_DUR = 1.25f;
-    private static final float OUT_OF_WATER_GRAVITY = -1f;
 
     private final Sprite sprite;
     private final Timer chompTimer;

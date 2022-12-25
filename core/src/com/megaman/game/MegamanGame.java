@@ -1,6 +1,9 @@
 package com.megaman.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -32,7 +35,6 @@ import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.Logger;
-import com.megaman.game.world.WorldContactListener;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
@@ -72,28 +74,22 @@ public class MegamanGame implements ApplicationListener {
 
     @Override
     public void create() {
-        // renderers
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
-        // managers
         ctrlMan = new ControllerManager();
         assMan = new AssetsManager();
         assMan.loadAssets();
         audioMan = new AudioManager(assMan.getSound(), assMan.getMusic());
-        // events
         eventMan = new EventManager();
-        // entity factories
         entityFactories = new EntityFactories(this);
-        // game engine
-        WorldContactListener w = new WorldContactListenerImpl(this);
         gameEngine = new GameEngine(
                 new ControllerSystem(ctrlMan),
                 new CullOnOutOfBoundsSystem(),
                 new CullOnEventSystem(eventMan),
                 new HealthSystem(),
                 new TrajectorySystem(),
-                new WorldSystem(w),
+                new WorldSystem(new WorldContactListenerImpl(this)),
                 new PathfindingSystem(),
                 new RotatingLineSystem(),
                 new PendulumSystem(),
@@ -104,9 +100,7 @@ public class MegamanGame implements ApplicationListener {
                 new LineSystem(),
                 new ShapeSystem(),
                 new SoundSystem(audioMan));
-        // megaman
         megaman = new Megaman(this);
-        // put screens
         float screenWidth = ViewVals.VIEW_WIDTH * WorldVals.PPM;
         float screenHeight = ViewVals.VIEW_HEIGHT * WorldVals.PPM;
         gameCam = new OrthographicCamera();
@@ -115,7 +109,6 @@ public class MegamanGame implements ApplicationListener {
         uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
         screens = new EnumMap<>(ScreenEnum.class);
         screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
-        // set screen
         setLevel(Level.TEST);
         setScreen(ScreenEnum.LEVEL);
     }
@@ -181,7 +174,7 @@ public class MegamanGame implements ApplicationListener {
         logger.log("Game resume actuated");
         paused = false;
         audioMan.resume();
-        screen.pause();
+        screen.resume();
     }
 
     @Override
