@@ -44,8 +44,8 @@ import com.megaman.game.screens.levels.spawns.SpawnManager;
 import com.megaman.game.screens.levels.spawns.SpawnType;
 import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
 import com.megaman.game.screens.levels.spawns.player.PlayerSpawnManager;
-import com.megaman.game.screens.ui.BitsBar;
-import com.megaman.game.screens.ui.TextHandle;
+import com.megaman.game.screens.utils.BitsBar;
+import com.megaman.game.screens.utils.TextHandle;
 import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
@@ -76,19 +76,19 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private static final float ON_PLAYER_DEATH_DELAY = 4f;
 
     private final MegamanGame game;
+    private final OrthographicCamera uiCam;
+    private final OrthographicCamera gameCam;
     private final LevelMapManager levelMapMan;
     private final LevelCamManager levelCamMan;
     private final SpawnManager spawnMan;
     private final PlayerSpawnManager playerSpawnMan;
-    private final OrthographicCamera uiCam;
-    private final OrthographicCamera gameCam;
-    private final Array<Runnable> runOnDispose = new Array<>();
-    private final Timer playerDeathDelayTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
-    private final Array<Background> backgrounds = new Array<>();
-    private final PriorityQueue<SpriteHandle> gameSpritesQ = new PriorityQueue<>();
-    private final PriorityQueue<RenderableShape> gameShapesQ = new PriorityQueue<>();
-    private final Queue<TextHandle> uiText = new LinkedList<>();
-    private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables = new Array<>();
+    private final Array<Runnable> runOnDispose;
+    private final Timer playerDeathDelayTimer;
+    private final Array<Background> backgrounds;
+    private final PriorityQueue<SpriteHandle> gameSpritesQ;
+    private final PriorityQueue<RenderableShape> gameShapesQ;
+    private final Queue<TextHandle> uiText;
+    private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables;
 
     private OrderedMap<Class<? extends System>, Boolean> sysStatesOnPause;
     private boolean set;
@@ -116,12 +116,19 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     megaman::getCurrentAmmo, assMan, weapon.weaponBitSrc);
             addUiDrawable(() -> weapon == megaman.currWeapon, weaponBar);
         }
+        runOnDispose = new Array<>();
+        playerDeathDelayTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
+        backgrounds = new Array<>();
+        gameSpritesQ = new PriorityQueue<>();
+        gameShapesQ = new PriorityQueue<>();
+        uiText = new LinkedList<>();
+        uiDrawables = new Array<>();
     }
 
     public void set(Level level) {
         dispose();
-        if (level.getMusicAsset() != null) {
-            setMusic(level.getMusicAsset());
+        if (level.getMusicAss() != null) {
+            setMusic(level.getMusicAss());
             playMusic(true);
         }
         playerDeathDelayTimer.setToEnd();

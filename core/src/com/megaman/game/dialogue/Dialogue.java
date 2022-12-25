@@ -10,7 +10,7 @@ import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.AudioManager;
-import com.megaman.game.screens.ui.TextHandle;
+import com.megaman.game.screens.utils.TextHandle;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;

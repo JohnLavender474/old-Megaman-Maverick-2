@@ -25,6 +25,16 @@ public class Animation implements Updatable, Resettable {
     private boolean finished;
     private float timeElapsed;
 
+    public Animation(Animation anim) {
+        frames.addAll(anim.frames);
+        frameTimes.addAll(anim.frameTimes);
+        currRegion = anim.currRegion;
+        loop = anim.loop;
+        animDur = anim.animDur;
+        finished = anim.finished;
+        timeElapsed = anim.timeElapsed;
+    }
+
     public Animation(TextureRegion textureRegion) {
         this(textureRegion, 1, 1f);
     }

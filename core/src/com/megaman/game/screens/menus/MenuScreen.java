@@ -10,44 +10,49 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.AssetsManager;
+import com.megaman.game.audio.AudioManager;
 import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.ViewVals;
 import com.megaman.game.world.WorldVals;
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class MenuScreen extends ScreenAdapter {
 
-    protected final AssetsManager assMan;
     protected final ControllerManager ctrlMan;
     protected final OrthographicCamera uiCam;
+    protected final AudioManager audioMan;
+    protected final AssetsManager assMan;
     protected final Viewport uiViewport;
     protected final SpriteBatch batch;
-    protected Music music;
+    protected final MegamanGame game;
 
     private final String firstBtnKey;
     private final ObjectMap<String, MenuButton> menuButtons;
 
     @Getter
+    @Setter
+    public Music music;
+    @Getter
     private String currBtnKey;
     @Getter
     private boolean selectionMade;
 
-    public MenuScreen(MegamanGame game, String musicSrc, String firstBtnKey) {
-        this.ctrlMan = game.getCtrlMan();
-        this.assMan = game.getAssMan();
-        this.music = assMan.getAsset(musicSrc, Music.class);
-        this.uiCam = new OrthographicCamera();
-        this.uiViewport = new FitViewport(ViewVals.VIEW_WIDTH, ViewVals.VIEW_HEIGHT, uiCam);
-        this.currBtnKey = this.firstBtnKey = firstBtnKey;
-        this.batch = game.getBatch();
-        this.menuButtons = defineMenuButtons();
+    public MenuScreen(MegamanGame game, String firstBtnKey) {
+        this.game = game;
+        batch = game.getBatch();
+        assMan = game.getAssMan();
+        audioMan = game.getAudioMan();
+        ctrlMan = game.getCtrlMan();
+        uiCam = new OrthographicCamera();
+        menuButtons = defineMenuButtons();
+        currBtnKey = this.firstBtnKey = firstBtnKey;
+        uiViewport = new FitViewport(ViewVals.VIEW_WIDTH, ViewVals.VIEW_HEIGHT, uiCam);
     }
 
     protected abstract ObjectMap<String, MenuButton> defineMenuButtons();
-
-    protected abstract void renderMenu();
 
     protected void onAnyMovement() {
     }
@@ -70,7 +75,7 @@ public abstract class MenuScreen extends ScreenAdapter {
     }
 
     @Override
-    public final void render(float delta) {
+    public void render(float delta) {
         super.render(delta);
         if (isSelectionMade()) {
             return;
@@ -96,7 +101,6 @@ public abstract class MenuScreen extends ScreenAdapter {
                 selectionMade = menuButton.onSelect(delta);
             }
         }
-        renderMenu();
         uiViewport.apply();
     }
 

@@ -15,9 +15,9 @@ import java.util.Iterator;
 @Getter
 public class AudioManager implements Updatable {
 
-    private static final float MAX_VOLUME = 10f;
-    private static final float MIN_VOLUME = 0f;
-    private static final float DEFAULT_VOLUME = 5f;
+    private static final int MIN_VOLUME = 0;
+    private static final int MAX_VOLUME = 10;
+    private static final int DEFAULT_VOLUME = 5;
 
     @RequiredArgsConstructor
     private static final class SoundEntry {
@@ -33,8 +33,8 @@ public class AudioManager implements Updatable {
     private final OrderedMap<MusicAsset, Music> music;
     private final Array<SoundEntry> playingSounds;
 
-    private float soundVolume;
-    private float musicVolume;
+    private int soundVolume;
+    private int musicVolume;
     private Music currMusic;
 
     public AudioManager(OrderedMap<SoundAsset, Sound> sounds, OrderedMap<MusicAsset, Music> music) {
@@ -71,8 +71,8 @@ public class AudioManager implements Updatable {
         resumeMusic();
     }
 
-    public void changeSoundVolume(float delta) {
-        soundVolume += delta;
+    public void setSoundVolume(int newVolume) {
+        soundVolume = newVolume;
         if (soundVolume > MAX_VOLUME) {
             soundVolume = MAX_VOLUME;
         }
@@ -81,12 +81,12 @@ public class AudioManager implements Updatable {
         }
         for (SoundEntry e : playingSounds) {
             Sound s = sounds.get(e.ass);
-            s.setVolume(e.id, soundVolume);
+            s.setVolume(e.id, (float) soundVolume / MAX_VOLUME);
         }
     }
 
-    public void changeMusicVolume(float delta) {
-        musicVolume += delta;
+    public void setMusicVolume(int newVolume) {
+        musicVolume = newVolume;
         if (musicVolume > MAX_VOLUME) {
             musicVolume = MAX_VOLUME;
         }
@@ -94,13 +94,13 @@ public class AudioManager implements Updatable {
             musicVolume = MIN_VOLUME;
         }
         for (Music m : music.values()) {
-            m.setVolume(musicVolume);
+            m.setVolume((float) musicVolume / MAX_VOLUME);
         }
     }
 
     public void playSound(SoundAsset ass) {
         Sound sound = sounds.get(ass);
-        long id = sound.play(soundVolume / MAX_VOLUME);
+        long id = sound.play((float) soundVolume / MAX_VOLUME);
         playingSounds.add(new SoundEntry(id, ass));
     }
 
@@ -114,7 +114,7 @@ public class AudioManager implements Updatable {
         }
         currMusic = music;
         currMusic.setLooping(loop);
-        currMusic.setVolume(musicVolume / MAX_VOLUME);
+        currMusic.setVolume((float) musicVolume / MAX_VOLUME);
         currMusic.play();
     }
 
