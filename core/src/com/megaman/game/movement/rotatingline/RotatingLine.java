@@ -2,6 +2,7 @@ package com.megaman.game.movement.rotatingline;
 
 import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Vector2;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RotatingLine implements Updatable {
+public class RotatingLine implements Updatable, Resettable {
 
     @Getter(AccessLevel.NONE)
     private final float[] vertices = new float[4];
@@ -17,6 +18,7 @@ public class RotatingLine implements Updatable {
 
     private float speed;
     private float degrees;
+    private float degreesOnReset;
 
     public RotatingLine(Vector2 origin, float radius, float speed) {
         this(origin, radius, speed, 0f);
@@ -24,14 +26,10 @@ public class RotatingLine implements Updatable {
 
     public RotatingLine(Vector2 origin, float radius, float speed, float degrees) {
         this.speed = speed;
-        this.degrees = degrees;
+        this.degrees = degreesOnReset = degrees;
         Vector2 endPoint = origin.cpy().add(radius, 0f);
         setPoints(origin, endPoint);
         polyline.setRotation(degrees);
-    }
-
-    public float[] getTransformedVertices() {
-        return polyline.getTransformedVertices();
     }
 
     public void setPoints(Vector2 origin, Vector2 endPoint) {
@@ -47,6 +45,11 @@ public class RotatingLine implements Updatable {
     public void update(float delta) {
         degrees += speed * delta;
         polyline.setRotation(degrees);
+    }
+
+    @Override
+    public void reset() {
+        degrees = degreesOnReset;
     }
 
     public Vector2 getPosOnLine(float scalar) {

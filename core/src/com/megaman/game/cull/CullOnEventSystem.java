@@ -12,12 +12,14 @@ import java.util.Queue;
 
 public class CullOnEventSystem extends System implements EventListener {
 
-    private final Array<Event> events = new Array<>();
-    private final Queue<Event> eventsToAdd = new LinkedList<>();
+    private final Array<Event> events;
+    private final Queue<Event> eventsToAdd;
 
     public CullOnEventSystem(EventManager eventMan) {
         super(CullOnEventComponent.class);
         eventMan.add(this);
+        events = new Array<>();
+        eventsToAdd = new LinkedList<>();
     }
 
     @Override

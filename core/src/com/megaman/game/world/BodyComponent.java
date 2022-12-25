@@ -10,4 +10,9 @@ public class BodyComponent implements Component {
 
     public Body body;
 
+    @Override
+    public void reset() {
+        body.reset();
+    }
+
 }

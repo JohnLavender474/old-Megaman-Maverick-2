@@ -2,28 +2,30 @@ package com.megaman.game.movement.trajectory;
 
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.Component;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.world.Body;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class TrajectoryComponent implements Component {
 
     public Trajectory trajectory;
+    public boolean doUpdate;
 
-    public TrajectoryComponent(Body body, String trajStr) {
-        this(body, trajStr, ShapeUtils.getCenterPoint(body.bounds));
+    public TrajectoryComponent() {
+        doUpdate = true;
     }
 
     public TrajectoryComponent(Body body, String trajStr, Vector2 center) {
+        this(body, trajStr, center, true);
+    }
+
+    public TrajectoryComponent(Body body, String trajStr, Vector2 center, boolean doUpdate) {
+        this.doUpdate = doUpdate;
         trajectory = new Trajectory(body, trajStr, center);
     }
 
     public void reset() {
-        if (trajectory == null) {
-            return;
+        if (trajectory != null) {
+            trajectory.reset();
         }
-        trajectory.reset();
     }
 
 }

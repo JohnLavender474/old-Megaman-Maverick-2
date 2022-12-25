@@ -6,15 +6,15 @@ import com.megaman.game.utils.interfaces.UpdatableConsumer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
 public class RotatingLineComponent implements Component {
 
     public RotatingLine rotatingLine;
     public Updatable updatable;
 
-    public RotatingLineComponent(RotatingLine rotatingLine) {
-        this.rotatingLine = rotatingLine;
+    @Override
+    public void reset() {
+        rotatingLine.reset();
     }
 
 }

@@ -2,6 +2,7 @@ package com.megaman.game.movement.pendulum;
 
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.TargetFPS;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +14,16 @@ import static java.lang.Math.*;
  * Resource: <a href="https://www.javacodex.com/More-Examples/2/13">...</a>
  */
 @Getter
-@RequiredArgsConstructor
-public class Pendulum implements Updatable {
+public class Pendulum implements Updatable, Resettable {
 
     private final float length;
     private final float gravity;
     private final Vector2 anchor;
-    private final Vector2 end = new Vector2();
+    private final Vector2 end;
 
-    private float angle = (float) PI / 2f;
-    private float angleAccel;
+    private float angle;
     private float angleVel;
+    private float angleAccel;
     private float accumulator;
 
     @Setter
@@ -32,6 +32,14 @@ public class Pendulum implements Updatable {
     public Pendulum(float length, float gravity, Vector2 anchor, float scalar) {
         this(length, gravity, anchor);
         this.scalar = scalar;
+    }
+
+    public Pendulum(float length, float gravity, Vector2 anchor) {
+        this.length = length;
+        this.gravity = gravity;
+        this.anchor = anchor;
+        end = new Vector2();
+        reset();
     }
 
     @Override
@@ -45,6 +53,15 @@ public class Pendulum implements Updatable {
             angle += angleVel * tDelta * scalar;
         }
         setEndPoint();
+    }
+
+    @Override
+    public void reset() {
+        angleVel = 0f;
+        angleAccel = 0f;
+        accumulator = 0f;
+        angle = (float) PI / 2f;
+        end.setZero();
     }
 
     private void setEndPoint() {

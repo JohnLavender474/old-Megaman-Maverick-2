@@ -25,9 +25,9 @@ import lombok.Setter;
 
 public class ChargedShotExplosion extends Entity implements Damager, Faceable {
 
-    private static final float FULLY_CHARGED_DUR = .75f;
-    private static final float HALF_CHARGED_DUR = .25f;
-    private static final float SOUND_INTERVAL = .1f;
+    private static final float FULLY_CHARGED_DUR = .6f;
+    private static final float HALF_CHARGED_DUR = .3f;
+    private static final float SOUND_INTERVAL = .15f;
 
     private static TextureRegion fullyChargedReg;
     private static TextureRegion halfChargedReg;

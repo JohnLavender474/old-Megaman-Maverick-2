@@ -12,7 +12,9 @@ public class TrajectorySystem extends System {
     @Override
     protected void processEntity(Entity e, float delta) {
         TrajectoryComponent c = e.getComponent(TrajectoryComponent.class);
-        c.trajectory.update(delta);
+        if (c.doUpdate) {
+            c.trajectory.update(delta);
+        }
     }
 
 }

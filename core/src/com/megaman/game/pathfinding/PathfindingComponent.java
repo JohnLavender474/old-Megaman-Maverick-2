@@ -14,6 +14,11 @@ public class PathfindingComponent implements Component {
 
     public PathfindingComponent(PathfindParams params) {
         this.params = params;
+        reset();
+    }
+
+    @Override
+    public void reset() {
         currentPath = new LinkedList<>();
         currentTrajectory = new Vector2();
     }

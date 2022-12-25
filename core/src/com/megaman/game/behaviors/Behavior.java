@@ -1,12 +1,13 @@
 package com.megaman.game.behaviors;
 
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class Behavior implements Updatable {
+public abstract class Behavior implements Updatable, Resettable {
 
     private boolean runningNow;
 
@@ -31,6 +32,11 @@ public abstract class Behavior implements Updatable {
         if (!runningNow && runningPrior) {
             end();
         }
+    }
+
+    @Override
+    public void reset() {
+        runningNow = false;
     }
 
 }

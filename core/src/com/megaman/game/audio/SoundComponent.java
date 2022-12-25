@@ -8,8 +8,13 @@ import java.util.Queue;
 
 public class SoundComponent implements Component {
 
-    public Queue<SoundAsset> playReqs = new LinkedList<>();
-    public Queue<SoundAsset> stopReqs = new LinkedList<>();
+    public Queue<SoundAsset> playReqs;
+    public Queue<SoundAsset> stopReqs;
+
+    public SoundComponent() {
+        playReqs = new LinkedList<>();
+        stopReqs = new LinkedList<>();
+    }
 
     public void requestToPlay(SoundAsset ass) {
         playReqs.add(ass);
@@ -17,6 +22,12 @@ public class SoundComponent implements Component {
 
     public void requestToStop(SoundAsset ass) {
         stopReqs.add(ass);
+    }
+
+    @Override
+    public void reset() {
+        playReqs.clear();
+        stopReqs.clear();
     }
 
 }

@@ -1,7 +1,6 @@
 package com.megaman.game.cull;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.megaman.game.MegamanGame;
 import com.megaman.game.System;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.Logger;

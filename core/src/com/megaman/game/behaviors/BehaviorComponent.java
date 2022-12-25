@@ -26,4 +26,12 @@ public class BehaviorComponent implements Component {
         }
     }
 
+    @Override
+    public void reset() {
+        for (Behavior b : behaviors) {
+
+        }
+
+    }
+
 }

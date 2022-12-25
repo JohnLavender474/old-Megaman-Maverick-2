@@ -58,6 +58,14 @@ public class Trajectory implements Updatable, Resettable {
         body.bounds.setCenter(center);
     }
 
+    @Override
+    public void reset() {
+        index = 0;
+        for (KeyValuePair<Vector2, Timer> def : defs) {
+            def.value().reset();
+        }
+    }
+
     public Vector2 getPosDelta() {
         return currCenter.cpy().sub(prevCenter);
     }
@@ -73,14 +81,6 @@ public class Trajectory implements Updatable, Resettable {
 
     private Timer getCurrentTimer() {
         return defs.get(index).value();
-    }
-
-    @Override
-    public void reset() {
-        index = 0;
-        for (KeyValuePair<Vector2, Timer> def : defs) {
-            def.value().reset();
-        }
     }
 
 }

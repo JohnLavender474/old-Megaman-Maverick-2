@@ -5,9 +5,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 
-public class Body implements Updatable {
+public class Body implements Updatable, Resettable {
 
     public static final float MIN_VEL = .01f;
     public static final float STANDARD_RESISTANCE_X = 1.035f;
@@ -155,6 +156,23 @@ public class Body implements Updatable {
         }
         bounds.x += velocity.x * delta;
         bounds.y += velocity.y * delta;
+        for (Fixture f : fixtures) {
+            Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);
+            Shape2D shape = f.shape;
+            if (shape instanceof Rectangle r) {
+                r.setCenter(p);
+            } else if (shape instanceof Circle c) {
+                c.setPosition(p);
+            } else if (shape instanceof Polyline l) {
+                l.setOrigin(p.x, p.y);
+            }
+        }
+    }
+
+    @Override
+    public void reset() {
+        velocity.setZero();
+        resistance.set(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
         for (Fixture f : fixtures) {
             Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);
             Shape2D shape = f.shape;

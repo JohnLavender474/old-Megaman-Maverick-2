@@ -10,8 +10,9 @@ public class CullOutOfBoundsComponent implements Component {
 
     public static final float DEFAULT_CULL_DUR = .5f;
 
+    public final Timer timer;
+
     public Supplier<Rectangle> boundsSupplier;
-    public Timer timer;
 
     public CullOutOfBoundsComponent(Rectangle bounds) {
         this(() -> bounds);
@@ -23,7 +24,12 @@ public class CullOutOfBoundsComponent implements Component {
 
     public CullOutOfBoundsComponent(Supplier<Rectangle> boundsSupplier, float cullDur) {
         this.boundsSupplier = boundsSupplier;
-        this.timer = new Timer(cullDur);
+        timer = new Timer(cullDur);
+    }
+
+    @Override
+    public void reset() {
+        timer.reset();
     }
 
 }
