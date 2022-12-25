@@ -8,12 +8,14 @@ import java.util.Arrays;
 
 public class MegamanHealthHandler {
 
-    private final HealthComponent megamanHealth;
-    private final int[] healthTanks = new int[MegamanHealthTank.values().length];
-    private final boolean[] hasHealthTank = new boolean[MegamanHealthTank.values().length];
+    private final Megaman megaman;
+    private final int[] healthTanks;
+    private final boolean[] hasHealthTank;
 
     public MegamanHealthHandler(Megaman megaman) {
-        this.megamanHealth = megaman.getComponent(HealthComponent.class);
+        this.megaman = megaman;
+        healthTanks = new int[MegamanHealthTank.values().length];
+        hasHealthTank = new boolean[MegamanHealthTank.values().length];
     }
 
     public void putHealthTank(MegamanHealthTank healthTank) {
@@ -36,7 +38,7 @@ public class MegamanHealthHandler {
 
     public int addHealth(int health) {
         int toAddToMegaman = HealthVals.MAX_HEALTH - health;
-        int diff = megamanHealth.translateHealth(toAddToMegaman);
+        int diff = megaman.getComponent(HealthComponent.class).translateHealth(toAddToMegaman);
         for (int i = 0; i < MegamanHealthTank.values().length; i++) {
             if (diff <= 0) {
                 break;
@@ -55,7 +57,7 @@ public class MegamanHealthHandler {
         if (damage < 0) {
             throw new IllegalStateException("Damage cannot be negative");
         }
-        megamanHealth.translateHealth(-damage);
+        megaman.getComponent(HealthComponent.class).translateHealth(-damage);
     }
 
     public void clearHealthTanks() {

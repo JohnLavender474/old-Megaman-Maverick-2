@@ -16,8 +16,13 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.entities.projectiles.impl.Bullet;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.health.HealthVals;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -78,7 +83,10 @@ public class MagFly extends Enemy implements Faceable {
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
-
+            put(Bullet.class, new DamageNegotiation(10));
+            put(Fireball.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShot.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShotExplosion.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
         }};
     }
 

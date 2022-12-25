@@ -9,15 +9,15 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
+import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.explosions.ExplosionFactory;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
-import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.BodyType;
@@ -46,6 +46,11 @@ public class Bullet extends Projectile {
 
         // TODO: testing NOT using updatable comp
         // putComponent(updatableComponent());
+    }
+
+    @Override
+    public void onDamageInflictedTo(Damageable damageable) {
+        disintegrate();
     }
 
     @Override
@@ -97,9 +102,12 @@ public class Bullet extends Projectile {
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
+    // TODO: testing NOT using updatable comp
+    /*
     private UpdatableComponent updatableComponent() {
         return new UpdatableComponent(delta -> body.velocity.set(traj));
     }
+     */
 
     private void defineBody() {
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);

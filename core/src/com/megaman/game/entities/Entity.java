@@ -23,11 +23,11 @@ public class Entity {
     }
 
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
-        throw new IllegalStateException("Init method not implemented");
+        throw new IllegalStateException("Init method not implemented for " + this);
     }
 
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
-        throw new IllegalStateException("Init method not implemented");
+        throw new IllegalStateException("Init method not implemented for " + this);
     }
 
     public void putComponent(Component c) {

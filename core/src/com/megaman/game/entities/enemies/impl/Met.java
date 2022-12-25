@@ -14,8 +14,12 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.projectiles.impl.Bullet;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.health.HealthVals;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -81,7 +85,10 @@ public class Met extends Enemy implements Faceable {
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
-
+            put(Bullet.class, new DamageNegotiation(10));
+            put(Fireball.class, new DamageNegotiation(15));
+            put(ChargedShot.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShotExplosion.class, new DamageNegotiation(15));
         }};
     }
 

@@ -23,7 +23,7 @@ import java.util.Set;
 public abstract class Enemy extends Entity implements Damager, Damageable {
 
     private static final float DEFAULT_CULL_DUR = .75f;
-    private static final float DEFAULT_DMG_DUR = .05f;
+    private static final float DEFAULT_DMG_DUR = .15f;
 
     protected final Body body;
     protected final Timer dmgTimer;

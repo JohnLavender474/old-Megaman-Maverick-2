@@ -59,6 +59,9 @@ public abstract class Projectile extends Entity implements Damager {
         if (owner == null) {
             return true;
         }
+        if (owner.equals(damageable)) {
+            return false;
+        }
         return damageable instanceof Entity e && entityType != e.entityType;
     }
 

@@ -40,6 +40,7 @@ public class ChargedShot extends Projectile implements Faceable {
 
     private final Vector2 traj;
 
+    @Getter
     private boolean fullyCharged;
     @Getter
     @Setter
@@ -82,11 +83,7 @@ public class ChargedShot extends Projectile implements Faceable {
         super.init(spawn, data);
     }
 
-    @Override
-    public void hitBody(Fixture bodyFixture) {
-        if (bodyFixture.entity.equals(owner)) {
-            return;
-        }
+    private void explodeAndDie() {
         dead = true;
         ChargedShotExplosion e = (ChargedShotExplosion) game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.CHARGED_SHOT_EXPLOSION);
@@ -99,16 +96,16 @@ public class ChargedShot extends Projectile implements Faceable {
     }
 
     @Override
+    public void hitBody(Fixture bodyFixture) {
+        if (bodyFixture.entity.equals(owner)) {
+            return;
+        }
+        explodeAndDie();
+    }
+
+    @Override
     public void hitBlock(Fixture blockFixture) {
-        dead = true;
-        ChargedShotExplosion e = (ChargedShotExplosion) game.getEntityFactories()
-                .fetch(EntityType.EXPLOSION, ExplosionFactory.CHARGED_SHOT_EXPLOSION);
-        ObjectMap<String, Object> data = new ObjectMap<>() {{
-            put(ConstKeys.OWNER, owner);
-            put(ConstKeys.DIR, facing);
-            put(ConstKeys.BOOL, fullyCharged);
-        }};
-        game.getGameEngine().spawnEntity(e, ShapeUtils.getCenterPoint(body.bounds), data);
+        explodeAndDie();
     }
 
     @Override
@@ -129,15 +126,7 @@ public class ChargedShot extends Projectile implements Faceable {
 
     @Override
     public void onDamageInflictedTo(Damageable damageable) {
-        dead = true;
-        game.getGameEngine().spawnEntity(
-                game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.CHARGED_SHOT_EXPLOSION),
-                body.bounds,
-                new ObjectMap<>() {{
-                    put(ConstKeys.DIR, facing);
-                    put(ConstKeys.OWNER, owner);
-                    put(ConstKeys.BOOL, fullyCharged);
-                }});
+        explodeAndDie();
     }
 
     private ShapeComponent shapeComponent() {

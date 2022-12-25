@@ -19,12 +19,17 @@ import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
+import com.megaman.game.entities.enemies.impl.*;
+import com.megaman.game.entities.hazards.impl.LaserBeamer;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
 import com.megaman.game.entities.projectiles.ChargeStatus;
+import com.megaman.game.entities.projectiles.impl.Bullet;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventType;
@@ -90,7 +95,20 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float CHARGING_ANIM_TIME = .125f;
 
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
-
+        put(Bat.class, new DamageNegotiation(5));
+        put(Met.class, new DamageNegotiation(5));
+        put(MagFly.class, new DamageNegotiation(5));
+        put(Bullet.class, new DamageNegotiation(10));
+        put(ChargedShot.class, new DamageNegotiation(15));
+        put(Fireball.class, new DamageNegotiation(5));
+        put(Dragonfly.class, new DamageNegotiation(5));
+        put(Matasaburo.class, new DamageNegotiation(5));
+        put(SniperJoe.class, new DamageNegotiation(10));
+        put(SpringHead.class, new DamageNegotiation(5));
+        put(FloatingCan.class, new DamageNegotiation(10));
+        put(LaserBeamer.class, new DamageNegotiation(10));
+        put(SuctionRoller.class, new DamageNegotiation(10));
+        put(GapingFish.class, new DamageNegotiation(5));
     }};
 
     public final MegamanWeaponHandler weaponHandler;
@@ -171,7 +189,17 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         dmgTimer.reset();
         damageNegotiation.runOnDamage();
         healthHandler.removeHealth(damageNegotiation.getDamage(damager));
+        request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
         request(SoundAsset.MEGAMAN_DAMAGE_SOUND, true);
+    }
+
+    @Override
+    public boolean isInvincible() {
+        return !dmgTimer.isFinished() || !dmgRecovTimer.isFinished();
+    }
+
+    public boolean isDamaged() {
+        return !dmgTimer.isFinished();
     }
 
     @Override
@@ -256,10 +284,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public boolean is(BodySense bodySense) {
         return body.is(bodySense);
-    }
-
-    public boolean isDamaged() {
-        return !dmgTimer.isFinished();
     }
 
     public void request(SoundAsset ass, boolean play) {

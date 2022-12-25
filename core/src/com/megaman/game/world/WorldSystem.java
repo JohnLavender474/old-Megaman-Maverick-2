@@ -11,7 +11,7 @@ import java.util.*;
 
 public class WorldSystem extends System {
 
-    private static final int PROCESS_CYCLES = 2;
+    private static final int PROCESS_CYCLES = 3;
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
         put(FixtureType.SCANNER, EnumSet.allOf(FixtureType.class));
@@ -131,8 +131,8 @@ public class WorldSystem extends System {
     protected void processEntity(Entity e, float delta) {
         BodyComponent bc = e.getComponent(BodyComponent.class);
         switch (currCycle) {
-            case 0 -> updateBody(bc.body, delta);
-            case 1 -> resolve(bc.body);
+            case 0, 2 -> resolve(bc.body);
+            case 1 -> updateBody(bc.body, delta);
         }
     }
 

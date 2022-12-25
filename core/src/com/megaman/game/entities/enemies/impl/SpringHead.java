@@ -60,7 +60,7 @@ public class SpringHead extends Enemy implements Faceable {
     private Facing facing;
 
     public SpringHead(MegamanGame game) {
-        super(game, BodyType.DYNAMIC);
+        super(game, DAMAGE_DUR, BodyType.DYNAMIC);
         sprite = new Sprite();
         turnTimer = new Timer(TURN_DELAY);
         bounceTimer = new Timer(BOUNCE_DUR, true);

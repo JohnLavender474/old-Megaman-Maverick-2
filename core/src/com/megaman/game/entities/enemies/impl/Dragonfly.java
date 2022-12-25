@@ -14,6 +14,11 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
+import com.megaman.game.entities.projectiles.impl.Bullet;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.health.HealthVals;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
@@ -77,7 +82,10 @@ public class Dragonfly extends Enemy implements Faceable {
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
-
+            put(Bullet.class, new DamageNegotiation(5));
+            put(Fireball.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShot.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShotExplosion.class, new DamageNegotiation(15));
         }};
     }
 
