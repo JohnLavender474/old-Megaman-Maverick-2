@@ -3,8 +3,10 @@ package com.megaman.game.entities.hazards.impl;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
@@ -18,13 +20,18 @@ import com.megaman.game.movement.pendulum.PendulumComponent;
 import com.megaman.game.movement.rotatingline.RotatingLine;
 import com.megaman.game.movement.rotatingline.RotatingLineComponent;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
-import com.megaman.game.shapes.ShapeComponent;
-import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.*;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
+import com.megaman.game.utils.objs.Pair;
 import com.megaman.game.world.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.badlogic.gdx.graphics.Color.DARK_GRAY;
+import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
 public class Saw extends Entity {
 
@@ -79,6 +86,30 @@ public class Saw extends Entity {
         runOnDeath.add(() -> getComponent(AnimationComponent.class).animators.removeValue(animator, true));
         */
 
+        // TODO: temp use shape renderer
+        LineHandle lineHandle = new LineHandle();
+        lineHandle.setLineSupplier(() -> Pair.of(p.getAnchor(), p.getEnd()));
+        lineHandle.setColorSupplier(() -> DARK_GRAY);
+        lineHandle.setThicknessSupplier(() -> WorldVals.PPM / 8f);
+        lineHandle.setShapeTypeSupplier(() -> Filled);
+        putComponent(new LineComponent(lineHandle));
+        Circle circle1 = new Circle(p.getAnchor(), WorldVals.PPM / 4f);
+        Circle circle2 = new Circle();
+        circle2.setRadius(WorldVals.PPM / 4f);
+        Array<ShapeHandle> shapeHandles = new Array<>();
+        ShapeHandle shapeHandle1 = new ShapeHandle();
+        shapeHandle1.setShapeSupplier(() -> circle1);
+        shapeHandle1.setShapeTypeSupplier(() -> Filled);
+        shapeHandle1.setColorSupplier(() -> DARK_GRAY);
+        shapeHandles.add(shapeHandle1);
+        ShapeHandle shapeHandle2 = new ShapeHandle();
+        shapeHandle2.setShapeSupplier(() -> circle2);
+        shapeHandle2.setColorSupplier(() -> DARK_GRAY);
+        shapeHandle2.setShapeTypeSupplier(() -> Filled);
+        shapeHandle2.setUpdatable(delta -> circle2.setPosition(p.getEnd()));
+        shapeHandles.add(shapeHandle2);
+        putComponent(new ShapeComponent(shapeHandles));
+
     }
 
     private void setToRotation(Vector2 spawn) {
@@ -91,6 +122,31 @@ public class Saw extends Entity {
         runOnDeath.add(() -> getComponent(AnimationComponent.class).animators.removeValue(animator, true));
         */
 
+        // TODO: temp use shape renderer
+        LineHandle lineHandle = new LineHandle();
+        lineHandle.setLineSupplier(() -> Pair.of(r.getPos(), r.getEndPoint()));
+        lineHandle.setColorSupplier(() -> DARK_GRAY);
+        lineHandle.setThicknessSupplier(() -> WorldVals.PPM / 8f);
+        lineHandle.setShapeTypeSupplier(() -> Filled);
+        putComponent(new LineComponent(lineHandle));
+        Circle circle1 = new Circle();
+        circle1.setRadius(WorldVals.PPM / 4f);
+        Circle circle2 = new Circle();
+        circle2.setRadius(WorldVals.PPM / 4f);
+        List<ShapeHandle> shapeHandles = new ArrayList<>();
+        ShapeHandle shapeHandle1 = new ShapeHandle();
+        shapeHandle1.setShapeSupplier(() -> circle1);
+        shapeHandle1.setShapeTypeSupplier(() -> Filled);
+        shapeHandle1.setColorSupplier(() -> DARK_GRAY);
+        shapeHandle1.setUpdatable(delta -> circle1.setPosition(r.getPos()));
+        shapeHandles.add(shapeHandle1);
+        ShapeHandle shapeHandle2 = new ShapeHandle();
+        shapeHandle2.setShapeSupplier(() -> circle2);
+        shapeHandle2.setColorSupplier(() -> DARK_GRAY);
+        shapeHandle2.setShapeTypeSupplier(() -> Filled);
+        shapeHandle2.setUpdatable(delta -> circle2.setPosition(r.getEndPoint()));
+        shapeHandles.add(shapeHandle2);
+        putComponent(new ShapeComponent(shapeHandles));
     }
 
     private void setToTrajectory(String trajStr, Vector2 spawn) {

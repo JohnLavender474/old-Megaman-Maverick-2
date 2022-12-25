@@ -20,8 +20,12 @@ public class Block extends Entity {
     public final Fixture blockFixture;
 
     public Block(MegamanGame game, boolean cullOnBodyOOB) {
+        this(game, BodyType.STATIC, cullOnBodyOOB);
+    }
+
+    public Block(MegamanGame game, BodyType bodyType, boolean cullOnBodyOOB) {
         super(game, EntityType.BLOCK);
-        body = new Body(BodyType.STATIC);
+        body = new Body(bodyType);
         blockFixture = new Fixture(this, FixtureType.BLOCK, new Rectangle());
         body.fixtures.add(blockFixture);
         putComponent(new BodyComponent(body));

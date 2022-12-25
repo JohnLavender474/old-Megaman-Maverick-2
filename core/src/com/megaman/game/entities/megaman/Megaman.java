@@ -20,6 +20,8 @@ import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.impl.*;
+import com.megaman.game.entities.explosions.ExplosionFactory;
+import com.megaman.game.entities.explosions.impl.ExplosionOrb;
 import com.megaman.game.entities.hazards.impl.LaserBeamer;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
@@ -154,11 +156,35 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         putComponent(updatableComponent());
         putComponent(bodyComponent());
         putComponent(spriteComponent());
-        putComponent(healthComponent());
         putComponent(behaviorComponent());
         putComponent(new SoundComponent());
         putComponent(controllerComponent());
+        putComponent(new HealthComponent());
         putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
+        runOnDeath.add(() -> {
+            game.getAudioMan().stopSound(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
+            if (getHealth() > 0f) {
+                return;
+            }
+            Array<Vector2> trajs = new Array<>() {{
+                add(new Vector2(-EXPLOSION_ORB_SPEED, 0f));
+                add(new Vector2(-EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
+                add(new Vector2(0f, EXPLOSION_ORB_SPEED));
+                add(new Vector2(EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
+                add(new Vector2(EXPLOSION_ORB_SPEED, 0f));
+                add(new Vector2(EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
+                add(new Vector2(0f, -EXPLOSION_ORB_SPEED));
+                add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
+            }};
+            for (Vector2 traj : trajs) {
+                ExplosionOrb e = (ExplosionOrb)
+                        game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION_ORB);
+                game.getGameEngine().spawnEntity(e, ShapeUtils.getCenterPoint(body.bounds), new ObjectMap<>() {{
+                    put(ConstKeys.TRAJECTORY, traj);
+                }});
+            }
+            game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_DEAD));
+        });
     }
 
     @Override
@@ -405,8 +431,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 aButtonTask = AButtonTask.AIR_DASH;
             }
         };
-        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setWidth(.915f * WorldVals.PPM));
-        bodyFixture.offset.y = .1f * WorldVals.PPM;
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
+                new Rectangle().setWidth(.8f * WorldVals.PPM));
         body.fixtures.add(bodyFixture);
         shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.YELLOW));
         Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
@@ -471,33 +497,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return new BodyComponent(body);
     }
 
-    private HealthComponent healthComponent() {
-        return new HealthComponent(() -> {
-            Array<Vector2> trajs = new Array<>() {{
-                add(new Vector2(-EXPLOSION_ORB_SPEED, 0f));
-                add(new Vector2(-EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
-                add(new Vector2(0f, EXPLOSION_ORB_SPEED));
-                add(new Vector2(EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
-                add(new Vector2(EXPLOSION_ORB_SPEED, 0f));
-                add(new Vector2(EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
-                add(new Vector2(0f, -EXPLOSION_ORB_SPEED));
-                add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
-            }};
-            for (Vector2 traj : trajs) {
-
-                // game.getGameEngine().spawnEntity(new ExplosionOrb(game, body, traj));
-            }
-            game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_DEAD));
-        });
-    }
-
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
         SpriteHandle handle = new SpriteHandle(sprite);
         handle.priority = 3;
         handle.updatable = delta -> {
             handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
-            sprite.setAlpha(recoveryBlink ? 0f : 1f);
+            sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
             sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
             sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
         };

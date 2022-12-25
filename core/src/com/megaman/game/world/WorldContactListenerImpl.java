@@ -16,6 +16,7 @@ import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.projectiles.Projectile;
+import com.megaman.game.health.HealthComponent;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
@@ -30,7 +31,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
 
-    private static final Logger logger = new Logger(WorldContactListener.class, MegamanGame.DEBUG && false);
+    private static final Logger logger = new Logger(WorldContactListener.class, MegamanGame.DEBUG && true);
 
     private final MegamanGame game;
 
@@ -43,6 +44,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
         if (contact.acceptMask(FixtureType.SCANNER, false)) {
             Consumer<Fixture> c = (Consumer<Fixture>) contact.mask1stData(ConstKeys.CONSUMER);
             c.accept(contact.mask.getSecond());
+        } else if (contact.acceptMask(FixtureType.DEATH, FixtureType.DAMAGEABLE)) {
+            logger.log("Death and damageable begin contact");
+            contact.mask2ndEntity().getComponent(HealthComponent.class).setDead();
         } else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
             Damager dmgr = (Damager) contact.mask1stEntity();
             Damageable dmgbl = (Damageable) contact.mask2ndEntity();

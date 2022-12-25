@@ -109,7 +109,7 @@ public class MegamanGame implements ApplicationListener {
         uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
         screens = new EnumMap<>(ScreenEnum.class);
         screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
-        setLevel(Level.TEST);
+        setLevel(Level.TEST5);
         setScreen(ScreenEnum.LEVEL);
     }
 

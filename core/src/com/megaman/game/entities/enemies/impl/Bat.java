@@ -70,7 +70,7 @@ public class Bat extends Enemy {
     private BatStatus currStat;
 
     public Bat(MegamanGame game) {
-        super(game, DAMAGE_DUR, BodyType.DYNAMIC);
+        super(game, DAMAGE_DUR, BodyType.ABSTRACT);
         sprite = new Sprite();
         hangTimer = new Timer(HANG_DUR);
         releasePerchTimer = new Timer(RELEASE_FROM_PERCH_DUR);
@@ -174,8 +174,7 @@ public class Bat extends Enemy {
     private PathfindingComponent pathfindingComponent() {
         return new PathfindingComponent(new PathfindParams(
                 this, body, () -> ShapeUtils.getTopCenterPoint(game.getMegaman().body.bounds),
-                f -> f.fixtureType == FixtureType.BLOCK ||
-                        (f.fixtureType == FixtureType.BODY && f.entity instanceof Bat),
+                f -> f.fixtureType == FixtureType.BLOCK || f.entity instanceof Bat,
                 r -> body.bounds.overlaps(r), FLY_TO_ATTACK_SPEED, false));
     }
 

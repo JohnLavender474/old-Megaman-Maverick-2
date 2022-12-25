@@ -5,10 +5,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
-import com.megaman.game.world.Body;
-import com.megaman.game.world.BodyType;
-import com.megaman.game.world.Fixture;
-import com.megaman.game.world.FixtureType;
+import com.megaman.game.world.*;
 
 public class DeathSensor extends Entity {
 
@@ -20,6 +17,7 @@ public class DeathSensor extends Entity {
         body = new Body(BodyType.ABSTRACT);
         deathFixture = new Fixture(this, FixtureType.DEATH, new Rectangle());
         body.fixtures.add(deathFixture);
+        putComponent(new BodyComponent(body));
     }
 
     @Override

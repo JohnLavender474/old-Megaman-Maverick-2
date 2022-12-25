@@ -51,8 +51,14 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         defineCullOnEventComponent(c);
         putComponent(c);
         putComponent(new SoundComponent());
-        putComponent(new HealthComponent(this::disintegrate));
+        putComponent(new HealthComponent());
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
+        runOnDeath.add(() -> {
+            if (getComponent(HealthComponent.class).getHealth() > 0f) {
+                return;
+            }
+            disintegrate();
+        });
     }
 
     protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations();

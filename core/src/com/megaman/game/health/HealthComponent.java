@@ -1,18 +1,24 @@
 package com.megaman.game.health;
 
-import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
 import lombok.Getter;
 
 public class HealthComponent implements Component {
 
-    public Array<Runnable> runOnDeath = new Array<>();
-
     @Getter
     private int health = HealthVals.MAX_HEALTH;
 
-    public HealthComponent(Runnable... runOnDeath) {
-        this.runOnDeath.addAll(runOnDeath);
+    public void setDead() {
+        setHealth(0);
+    }
+
+    public void setHealth(int h) {
+        if (h > HealthVals.MAX_HEALTH) {
+            h = HealthVals.MAX_HEALTH;
+        } else if (h < 0) {
+            h = 0;
+        }
+        health = h;
     }
 
     public int translateHealth(int delta) {

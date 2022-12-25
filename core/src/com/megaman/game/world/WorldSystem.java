@@ -15,8 +15,9 @@ public class WorldSystem extends System {
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
         put(FixtureType.SCANNER, EnumSet.allOf(FixtureType.class));
-        put(FixtureType.DAMAGER, EnumSet.of(
-                FixtureType.DAMAGEABLE));
+        put(FixtureType.DAMAGEABLE, EnumSet.of(
+                FixtureType.DEATH,
+                FixtureType.DAMAGER));
         put(FixtureType.BODY, EnumSet.of(
                 FixtureType.FORCE));
         put(FixtureType.WATER_LISTENER, EnumSet.of(
@@ -194,8 +195,7 @@ public class WorldSystem extends System {
             throw new IllegalStateException("First body must be dynamic, second must be static");
         }
         Rectangle overlap = new Rectangle();
-        if (!dynamicBody.intersects(staticBody, overlap) ||
-                isSpecialCollision(dynamicBody, staticBody, overlap)) {
+        if (!dynamicBody.intersects(staticBody, overlap)) {
             return;
         }
         if (overlap.width > overlap.height) {
@@ -213,13 +213,6 @@ public class WorldSystem extends System {
                 dynamicBody.bounds.x -= overlap.width;
             }
         }
-    }
-
-    private boolean isSpecialCollision(Body dynamicBody, Body staticBody, Rectangle overlap) {
-
-        // TODO: megaman and ladder collision, only collide when megaman bounds.y >= ladder bounds.y + bounds.height
-
-        return false;
     }
 
 }

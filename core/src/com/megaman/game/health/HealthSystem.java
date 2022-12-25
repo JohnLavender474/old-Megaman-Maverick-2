@@ -14,9 +14,6 @@ public class HealthSystem extends System {
         HealthComponent c = e.getComponent(HealthComponent.class);
         if (c.getHealth() == 0) {
             e.dead = true;
-            for (Runnable r : c.runOnDeath) {
-                r.run();
-            }
         }
     }
 

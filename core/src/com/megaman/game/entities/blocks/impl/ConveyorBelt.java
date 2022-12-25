@@ -57,9 +57,7 @@ public class ConveyorBelt extends Block {
         }
         forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
         body.fixtures.add(forceFixture);
-        ShapeHandle h = new ShapeHandle(forceFixture.shape);
-        h.setColorSupplier(() -> Color.BLUE);
-        putComponent(new ShapeComponent(h));
+        putComponent(new ShapeComponent(new ShapeHandle(forceFixture.shape, Color.BLUE)));
     }
 
     @Override
@@ -82,7 +80,7 @@ public class ConveyorBelt extends Block {
             String part = i == 0 ? "left" : (i == numParts - 1 ? "right" : "middle");
             TextureRegion reg;
             if (part.equals("left")) {
-                reg = left ? lLeft : rLeft;
+                reg = left ? lLeft : lRight;
             } else if (part.equals("right")) {
                 reg = left ? rLeft : rRight;
             } else {

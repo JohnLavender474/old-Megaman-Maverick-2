@@ -10,11 +10,11 @@ public enum LevelMapLayer {
     BLOCKS("Blocks"),
     SPECIAL("Special"),
     HAZARDS("Hazards"),
-    SENSORS("Sensors"),
     GAME_ROOMS("GameRooms"),
     BACKGROUNDS("Backgrounds"),
     ENEMY_SPAWNS("EnemySpawns"),
-    PLAYER_SPAWNS("PlayerSpawns");
+    PLAYER_SPAWNS("PlayerSpawns"),
+    DEATH_SENSORS("DeathSensors");
 
     public final String name;
 

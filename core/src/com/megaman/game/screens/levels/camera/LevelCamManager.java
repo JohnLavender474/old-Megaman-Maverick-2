@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.ProcessState;
@@ -19,6 +21,8 @@ import static com.megaman.game.utils.UtilMethods.interpolate;
 import static java.lang.Math.min;
 
 public class LevelCamManager implements Updatable {
+
+    private static final Logger logger = new Logger(LevelCamManager.class, MegamanGame.DEBUG && true);
 
     public static final float CAM_TRANS_DUR = 1f;
     public static final float DIST_ON_TRANS = 3f;

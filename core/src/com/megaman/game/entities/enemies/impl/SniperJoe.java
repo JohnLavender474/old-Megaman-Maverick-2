@@ -11,7 +11,9 @@ import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
+import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
@@ -144,6 +146,7 @@ public class SniperJoe extends Enemy implements Faceable {
         data.put(ConstKeys.OWNER, this);
         data.put(ConstKeys.TRAJECTORY, traj);
         game.getGameEngine().spawnEntity(bullet, spawn, data);
+        getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_BULLET_SOUND);
     }
 
     private void setShielded(boolean shielded) {

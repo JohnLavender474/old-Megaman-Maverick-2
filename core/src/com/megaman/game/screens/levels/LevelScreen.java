@@ -28,6 +28,7 @@ import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
+import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventManager;
@@ -151,13 +152,17 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         EntityFactories factories = game.getEntityFactories();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
             switch (e.getKey()) {
-                case ENEMY_SPAWNS, BLOCKS, HAZARDS, SENSORS, SPECIAL -> {
+                case DEATH_SENSORS -> {
+                    for (RectangleMapObject o : e.getValue()) {
+                        engine.spawnEntity(factories.fetch(EntityType.SENSOR, SensorFactory.DEATH), o.getRectangle());
+                    }
+                }
+                case ENEMY_SPAWNS, BLOCKS, HAZARDS, SPECIAL -> {
                     EntityType type = switch (e.getKey()) {
-                        case ENEMY_SPAWNS -> EntityType.ENEMY;
                         case BLOCKS -> EntityType.BLOCK;
                         case HAZARDS -> EntityType.HAZARD;
-                        case SENSORS -> EntityType.SENSOR;
                         case SPECIAL -> EntityType.SPECIAL;
+                        case ENEMY_SPAWNS -> EntityType.ENEMY;
                         default -> throw new IllegalStateException("No matching entity type for: " + e.getKey());
                     };
                     for (RectangleMapObject o : e.getValue()) {
@@ -326,6 +331,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             }
             playerDeathDelayTimer.update(delta);
             if (playerDeathDelayTimer.isJustFinished()) {
+                playMusic(true);
                 spawnMegaman();
             }
         }

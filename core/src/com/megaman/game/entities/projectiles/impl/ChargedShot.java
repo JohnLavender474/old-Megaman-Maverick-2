@@ -97,7 +97,7 @@ public class ChargedShot extends Projectile implements Faceable {
 
     @Override
     public void hitBody(Fixture bodyFixture) {
-        if (bodyFixture.entity.equals(owner)) {
+        if (bodyFixture.entity.equals(owner) || bodyFixture.entity instanceof Projectile) {
             return;
         }
         explodeAndDie();
