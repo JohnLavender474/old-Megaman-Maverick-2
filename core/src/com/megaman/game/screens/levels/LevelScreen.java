@@ -236,10 +236,10 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     }
 
     @Override
-    public void listenForEvent(Event event) {
+    public void listenForEvent(Event e) {
         GameEngine engine = game.getGameEngine();
         AudioManager audioMan = game.getAudioMan();
-        switch (event.eventType) {
+        switch (e.eventType) {
             case GAME_PAUSE -> pause();
             case GAME_RESUME -> resume();
             case PLAYER_DEAD -> {
@@ -255,8 +255,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         WorldSystem.class);
                 game.getMegaman().getComponent(BodyComponent.class).body.velocity.setZero();
             }
-            case NEXT_GAME_ROOM_REQ -> levelCamMan.transToRoom(event.getInfo(ConstKeys.ROOM, String.class));
+            case NEXT_GAME_ROOM_REQ -> levelCamMan.transToRoom(e.getInfo(ConstKeys.ROOM, String.class));
             case ENTER_BOSS_ROOM -> {
+                logger.log("Enter boss room");
             }
         }
     }
@@ -328,6 +329,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         eventMan.dispatchEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
                         }}));
+                        if (levelCamMan.getCurrGameRoom().getName().equals(ConstKeys.BOSS)) {
+                            eventMan.dispatchEvent(new Event(EventType.ENTER_BOSS_ROOM));
+                        }
                     }
                 }
             }

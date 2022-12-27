@@ -33,5 +33,6 @@ public class ConstKeys {
     public static final String PRIOR = "Prior";
     public static final String CURR = "Curr";
     public static final String NEXT = "Next";
+    public static final String BOSS = "Boss";
 
 }
