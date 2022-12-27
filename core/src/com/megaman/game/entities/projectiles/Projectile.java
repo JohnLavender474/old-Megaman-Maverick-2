@@ -44,7 +44,7 @@ public abstract class Projectile extends Entity implements Damager {
         sprite = new Sprite();
         putComponent(new SoundComponent());
         putComponent(new BodyComponent(body));
-        putComponent(cullOnMessageComponent());
+        putComponent(cullOnEventComponent());
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
     }
 
@@ -56,13 +56,8 @@ public abstract class Projectile extends Entity implements Damager {
 
     @Override
     public boolean canDamage(Damageable damageable) {
-        if (owner == null) {
-            return true;
-        }
-        if (owner.equals(damageable)) {
-            return false;
-        }
-        return damageable instanceof Entity e && entityType != e.entityType;
+        return !damageable.isInvincible() && !damageable.equals(owner) &&
+                damageable instanceof Entity e && entityType != e.entityType;
     }
 
     public void hitBody(Fixture bodyFixture) {
@@ -77,7 +72,7 @@ public abstract class Projectile extends Entity implements Damager {
     public void hitWater(Fixture waterFixture) {
     }
 
-    protected CullOnEventComponent cullOnMessageComponent() {
+    protected CullOnEventComponent cullOnEventComponent() {
         CullOnEventComponent c = new CullOnEventComponent();
         Set<EventType> s = EnumSet.of(
                 EventType.PLAYER_SPAWN,

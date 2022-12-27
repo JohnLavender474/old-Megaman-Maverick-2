@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
@@ -44,10 +45,9 @@ public class BlinkingArrow implements Updatable, Drawable {
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (!isArrowVisible()) {
-            return;
+        if (isArrowVisible()) {
+            SpriteDrawer.draw(arrowSprite, batch);
         }
-        arrowSprite.draw(batch);
     }
 
 }

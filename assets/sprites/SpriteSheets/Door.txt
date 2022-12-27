@@ -1,7 +1,7 @@
 Door.png
 size: 960, 64
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 blue_closed
   rotate: false
@@ -17,14 +17,14 @@ blue_opening
   orig: 256, 64
   offset: 0, 0
   index: -1
-gray_closed
+closed
   rotate: false
   xy: 320, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-gray_opening
+opening
   rotate: false
   xy: 384, 0
   size: 256, 64

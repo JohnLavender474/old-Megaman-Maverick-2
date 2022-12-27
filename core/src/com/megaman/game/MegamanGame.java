@@ -21,6 +21,7 @@ import com.megaman.game.cull.CullOnEventSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.events.EventListenerSystem;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.health.HealthSystem;
 import com.megaman.game.movement.pendulum.PendulumSystem;
@@ -30,6 +31,9 @@ import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.Level;
 import com.megaman.game.screens.levels.LevelScreen;
+import com.megaman.game.screens.menus.impl.bosses.BSelectScreen;
+import com.megaman.game.screens.menus.impl.main.MainScreen;
+import com.megaman.game.screens.other.BIntroScreen;
 import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
@@ -52,25 +56,20 @@ public class MegamanGame implements ApplicationListener {
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-
+    private Map<ScreenEnum, Screen> screens;
     private OrthographicCamera gameCam;
     private OrthographicCamera uiCam;
     private Viewport gameViewport;
     private Viewport uiViewport;
-    private Map<ScreenEnum, Screen> screens;
-
     private AssetsManager assMan;
     private AudioManager audioMan;
     private EventManager eventMan;
     private ControllerManager ctrlMan;
-
     private Megaman megaman;
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
-
-    private Level level;
-    private Screen screen;
     private boolean paused;
+    private Screen currScreen;
 
     @Override
     public void create() {
@@ -85,14 +84,15 @@ public class MegamanGame implements ApplicationListener {
         entityFactories = new EntityFactories(this);
         gameEngine = new GameEngine(
                 new ControllerSystem(ctrlMan),
-                new CullOnOutOfBoundsSystem(),
-                new CullOnEventSystem(eventMan),
-                new HealthSystem(),
-                new TrajectorySystem(),
                 new WorldSystem(new WorldContactListenerImpl(this)),
+                new EventListenerSystem(eventMan),
+                new CullOnEventSystem(eventMan),
+                new CullOnOutOfBoundsSystem(),
+                new TrajectorySystem(),
                 new PathfindingSystem(),
                 new RotatingLineSystem(),
                 new PendulumSystem(),
+                new HealthSystem(),
                 new UpdatableSystem(),
                 new BehaviorSystem(),
                 new AnimationSystem(),
@@ -109,30 +109,38 @@ public class MegamanGame implements ApplicationListener {
         uiViewport = new FitViewport(screenWidth, screenHeight, uiCam);
         screens = new EnumMap<>(ScreenEnum.class);
         screens.put(ScreenEnum.LEVEL, new LevelScreen(this));
-        setLevel(Level.TEST5);
-        setScreen(ScreenEnum.LEVEL);
+        screens.put(ScreenEnum.MAIN, new MainScreen(this));
+        screens.put(ScreenEnum.BOSS_SELECT, new BSelectScreen(this));
+        screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
+
+        // TODO: test levels
+        LevelScreen l = getScreen(ScreenEnum.LEVEL, LevelScreen.class);
+        l.set(Level.TEST1);
+        setCurrScreen(l);
+
+        // TODO: set to main menu
+        // setCurrScreen(getScreen(ScreenEnum.MAIN));
     }
 
-    public void setScreen(ScreenEnum screenEnum) {
-        Screen s = screens.get(screenEnum);
-        if (s instanceof LevelScreen levelScreen && level != null) {
-            levelScreen.set(level);
+    public <S extends Screen> S getScreen(ScreenEnum e, Class<S> sClass) {
+        return sClass.cast(getScreen(e));
+    }
+
+    public Screen getScreen(ScreenEnum e) {
+        return screens.get(e);
+    }
+
+    public void setCurrScreen(Screen screen) {
+        if (currScreen != null) {
+            currScreen.dispose();
         }
-        setScreen(s);
-    }
-
-    public void setLevel(Level level) {
-        this.level = level;
-    }
-
-    private void setScreen(Screen screen) {
-        if (this.screen != null) {
-            this.screen.dispose();
+        currScreen = screen;
+        if (currScreen != null) {
+            currScreen.show();
+            currScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
-        this.screen = screen;
-        if (this.screen != null) {
-            this.screen.show();
-            this.screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        if (paused) {
+            currScreen.pause();
         }
     }
 
@@ -146,8 +154,8 @@ public class MegamanGame implements ApplicationListener {
         float delta = Gdx.graphics.getDeltaTime();
         ctrlMan.run();
         audioMan.update(delta);
-        if (screen != null) {
-            screen.render(delta);
+        if (currScreen != null) {
+            currScreen.render(delta);
         }
         gameViewport.apply();
         uiViewport.apply();
@@ -161,8 +169,9 @@ public class MegamanGame implements ApplicationListener {
         }
         logger.log("Game pause actuated");
         paused = true;
-        audioMan.pause();
-        screen.pause();
+        if (currScreen != null) {
+            currScreen.pause();
+        }
     }
 
     @Override
@@ -173,23 +182,27 @@ public class MegamanGame implements ApplicationListener {
         }
         logger.log("Game resume actuated");
         paused = false;
-        audioMan.resume();
-        screen.resume();
+        if (currScreen != null) {
+            currScreen.resume();
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         gameViewport.update(width, height);
         uiViewport.update(width, height);
-        screen.resize(width, height);
+        if (currScreen != null) {
+            currScreen.resize(width, height);
+        }
     }
 
     @Override
     public void dispose() {
-        screen.dispose();
+        if (currScreen != null) {
+            currScreen.dispose();
+        }
         batch.dispose();
         assMan.dispose();
-        screen.dispose();
         shapeRenderer.dispose();
         gameEngine.getSystem(PathfindingSystem.class).dispose();
     }

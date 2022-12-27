@@ -13,6 +13,7 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.sensors.impl.Gate;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.projectiles.Projectile;
@@ -61,6 +62,12 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 body.set(BodySense.TOUCHING_BLOCK_LEFT, true);
             } else {
                 body.set(BodySense.TOUCHING_BLOCK_RIGHT, true);
+            }
+        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.GATE)) {
+            if (contact.mask1stEntity() instanceof Megaman &&
+                    contact.mask2ndEntity() instanceof Gate gate &&
+                    gate.isState(Gate.GateState.OPENABLE)) {
+                gate.trigger();
             }
         } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
             Body body = contact.mask1stBody();

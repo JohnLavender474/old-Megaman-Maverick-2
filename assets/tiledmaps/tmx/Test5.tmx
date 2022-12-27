@@ -5,31 +5,6 @@
  <tileset firstgid="1235" source="../tsx/GearTrolley.tsx"/>
  <tileset firstgid="1247" source="../tsx/BFT - Mega Metroidvania Tileset.tsx"/>
  <tileset firstgid="1832" source="../tsx/mm10pump.tsx"/>
- <objectgroup id="5" name="DeathSensors">
-  <object id="195" name="saw" x="2400" y="9312" width="32" height="32">
-   <properties>
-    <property name="p" value=""/>
-   </properties>
-  </object>
-  <object id="233" name="Death" x="1696" y="9824" width="64" height="32"/>
-  <object id="236" name="Death" x="480" y="9568" width="1440" height="32"/>
-  <object id="237" name="Death" x="2176" y="9568" width="736" height="32"/>
-  <object id="238" name="Death" x="3328" y="9568" width="320" height="32"/>
-  <object id="239" name="Death" x="3936" y="9568" width="320" height="32"/>
-  <object id="240" name="Death" x="4256" y="9440" width="32" height="160"/>
-  <object id="241" name="Death" x="4384" y="9440" width="32" height="192"/>
-  <object id="242" name="Death" x="4480" y="9280" width="32" height="672"/>
-  <object id="243" name="Death" x="3488" y="9952" width="1024" height="32"/>
-  <object id="244" name="Death" x="3264" y="9632" width="1152" height="32"/>
-  <object id="245" name="Death" x="3648" y="9760" width="288" height="32"/>
-  <object id="246" name="Death" x="3168" y="9632" width="32" height="64"/>
-  <object id="247" name="Death" x="2880" y="9632" width="128" height="32"/>
-  <object id="248" name="Death" x="2752" y="9632" width="64" height="32"/>
-  <object id="250" name="Death" x="2496" y="9760" width="192" height="32"/>
-  <object id="249" name="Death" x="2816" y="9728" width="32" height="128"/>
-  <object id="235" name="Death" x="1952" y="9856" width="128" height="32"/>
-  <object id="255" name="Death" x="1440" y="10048" width="2400" height="96"/>
- </objectgroup>
  <objectgroup id="8" name="EnemySpawns">
   <object id="60" name="SniperJoe" x="2592" y="9440" width="32" height="32"/>
   <object id="123" name="SniperJoe" x="3904" y="9376" width="32" height="32"/>
@@ -107,6 +82,31 @@
    </properties>
   </object>
   <object id="110" name="Water" x="3488" y="9792" width="1024" height="192"/>
+ </objectgroup>
+ <objectgroup id="5" name="Death">
+  <object id="195" name="saw" x="2400" y="9312" width="32" height="32">
+   <properties>
+    <property name="p" value=""/>
+   </properties>
+  </object>
+  <object id="233" name="Death" x="1696" y="9824" width="64" height="32"/>
+  <object id="236" name="Death" x="480" y="9568" width="1440" height="32"/>
+  <object id="237" name="Death" x="2176" y="9568" width="736" height="32"/>
+  <object id="238" name="Death" x="3328" y="9568" width="320" height="32"/>
+  <object id="239" name="Death" x="3936" y="9568" width="320" height="32"/>
+  <object id="240" name="Death" x="4256" y="9440" width="32" height="160"/>
+  <object id="241" name="Death" x="4384" y="9440" width="32" height="192"/>
+  <object id="242" name="Death" x="4480" y="9280" width="32" height="672"/>
+  <object id="243" name="Death" x="3488" y="9952" width="1024" height="32"/>
+  <object id="244" name="Death" x="3264" y="9632" width="1152" height="32"/>
+  <object id="245" name="Death" x="3648" y="9760" width="288" height="32"/>
+  <object id="246" name="Death" x="3168" y="9632" width="32" height="64"/>
+  <object id="247" name="Death" x="2880" y="9632" width="128" height="32"/>
+  <object id="248" name="Death" x="2752" y="9632" width="64" height="32"/>
+  <object id="250" name="Death" x="2496" y="9760" width="192" height="32"/>
+  <object id="249" name="Death" x="2816" y="9728" width="32" height="128"/>
+  <object id="235" name="Death" x="1952" y="9856" width="128" height="32"/>
+  <object id="255" name="Death" x="1440" y="10048" width="2400" height="96"/>
  </objectgroup>
  <objectgroup id="12" name="Blocks">
   <object id="5" x="0" y="9440" width="480" height="224"/>

@@ -1,11 +1,11 @@
 package com.megaman.game.screens;
 
 public enum ScreenEnum {
+    MAIN,
     LEVEL,
-    LEVEL_INTRO,
-    MAIN_MENU,
-    PASSWORD,
     EXTRAS,
+    PASSWORD,
     CONTROLLER,
+    BOSS_INTRO,
     BOSS_SELECT
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
+import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.world.WorldVals;
@@ -85,7 +86,7 @@ public class Background implements Updatable, Drawable {
     public void draw(SpriteBatch batch) {
         for (Sprite[] row : backgroundSprites) {
             for (Sprite sprite : row) {
-                sprite.draw(batch);
+                SpriteDrawer.draw(sprite, batch);
             }
         }
     }

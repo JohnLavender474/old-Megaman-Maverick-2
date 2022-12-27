@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.world.WorldVals;
 
@@ -45,10 +46,10 @@ public class BitsBar implements Drawable {
 
     @Override
     public void draw(SpriteBatch batch) {
-        blackBackground.draw(batch);
+        SpriteDrawer.draw(blackBackground, batch);
         int count = countSupplier.get();
         for (int i = 0; i < Integer.min(count, BITS); i++) {
-            bitSprites.get(i).draw(batch);
+            SpriteDrawer.draw(bitSprites.get(i), batch);
         }
     }
 

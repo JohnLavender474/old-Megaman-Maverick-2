@@ -7,12 +7,12 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.world.*;
 
-public class DeathSensor extends Entity {
+public class Death extends Entity {
 
     private final Body body;
     private final Fixture deathFixture;
 
-    public DeathSensor(MegamanGame game) {
+    public Death(MegamanGame game) {
         super(game, EntityType.SENSOR);
         body = new Body(BodyType.ABSTRACT);
         deathFixture = new Fixture(this, FixtureType.DEATH, new Rectangle());

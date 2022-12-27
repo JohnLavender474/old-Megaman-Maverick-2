@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.ViewVals;
 import com.megaman.game.animations.Animation;
+import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.screens.ScreenEnum;
@@ -18,7 +19,9 @@ import com.megaman.game.screens.menus.MenuButton;
 import com.megaman.game.screens.menus.MenuScreen;
 import com.megaman.game.screens.menus.utils.BlinkingArrow;
 import com.megaman.game.screens.menus.utils.ScreenSlide;
+import com.megaman.game.screens.other.BIntroScreen;
 import com.megaman.game.screens.utils.TextHandle;
+import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.Position;
@@ -104,8 +107,11 @@ public class BSelectScreen extends MenuScreen {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 3; j++) {
                 Sprite sprite = new Sprite(bar);
-                sprite.setBounds(i * 3f * WorldVals.PPM, (j * 4f * WorldVals.PPM) + 1.35f * WorldVals.PPM, 
-                        5.33f * WorldVals.PPM, 4f * WorldVals.PPM);
+                sprite.setBounds(
+                        i * 3f * WorldVals.PPM,
+                        (j * 4f * WorldVals.PPM) + 1.35f * WorldVals.PPM,
+                        5.33f * WorldVals.PPM,
+                        4f * WorldVals.PPM);
                 Animation timedAnimation = new Animation(bar, new float[]{.3f, .15f, .15f, .15f});
                 bars.put(sprite, timedAnimation);
             }
@@ -113,7 +119,11 @@ public class BSelectScreen extends MenuScreen {
         TextureAtlas decorationsAtlas = assMan.getTextureAtlas(TextureAsset.DECORATIONS);
         TextureRegion whiteReg = decorationsAtlas.findRegion("White");
         white.setRegion(whiteReg);
-        white.setBounds(0f, 0f, ViewVals.VIEW_WIDTH * WorldVals.PPM, ViewVals.VIEW_HEIGHT * WorldVals.PPM);
+        white.setBounds(
+                0f,
+                0f,
+                ViewVals.VIEW_WIDTH * WorldVals.PPM,
+                ViewVals.VIEW_HEIGHT * WorldVals.PPM);
         TextureRegion black = decorationsAtlas.findRegion("Black");
         bar1.setRegion(black);
         bar1.setBounds(-WorldVals.PPM, -WorldVals.PPM,
@@ -128,8 +138,11 @@ public class BSelectScreen extends MenuScreen {
                 for (int x = 0; x < 2; x++) {
                     for (int y = 0; y < 2; y++) {
                         Sprite blueBlock = new Sprite(blueBlockRegion);
-                        blueBlock.setBounds(i * WorldVals.PPM + (x * halfPPM), j * WorldVals.PPM + (y * halfPPM), 
-                                halfPPM, halfPPM);
+                        blueBlock.setBounds(
+                                i * WorldVals.PPM + (x * halfPPM),
+                                j * WorldVals.PPM + (y * halfPPM),
+                                halfPPM,
+                                halfPPM);
                         bkgd.add(blueBlock);
                     }
                 }
@@ -144,6 +157,7 @@ public class BSelectScreen extends MenuScreen {
         slide.init();
         outTimer.reset();
         outro = false;
+        game.getAudioMan().playMusic(MusicAsset.STAGE_SELECT_MM3_MUSIC, true);
     }
 
     @Override
@@ -154,54 +168,60 @@ public class BSelectScreen extends MenuScreen {
     @Override
     public void render(float delta) {
         super.render(delta);
-        slide.update(delta);
+        if (!game.isPaused()) {
+            slide.update(delta);
+            if (outro) {
+                outTimer.update(delta);
+            }
+            if (outTimer.isFinished()) {
+                BIntroScreen s = game.getScreen(ScreenEnum.BOSS_INTRO, BIntroScreen.class);
+                s.set(bSelect);
+                game.setCurrScreen(s);
+                return;
+            }
+            for (ObjectMap.Entry<Sprite, Animation> e : bars) {
+                e.value.update(delta);
+                e.key.setRegion(e.value.getCurrRegion());
+            }
+            for (BPane b : bp) {
+                if (b.getBossName().equals(getCurrBtnKey())) {
+                    b.setBPaneStat(isSelectionMade() ? BPaneStat.HIGHLIGHTED : BPaneStat.BLINKING);
+                } else {
+                    b.setBPaneStat(BPaneStat.UNHIGHLIGHTED);
+                }
+                b.update(delta);
+            }
+            if (bArrs.containsKey(getCurrBtnKey())) {
+                bArrs.get(getCurrBtnKey()).update(delta);
+            }
+        }
         batch.setProjectionMatrix(uiCam.combined);
         batch.begin();
-        if (outro) {
-            outTimer.update(delta);
-            if (blink) {
-                white.draw(batch);
-            }
+        if (outro && blink) {
+            SpriteDrawer.draw(white, batch);
         }
         for (Sprite b : bkgd) {
-            b.draw(batch);
+            SpriteDrawer.draw(b, batch);
         }
         for (ObjectMap.Entry<Sprite, Animation> e : bars) {
-            e.value.update(delta);
-            e.key.setRegion(e.value.getCurrRegion());
-            e.key.draw(batch);
+            SpriteDrawer.draw(e.key, batch);
         }
         for (BPane b : bp) {
-            if (b.getBossName().equals(getCurrBtnKey())) {
-                b.setBPaneStat(isSelectionMade() ? BPaneStat.HIGHLIGHTED : BPaneStat.BLINKING);
-            } else {
-                b.setBPaneStat(BPaneStat.UNHIGHLIGHTED);
-            }
-            b.update(delta);
             b.draw(batch);
         }
-        bar1.draw(batch);
-        bar2.draw(batch);
+        SpriteDrawer.draw(bar1, batch);
+        SpriteDrawer.draw(bar2, batch);
         if (bArrs.containsKey(getCurrBtnKey())) {
-            BlinkingArrow blinkingArrow = bArrs.get(getCurrBtnKey());
-            blinkingArrow.update(delta);
-            blinkingArrow.draw(batch);
+            bArrs.get(getCurrBtnKey()).draw(batch);
         }
-        t.forEach(text -> text.draw(batch));
+        for (TextHandle text : t) {
+            text.draw(batch);
+        }
         if (MEGA_MAN.equals(getCurrBtnKey()) || bNameSet.contains(getCurrBtnKey())) {
             bName.setText(getCurrBtnKey().toUpperCase());
             bName.draw(batch);
         }
         batch.end();
-        if (outTimer.isFinished()) {
-            
-            // TODO: set level intro screen
-            /*
-            ((LevelIntroScreen) game.getScreen(LEVEL_INTRO)).set(bSelect);
-            game.setScreen(LEVEL_INTRO);            
-             */
-            
-        }
     }
 
     @Override
@@ -226,7 +246,7 @@ public class BSelectScreen extends MenuScreen {
         menuButtons.put(BACK, new MenuButton() {
             @Override
             public boolean onSelect(float delta) {
-                game.setScreen(ScreenEnum.MAIN_MENU);
+                game.setCurrScreen(game.getScreen(ScreenEnum.MAIN));
                 return true;
             }
 
@@ -242,10 +262,10 @@ public class BSelectScreen extends MenuScreen {
             menuButtons.put(bEnum.name, new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
-                    assMan.getSound(SoundAsset.BEAM_OUT_SOUND);
+                    audioMan.playSound(SoundAsset.BEAM_OUT_SOUND);
+                    audioMan.stopMusic();
                     bSelect = bEnum;
                     outro = true;
-                    music.stop();
                     return true;
                 }
 

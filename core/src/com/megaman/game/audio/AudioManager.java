@@ -57,20 +57,6 @@ public class AudioManager implements Updatable {
         }
     }
 
-    public void pause() {
-        for (Sound s : sounds.values()) {
-            s.pause();
-        }
-        pauseMusic();
-    }
-
-    public void resume() {
-        for (Sound s : sounds.values()) {
-            s.resume();
-        }
-        resumeMusic();
-    }
-
     public void setSoundVolume(int newVolume) {
         soundVolume = newVolume;
         if (soundVolume > MAX_VOLUME) {
@@ -108,28 +94,51 @@ public class AudioManager implements Updatable {
         sounds.get(ass).stop();
     }
 
-    public void playMusic(Music music, boolean loop) {
+    public void playMusic(MusicAsset ass, boolean loop) {
+        Music m = music.get(ass);
         if (currMusic != null) {
             currMusic.stop();
         }
-        currMusic = music;
+        currMusic = m;
         currMusic.setLooping(loop);
         currMusic.setVolume((float) musicVolume / MAX_VOLUME);
         currMusic.play();
     }
 
     public void pauseMusic() {
-        if (currMusic == null) {
-            return;
+        if (currMusic != null) {
+            currMusic.pause();
         }
-        currMusic.pause();
+    }
+
+    public void stopMusic() {
+        if (currMusic != null) {
+            currMusic.stop();
+        }
     }
 
     public void resumeMusic() {
-        if (currMusic == null || currMusic.isPlaying()) {
-            return;
+        if (currMusic != null && !currMusic.isPlaying()) {
+            currMusic.play();
         }
-        currMusic.play();
+    }
+
+    public void pauseSound() {
+        for (Sound s : sounds.values()) {
+            s.pause();
+        }
+    }
+
+    public void stopSound() {
+        for (Sound s : sounds.values()) {
+            s.stop();
+        }
+    }
+
+    public void resumeSound() {
+        for (Sound s : sounds.values()) {
+            s.resume();
+        }
     }
 
 }

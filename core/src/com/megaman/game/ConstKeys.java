@@ -30,5 +30,8 @@ public class ConstKeys {
     public static final String ROOM = "Room";
     public static final String RECT = "Rect";
     public static final String POS = "Pos";
+    public static final String PRIOR = "Prior";
+    public static final String CURR = "Curr";
+    public static final String NEXT = "Next";
 
 }

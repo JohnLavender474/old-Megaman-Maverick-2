@@ -6,15 +6,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public enum LevelMapLayer {
 
-    TEST("Test"),
+    GATES("Gates"),
+    DEATH("Death"),
     BLOCKS("Blocks"),
     SPECIAL("Special"),
     HAZARDS("Hazards"),
     GAME_ROOMS("GameRooms"),
     BACKGROUNDS("Backgrounds"),
     ENEMY_SPAWNS("EnemySpawns"),
-    PLAYER_SPAWNS("PlayerSpawns"),
-    DEATH_SENSORS("DeathSensors");
+    PLAYER_SPAWNS("PlayerSpawns");
 
     public final String name;
 

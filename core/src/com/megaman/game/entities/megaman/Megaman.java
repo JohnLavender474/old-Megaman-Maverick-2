@@ -33,7 +33,7 @@ import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.events.Event;
-import com.megaman.game.events.EventListener;
+import com.megaman.game.events.EventListenerComponent;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeComponent;
@@ -54,7 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
+public class Megaman extends Entity implements Damageable, Faceable, Positional /* , EventListener */ {
 
     public static final float CLAMP_X = 25f;
     public static final float CLAMP_Y = 35f;
@@ -157,8 +157,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         putComponent(bodyComponent());
         putComponent(spriteComponent());
         putComponent(behaviorComponent());
-        putComponent(new SoundComponent());
         putComponent(controllerComponent());
+        putComponent(eventListenerComponent());
+        putComponent(new SoundComponent());
         putComponent(new HealthComponent());
         putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
         runOnDeath.add(() -> {
@@ -238,6 +239,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         body.bounds.setPosition(x, y);
     }
 
+    // TODO: test event listen comp
+    /*
     @Override
     public void listenForEvent(Event event) {
         switch (event.eventType) {
@@ -246,9 +249,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 Vector2 pos = event.getInfo(ConstKeys.POS, Vector2.class);
                 body.setPos(pos, Position.BOTTOM_CENTER);
             }
-            case GATE_INIT_OPENING -> body.velocity.set(Vector2.Zero);
+            case GATE_INIT_OPENING -> body.velocity.setZero();
         }
     }
+     */
 
     public int getHealth() {
         return getComponent(HealthComponent.class).getHealth();
@@ -319,6 +323,23 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         } else {
             c.requestToStop(ass);
         }
+    }
+
+    private EventListenerComponent eventListenerComponent() {
+        return new EventListenerComponent(e -> {
+            switch (e.eventType) {
+                case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
+                    body.velocity.set(Vector2.Zero);
+                    Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
+                    body.setPos(pos, Position.BOTTOM_CENTER);
+                    request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+                }
+                case GATE_INIT_OPENING -> {
+                    body.velocity.setZero();
+                    request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+                }
+            }
+        });
     }
 
     private ControllerComponent controllerComponent() {

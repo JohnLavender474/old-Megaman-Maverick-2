@@ -21,27 +21,39 @@ public class TextHandle implements Drawable {
     public static final int FONT_SIZE = Math.round(WorldVals.PPM / 2f);
 
     private final BitmapFont font;
-    private final GlyphLayout layout = new GlyphLayout();
+    private final GlyphLayout layout;
 
-    public final Vector2 center = new Vector2();
-
+    public Vector2 pos;
+    public boolean centerX;
+    public boolean centerY;
     public Supplier<String> textSupplier;
 
-    public TextHandle(Vector2 center) {
-        this(center, () -> "");
+    public TextHandle(Vector2 pos) {
+        this(pos, "");
     }
 
-    public TextHandle(Vector2 center, String text) {
-        this(center, () -> text);
+    public TextHandle(Vector2 pos, String text) {
+        this(pos, text, false, false);
     }
 
-    public TextHandle(Vector2 center, Supplier<String> textSupplier) {
+    public TextHandle(Vector2 pos, Supplier<String> textSupplier) {
+        this(pos, textSupplier, false, false);
+    }
+
+    public TextHandle(Vector2 pos, String text, boolean centerX, boolean centerY) {
+        this(pos, () -> text, centerX, centerY);
+    }
+
+    public TextHandle(Vector2 pos, Supplier<String> textSupplier, boolean centerX, boolean centerY) {
+        this.centerX = centerX;
+        this.centerY = centerY;
+        this.pos = pos;
+        layout = new GlyphLayout();
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_SRC));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = FONT_SIZE;
         font = generator.generateFont(parameter);
         generator.dispose();
-        this.center.set(center);
         this.textSupplier = textSupplier;
     }
 
@@ -49,14 +61,16 @@ public class TextHandle implements Drawable {
         setTextSupplier(() -> text);
     }
 
-    public void setTextSupplier(Supplier<String> textSupplier) {
-        this.textSupplier = textSupplier;
+    public void clear() {
+        setText("");
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         layout.setText(font, textSupplier.get().toUpperCase());
-        font.draw(batch, layout, center.x - (layout.width / 2f), center.y);
+        float x = centerX ? pos.x - layout.width / 2f : pos.x;
+        float y = centerY ? pos.y - layout.height / 2f : pos.y;
+        font.draw(batch, layout, x, y);
     }
 
 }

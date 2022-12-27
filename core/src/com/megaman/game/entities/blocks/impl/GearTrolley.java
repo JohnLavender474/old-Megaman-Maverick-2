@@ -12,8 +12,7 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.blocks.Block;
-import com.megaman.game.events.Event;
-import com.megaman.game.events.EventListener;
+import com.megaman.game.events.EventListenerComponent;
 import com.megaman.game.movement.trajectory.Trajectory;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.shapes.ShapeUtils;
@@ -22,7 +21,7 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.WorldVals;
 
-public class GearTrolley extends Block implements EventListener {
+public class GearTrolley extends Block /* implements EventListener */ {
 
     private static final float WIDTH = 1.25f;
     private static final float HEIGHT = .35f;
@@ -40,9 +39,11 @@ public class GearTrolley extends Block implements EventListener {
         putComponent(shapeComponent());
         putComponent(spriteComponent());
         putComponent(animationComponent());
+        // TODO: test comp
+        putComponent(eventListenerComponent());
         putComponent(new TrajectoryComponent());
-        game.getEventMan().add(this);
-        runOnDeath.add(() -> game.getEventMan().remove(this));
+        // game.getEventMan().add(this);
+        // runOnDeath.add(() -> game.getEventMan().remove(this));
     }
 
     @Override
@@ -58,6 +59,8 @@ public class GearTrolley extends Block implements EventListener {
         t.trajectory = new Trajectory(body, trajStr);
     }
 
+    // TODO: test comp
+    /*
     @Override
     public void listenForEvent(Event event) {
         switch (event.eventType) {
@@ -67,6 +70,19 @@ public class GearTrolley extends Block implements EventListener {
             }
             case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
         }
+    }
+     */
+
+    private EventListenerComponent eventListenerComponent() {
+        return new EventListenerComponent(e -> {
+            switch (e.eventType) {
+                case BEGIN_GAME_ROOM_TRANS -> {
+                    spriteHandle.hidden = true;
+                    getComponent(TrajectoryComponent.class).reset();
+                }
+                case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
+            }
+        });
     }
 
     private SpriteComponent spriteComponent() {

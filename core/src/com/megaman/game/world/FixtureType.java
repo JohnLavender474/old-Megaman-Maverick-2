@@ -8,6 +8,7 @@ public enum FixtureType {
     SIDE,
     ITEM,
     ICE,
+    GATE,
     LASER,
     WATER,
     FORCE,

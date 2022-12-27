@@ -24,6 +24,7 @@ public class WorldSystem extends System {
                 FixtureType.WATER));
         put(FixtureType.SIDE, EnumSet.of(
                 FixtureType.ICE,
+                FixtureType.GATE,
                 FixtureType.BLOCK,
                 FixtureType.BOUNCER));
         put(FixtureType.FEET, EnumSet.of(

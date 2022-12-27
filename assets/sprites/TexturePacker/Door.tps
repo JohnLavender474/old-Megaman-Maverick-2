@@ -2,9 +2,9 @@
 <data version="1.0">
     <struct type="Settings">
         <key>fileFormatVersion</key>
-        <int>5</int>
+        <int>6</int>
         <key>texturePackerVersion</key>
-        <string>6.0.2</string>
+        <string>7.0.0</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -127,8 +127,8 @@
                 <filename>../SpriteSheets/Door.txt</filename>
             </struct>
         </map>
-        <key>multiPack</key>
-        <false/>
+        <key>multiPackMode</key>
+        <enum type="SettingsBase::MultiPackMode">MultiPackOff</enum>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
@@ -174,7 +174,7 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../Frames/Door/blue_closed.png</key>
-            <key type="filename">../Frames/Door/gray_closed.png</key>
+            <key type="filename">../Frames/Door/closed.png</key>
             <key type="filename">../Frames/Door/red_closed.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -191,7 +191,7 @@
                 <false/>
             </struct>
             <key type="filename">../Frames/Door/blue_opening.png</key>
-            <key type="filename">../Frames/Door/gray_opening.png</key>
+            <key type="filename">../Frames/Door/opening.png</key>
             <key type="filename">../Frames/Door/red_opening.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -208,10 +208,16 @@
                 <false/>
             </struct>
         </map>
-        <key>fileList</key>
-        <array>
-            <filename>../Frames/Door</filename>
-        </array>
+        <key>fileLists</key>
+        <map type="SpriteSheetMap">
+            <key>default</key>
+            <struct type="SpriteSheet">
+                <key>files</key>
+                <array>
+                    <filename>../Frames/Door</filename>
+                </array>
+            </struct>
+        </map>
         <key>ignoreFileList</key>
         <array/>
         <key>replaceList</key>

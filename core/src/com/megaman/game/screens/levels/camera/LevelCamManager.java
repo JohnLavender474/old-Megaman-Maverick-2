@@ -6,8 +6,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.megaman.game.MegamanGame;
-import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.ProcessState;
@@ -22,8 +20,6 @@ import static java.lang.Math.min;
 
 public class LevelCamManager implements Updatable {
 
-    private static final Logger logger = new Logger(LevelCamManager.class, MegamanGame.DEBUG && true);
-
     public static final float CAM_TRANS_DUR = 1f;
     public static final float DIST_ON_TRANS = 3f;
 
@@ -37,6 +33,8 @@ public class LevelCamManager implements Updatable {
     private final Vector2 focusableTargetPos = new Vector2();
 
     private Positional focusable;
+    @Getter
+    private RectangleMapObject priorGameRoom;
     @Getter
     private RectangleMapObject currGameRoom;
     private ObjectMap<String, RectangleMapObject> gameRooms;
@@ -72,9 +70,13 @@ public class LevelCamManager implements Updatable {
     public void update(float delta) {
         updating = true;
         if (reset) {
-            setCamToFocusable(delta);
-            currGameRoom = nextGameRoom();
             reset = false;
+            setCamToFocusable(delta);
+            RectangleMapObject nextGameRoom = nextGameRoom();
+            if (nextGameRoom != null) {
+                priorGameRoom = currGameRoom;
+            }
+            currGameRoom = nextGameRoom;
         } else if (transState == null) {
             onNullTrans(delta);
         } else {
@@ -85,12 +87,13 @@ public class LevelCamManager implements Updatable {
 
     public void transToRoom(String name) {
         if (currGameRoom == null) {
-            throw new IllegalStateException("Cannot trans if there is no current game room");
+            throw new IllegalStateException("Cannot trans to room " + name + " if there is no current game room");
         }
         RectangleMapObject nextGameRoom = gameRooms.get(name);
         transDirection = UtilMethods.getSingleMostDirectionFromStartToTarget(
                 currGameRoom.getRectangle(), nextGameRoom.getRectangle());
         setTransVals(nextGameRoom.getRectangle());
+        priorGameRoom = currGameRoom;
         currGameRoom = nextGameRoom;
     }
 
@@ -131,24 +134,15 @@ public class LevelCamManager implements Updatable {
     }
 
     private void onNullTrans(float delta) {
-        /*
-        case 1: if current game room is null, try to find next game room and assign it to current game room,
-        wait until next resize cycle to attempt another action
-
-        case 2: if current game room contains focusable, then set gameCam center to current focus and
-        correct bounds if necessary
-
-        case 3: if current game room is not null and doesn't contain focusable, then setBounds next game room,
-        and if next game room is a neighbour, then init transition process, otherwise jump directly to
-        focusable on next resize cycle
-        */
-        // case 1
         if (currGameRoom == null) {
-            currGameRoom = nextGameRoom();
+            RectangleMapObject nextGameRoom = nextGameRoom();
+            if (nextGameRoom != null) {
+                priorGameRoom = currGameRoom;
+                currGameRoom = nextGameRoom;
+            }
             return;
         }
         Rectangle currRoomBounds = currGameRoom.getRectangle();
-        // case 2
         if (currRoomBounds.contains(focusable.getPosition())) {
             setCamToFocusable(delta);
             if (cam.position.y > (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f) {
@@ -165,12 +159,10 @@ public class LevelCamManager implements Updatable {
             }
             return;
         }
-        // case 3
         RectangleMapObject nextGameRoom = nextGameRoom();
         if (nextGameRoom == null) {
             return;
         }
-        // generic 5 * PPM by 5 * PPM square is used to determine push direction
         Rectangle overlap = new Rectangle();
         float width = 5f * WorldVals.PPM;
         float height = 5f * WorldVals.PPM;
@@ -178,13 +170,11 @@ public class LevelCamManager implements Updatable {
                 .setSize(width, height)
                 .setCenter(focusable.getPosition());
         transDirection = UtilMethods.getOverlapPushDirection(boundingBox, currGameRoom.getRectangle(), overlap);
-        // go ahead and set current game room to next room, which needs to be done even if
-        // transition direction is null
+        priorGameRoom = currGameRoom;
         currGameRoom = nextGameRoom;
         if (transDirection == null) {
             return;
         }
-        // set trans vals
         setTransVals(nextGameRoom.getRectangle());
     }
 

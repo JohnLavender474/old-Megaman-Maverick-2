@@ -6,6 +6,8 @@ import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.cull.CullOnEventComponent;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.*;
+import com.megaman.game.entities.explosions.ExplosionFactory;
+import com.megaman.game.entities.explosions.impl.Disintegration;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
@@ -54,10 +56,9 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         putComponent(new HealthComponent());
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
         runOnDeath.add(() -> {
-            if (getComponent(HealthComponent.class).getHealth() > 0f) {
-                return;
+            if (getHealth() == 0) {
+                disintegrate();
             }
-            disintegrate();
         });
     }
 
@@ -80,6 +81,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     @Override
     public Set<Class<? extends Damager>> getDamagerMaskSet() {
         return dmgNegs.keySet();
+    }
+
+    public int getHealth() {
+        return getComponent(HealthComponent.class).getHealth();
     }
 
     public boolean isDamaged() {
@@ -108,13 +113,15 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     protected void disintegrate() {
-        getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_DAMAGE_SOUND);
-        // gameContext.addEntity(new Disintegration(gameContext, getComponent(BodyComponent.class).getCenter()));
+        game.getAudioMan().playSound(SoundAsset.ENEMY_DAMAGE_SOUND);
+        game.getGameEngine().spawnEntity(game.getEntityFactories()
+                .fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION), body.getCenter());
     }
 
     protected void explode() {
-        getComponent(SoundComponent.class).requestToPlay(SoundAsset.EXPLOSION_SOUND);
-        // gameContext.addEntity(new Explosion(gameContext, getComponent(BodyComponent.class).getCenter()));
+        game.getAudioMan().playSound(SoundAsset.EXPLOSION_SOUND);
+        game.getGameEngine().spawnEntity(game.getEntityFactories()
+                .fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION), body.getCenter());
     }
 
     protected boolean isPlayerShootingAtMe() {

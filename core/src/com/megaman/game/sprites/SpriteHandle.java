@@ -91,7 +91,7 @@ public class SpriteHandle implements Drawable, Positional, Updatable, Comparable
 
     @Override
     public void draw(SpriteBatch batch) {
-        sprite.draw(batch);
+        SpriteDrawer.draw(sprite, batch);
     }
 
     @Override

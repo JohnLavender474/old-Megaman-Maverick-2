@@ -26,6 +26,10 @@ public class Animation implements Updatable, Resettable {
     private float timeElapsed;
 
     public Animation(Animation anim) {
+        this(anim, false);
+    }
+
+    public Animation(Animation anim, boolean reverse) {
         frames.addAll(anim.frames);
         frameTimes.addAll(anim.frameTimes);
         currRegion = anim.currRegion;
@@ -33,6 +37,10 @@ public class Animation implements Updatable, Resettable {
         animDur = anim.animDur;
         finished = anim.finished;
         timeElapsed = anim.timeElapsed;
+        if (reverse) {
+            frames.reverse();
+            frameTimes.reverse();
+        }
     }
 
     public Animation(TextureRegion textureRegion) {
@@ -101,7 +109,7 @@ public class Animation implements Updatable, Resettable {
             timeElapsed += delta;
         }
         if (timeElapsed > animDur && !loop) {
-            timeElapsed = animDur - .000001f;
+            timeElapsed = animDur - .00001f;
             finished = true;
         }
         float currentLoopDuration = timeElapsed % animDur;

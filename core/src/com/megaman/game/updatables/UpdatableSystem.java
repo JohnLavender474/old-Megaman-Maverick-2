@@ -5,7 +5,7 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.KeyValuePair;
 
-import java.util.Iterator;
+import java.util.function.Supplier;
 
 public class UpdatableSystem extends System {
 
@@ -16,14 +16,9 @@ public class UpdatableSystem extends System {
     @Override
     protected void processEntity(Entity e, float delta) {
         UpdatableComponent c = e.getComponent(UpdatableComponent.class);
-        Iterator<KeyValuePair<Updatable, UpdateQualifier>> iter = c.updatables.iterator();
-        while (iter.hasNext()) {
-            KeyValuePair<Updatable, UpdateQualifier> p = iter.next();
-            if (p.value().doUpdate()) {
+        for (KeyValuePair<Updatable, Supplier<Boolean>> p : c.updatables) {
+            if (p.value().get()) {
                 p.key().update(delta);
-            }
-            if (p.value().doRemove()) {
-                iter.remove();
             }
         }
     }

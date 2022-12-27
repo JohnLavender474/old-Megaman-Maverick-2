@@ -21,8 +21,8 @@ import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor(access = PRIVATE)
 public enum BEnum {
-    TIMBER_WOMAN("Timber Woman", "tiledmaps/tmx/Test5.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN, Level.TIMBER_WOMAN) {
+    TIMBER_WOMAN("Timber Woman", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN) {
         @Override
         public String getBio() {
             return "Originally named 'Timbre Woman', she was to be \n" +
@@ -62,8 +62,8 @@ public enum BEnum {
             }};
         }
     },
-    DISTRIBUTOR_MAN("Distributor Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN, Level.DISTRIBUTOR_MAN) {
+    DISTRIBUTOR_MAN("Distributor Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN) {
         @Override
         public String getBio() {
             return "Distributor Man designs electrical components \n" +
@@ -105,8 +105,8 @@ public enum BEnum {
             }};
         }
     },
-    ROASTER_MAN("Roaster Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_RIGHT, TextureAsset.ROASTER_MAN, Level.ROASTER_MAN) {
+    ROASTER_MAN("Roaster Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.TOP_RIGHT, TextureAsset.ROASTER_MAN) {
         @Override
         public String getBio() {
             return "Roaster Man was designed as a chicken chef \n" +
@@ -150,8 +150,8 @@ public enum BEnum {
             }};
         }
     },
-    MISTER_MAN("Mister Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.CENTER_LEFT, TextureAsset.MISTER_MAN, Level.MISTER_MAN) {
+    MISTER_MAN("Mister Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.CENTER_LEFT, TextureAsset.MISTER_MAN) {
         @Override
         public String getBio() {
             return "Pump Man's brother, Mister Man waters delicate \n" +
@@ -191,8 +191,8 @@ public enum BEnum {
             }};
         }
     },
-    BLUNT_MAN("Blunt Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN, Level.BLUNT_MAN) {
+    BLUNT_MAN("Blunt Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
         @Override
         public String getBio() {
             return "Blunt Man is designed to be an activist for the \n" +
@@ -234,8 +234,8 @@ public enum BEnum {
             }};
         }
     },
-    NUKE_MAN("Nuke Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_LEFT, TextureAsset.NUKE_MAN, Level.NUKE_MAN) {
+    NUKE_MAN("Nuke Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.BOTTOM_LEFT, TextureAsset.NUKE_MAN) {
         @Override
         public String getBio() {
             return "Designed as a nuclear arms expert, Nuke Man is \n" +
@@ -276,8 +276,8 @@ public enum BEnum {
             }};
         }
     },
-    FRIDGE_MAN("Fridge Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_CENTER, TextureAsset.FRIDGE_MAN, Level.FRIDGE_MAN) {
+    FRIDGE_MAN("Fridge Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.BOTTOM_CENTER, TextureAsset.FRIDGE_MAN) {
         @Override
         public String getBio() {
             return "Fridge Man really enjoys putting leftovers inside \n" +
@@ -320,8 +320,8 @@ public enum BEnum {
             }};
         }
     },
-    MICROWAVE_MAN("Microwave Man", "tiledmaps/tmx/Test1.tmx", MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN, Level.MICROWAVE_MAN) {
+    MICROWAVE_MAN("Microwave Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
+            Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN) {
         @Override
         public String getBio() {
             return "Microwave Man is a microwave. It's a fate that \n" +
@@ -366,11 +366,10 @@ public enum BEnum {
     };
 
     public final String name;
-    public final String tmxFile;
+    public final Level level;
     public final MusicAsset music;
     public final Position position;
     public final TextureAsset ass;
-    public final Level level;
 
     public abstract String getBio();
 

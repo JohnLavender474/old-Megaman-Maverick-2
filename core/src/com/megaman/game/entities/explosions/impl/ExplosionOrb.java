@@ -16,6 +16,7 @@ import com.megaman.game.entities.EntityType;
 import com.megaman.game.events.EventType;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.world.WorldVals;
 
 public class ExplosionOrb extends Entity {
@@ -32,6 +33,7 @@ public class ExplosionOrb extends Entity {
         }
         putComponent(spriteComponent());
         putComponent(animationComponent());
+        putComponent(updatableComponent());
         putComponent(new CullOutOfBoundsComponent(sprite::getBoundingRectangle));
         putComponent(new CullOnEventComponent(e -> e.eventType == EventType.PLAYER_SPAWN));
     }
@@ -42,11 +44,14 @@ public class ExplosionOrb extends Entity {
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY));
     }
 
+    private UpdatableComponent updatableComponent() {
+        return new UpdatableComponent(delta ->
+                sprite.translate(traj.x * WorldVals.PPM * delta, traj.y * WorldVals.PPM * delta));
+    }
+
     private SpriteComponent spriteComponent() {
         sprite.setSize(3f * WorldVals.PPM, 3f * WorldVals.PPM);
-        SpriteHandle h = new SpriteHandle(sprite, 4);
-        h.updatable = delta -> sprite.translate(traj.x * WorldVals.PPM * delta, traj.y * WorldVals.PPM * delta);
-        return new SpriteComponent(h);
+        return new SpriteComponent(new SpriteHandle(sprite, 4));
     }
 
     private AnimationComponent animationComponent() {

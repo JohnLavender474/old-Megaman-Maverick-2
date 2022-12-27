@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
@@ -94,18 +95,10 @@ class BPane implements Updatable, Drawable {
     }
 
     @Override
-    public void draw(SpriteBatch spriteBatch) {
-        Texture paneTexture = paneSprite.getTexture();
-        if (paneTexture != null) {
-            paneTexture.setFilter(Nearest, Nearest);
-            paneSprite.draw(spriteBatch);
-        }
-        TextureRegion bossTexture = bossRegSupplier.get();
-        if (bossTexture != null && bossTexture.getTexture() != null) {
-            bossTexture.getTexture().setFilter(Nearest, Nearest);
-            bossSprite.setRegion(bossTexture);
-            bossSprite.draw(spriteBatch);
-        }
+    public void draw(SpriteBatch batch) {
+        SpriteDrawer.draw(paneSprite, batch);
+        bossSprite.setRegion(bossRegSupplier.get());
+        SpriteDrawer.draw(bossSprite, batch);
     }
 
 }
