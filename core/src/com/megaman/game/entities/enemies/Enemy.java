@@ -7,7 +7,6 @@ import com.megaman.game.cull.CullOnEventComponent;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.explosions.ExplosionFactory;
-import com.megaman.game.entities.explosions.impl.Disintegration;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
@@ -75,7 +74,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
                 EventType.PLAYER_SPAWN,
                 EventType.BEGIN_GAME_ROOM_TRANS,
                 EventType.GATE_INIT_OPENING);
-        c.preds.add(e -> s.contains(e.eventType));
+        c.preds.add(e -> s.contains(e.type));
     }
 
     @Override

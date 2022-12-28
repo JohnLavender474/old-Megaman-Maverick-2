@@ -21,10 +21,11 @@ import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.impl.*;
 import com.megaman.game.entities.explosions.ExplosionFactory;
-import com.megaman.game.entities.explosions.impl.ExplosionOrb;
 import com.megaman.game.entities.hazards.impl.LaserBeamer;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
+import com.megaman.game.entities.megaman.upgrades.MegamanAbility;
+import com.megaman.game.entities.megaman.upgrades.MegamanUpgradeHandler;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
@@ -33,7 +34,7 @@ import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.events.Event;
-import com.megaman.game.events.EventListenerComponent;
+import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeComponent;
@@ -54,7 +55,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional /* , EventListener */ {
+public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
 
     public static final float CLAMP_X = 25f;
     public static final float CLAMP_Y = 35f;
@@ -115,6 +116,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
 
     public final MegamanWeaponHandler weaponHandler;
     public final MegamanHealthHandler healthHandler;
+    public final MegamanUpgradeHandler upgradeHandler;
+
     public final Sprite sprite;
     public final Body body;
 
@@ -146,23 +149,36 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
         dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
         wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
         dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
-        chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
-                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
+        chargingTimer = new Timer(
+                TIME_TO_FULLY_CHARGED,
+                new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED, () ->
+                        request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler = new MegamanWeaponHandler(this);
+
+        // TODO: for now make all weapons available
         weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
         weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
+
         healthHandler = new MegamanHealthHandler(this);
+        upgradeHandler = new MegamanUpgradeHandler(this);
+
+        // TODO: for now add all abilities
+        upgradeHandler.add(MegamanAbility.WALL_JUMP);
+        upgradeHandler.add(MegamanAbility.AIR_DASH);
+        upgradeHandler.add(MegamanAbility.GROUND_SLIDE);
+
         putComponent(updatableComponent());
         putComponent(bodyComponent());
         putComponent(spriteComponent());
         putComponent(behaviorComponent());
         putComponent(controllerComponent());
-        putComponent(eventListenerComponent());
         putComponent(new SoundComponent());
         putComponent(new HealthComponent());
         putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
         runOnDeath.add(() -> {
+            game.getEventMan().submitEvent(new Event(EventType.PLAYER_DEAD));
+            game.getEventMan().remove(this);
             game.getAudioMan().stopSound(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
             if (getHealth() > 0f) {
                 return;
@@ -178,18 +194,18 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
                 add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
             }};
             for (Vector2 traj : trajs) {
-                ExplosionOrb e = (ExplosionOrb)
-                        game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION_ORB);
-                game.getGameEngine().spawnEntity(e, ShapeUtils.getCenterPoint(body.bounds), new ObjectMap<>() {{
-                    put(ConstKeys.TRAJECTORY, traj);
-                }});
+                game.getGameEngine().spawnEntity(
+                        game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION_ORB),
+                        ShapeUtils.getCenterPoint(body.bounds), new ObjectMap<>() {{
+                            put(ConstKeys.TRAJECTORY, traj);
+                        }});
             }
-            game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_DEAD));
         });
     }
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
+        game.getEventMan().add(this);
         body.bounds.setPosition(spawn);
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler.reset();
@@ -203,6 +219,22 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
         wallJumpTimer.setToEnd();
         dmgRecovBlinkTimer.reset();
         chargingTimer.reset();
+    }
+
+    @Override
+    public void listenForEvent(Event e) {
+        switch (e.type) {
+            case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
+                body.velocity.set(Vector2.Zero);
+                Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
+                body.setPos(pos, Position.BOTTOM_CENTER);
+                request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+            }
+            case GATE_INIT_OPENING -> {
+                body.velocity.setZero();
+                request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+            }
+        }
     }
 
     @Override
@@ -238,21 +270,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
     public void setPosition(float x, float y) {
         body.bounds.setPosition(x, y);
     }
-
-    // TODO: test event listen comp
-    /*
-    @Override
-    public void listenForEvent(Event event) {
-        switch (event.eventType) {
-            case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
-                body.velocity.set(Vector2.Zero);
-                Vector2 pos = event.getInfo(ConstKeys.POS, Vector2.class);
-                body.setPos(pos, Position.BOTTOM_CENTER);
-            }
-            case GATE_INIT_OPENING -> body.velocity.setZero();
-        }
-    }
-     */
 
     public int getHealth() {
         return getComponent(HealthComponent.class).getHealth();
@@ -308,6 +325,18 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
         return weaponHandler.isChargeable(currWeapon) && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
     }
 
+    public boolean has(MegamanAbility ability) {
+        return upgradeHandler.has(ability);
+    }
+
+    public void add(MegamanAbility ability) {
+        upgradeHandler.add(ability);
+    }
+
+    public void remove(MegamanAbility ability) {
+        upgradeHandler.remove(ability);
+    }
+
     public boolean is(BehaviorType behaviorType) {
         return getComponent(BehaviorComponent.class).is(behaviorType);
     }
@@ -323,23 +352,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional 
         } else {
             c.requestToStop(ass);
         }
-    }
-
-    private EventListenerComponent eventListenerComponent() {
-        return new EventListenerComponent(e -> {
-            switch (e.eventType) {
-                case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
-                    body.velocity.set(Vector2.Zero);
-                    Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
-                    body.setPos(pos, Position.BOTTOM_CENTER);
-                    request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
-                }
-                case GATE_INIT_OPENING -> {
-                    body.velocity.setZero();
-                    request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
-                }
-            }
-        });
     }
 
     private ControllerComponent controllerComponent() {

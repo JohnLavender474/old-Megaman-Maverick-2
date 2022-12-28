@@ -21,6 +21,7 @@ import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
+import lombok.Getter;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,6 +37,7 @@ public class SpringBouncer extends Entity {
     private final Sprite sprite;
     private final Timer bounceTimer;
 
+    @Getter
     private Direction dir;
     private Fixture bounceFixture;
 

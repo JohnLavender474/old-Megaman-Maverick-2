@@ -13,22 +13,28 @@ import java.util.Queue;
 
 public abstract class System implements Updatable, Resettable {
 
-    protected final Array<Entity> entities = new Array<>(150);
-    protected final Queue<Entity> entitiesToAddQueue = new LinkedList<>();
-    protected final OrderedSet<Class<? extends Component>> componentMask = new OrderedSet<>();
+    private static final int ENT_ARR_SIZE = 150;
+
+    protected final Array<Entity> entities;
+    protected final Queue<Entity> entitiesToAddQueue;
+    protected final OrderedSet<Class<? extends Component>> componentMask;
 
     protected boolean on = true;
     protected boolean updating;
 
     @SafeVarargs
-    public System(Class<? extends Component>... componentMask) {
-        this(Arrays.asList(componentMask));
+    public System(Class<? extends Component>... classes) {
+        this(Arrays.asList(classes));
     }
 
-    public System(Iterable<Class<? extends Component>> componentMask) {
-        for (Class<? extends Component> c : componentMask) {
-            this.componentMask.add(c);
-        }
+    public System(Iterable<Class<? extends Component>> classes) {
+        componentMask = new OrderedSet<>() {{
+            for (Class<? extends Component> c : classes) {
+                add(c);
+            }
+        }};
+        entities = new Array<>(ENT_ARR_SIZE);
+        entitiesToAddQueue = new LinkedList<>();
     }
 
     protected abstract void processEntity(Entity e, float delta);

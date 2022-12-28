@@ -35,7 +35,7 @@ public class ExplosionOrb extends Entity {
         putComponent(animationComponent());
         putComponent(updatableComponent());
         putComponent(new CullOutOfBoundsComponent(sprite::getBoundingRectangle));
-        putComponent(new CullOnEventComponent(e -> e.eventType == EventType.PLAYER_SPAWN));
+        putComponent(new CullOnEventComponent(e -> e.type == EventType.PLAYER_SPAWN));
     }
 
     @Override

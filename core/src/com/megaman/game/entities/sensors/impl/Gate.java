@@ -16,7 +16,7 @@ import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.events.Event;
-import com.megaman.game.events.EventListenerComponent;
+import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventType;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
@@ -30,7 +30,7 @@ import com.megaman.game.world.*;
 
 import java.util.function.Supplier;
 
-public class Gate extends Entity implements Resettable {
+public class Gate extends Entity implements EventListener, Resettable {
 
     private static final Logger logger = new Logger(Gate.class, MegamanGame.DEBUG && true);
 
@@ -58,19 +58,32 @@ public class Gate extends Entity implements Resettable {
         timer = new Timer(DUR, true);
         sprite = new Sprite();
         putComponent(bodyComponent());
-        putComponent(eventListenerComponent());
         putComponent(updatableComponent());
         putComponent(spriteComponent());
         putComponent(animationComponent());
         putComponent(new SoundComponent());
+        runOnDeath.add(() -> game.getEventMan().remove(this));
     }
 
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         reset();
+        game.getEventMan().add(this);
         Vector2 spawn = ShapeUtils.getCenterPoint(bounds);
         body.bounds.setCenter(spawn);
         nextRoom = (String) data.get(ConstKeys.ROOM);
+    }
+
+    @Override
+    public void listenForEvent(Event e) {
+        switch (e.type) {
+            case PLAYER_SPAWN -> reset();
+            case END_GAME_ROOM_TRANS -> {
+                if (nextRoom.equals(e.getInfo(ConstKeys.ROOM, RectangleMapObject.class).getName())) {
+                    transFinished = true;
+                }
+            }
+        }
     }
 
     @Override
@@ -88,7 +101,7 @@ public class Gate extends Entity implements Resettable {
         logger.log("Set gate state OPENING");
         state = GateState.OPENING;
         game.getAudioMan().playSound(SoundAsset.BOSS_DOOR);
-        game.getEventMan().dispatchEvent(new Event(EventType.GATE_INIT_OPENING));
+        game.getEventMan().submitEvent(new Event(EventType.GATE_INIT_OPENING));
     }
 
     private BodyComponent bodyComponent() {
@@ -96,19 +109,6 @@ public class Gate extends Entity implements Resettable {
         Fixture gateFixture = new Fixture(this, FixtureType.GATE, new Rectangle(body.bounds));
         body.fixtures.add(gateFixture);
         return new BodyComponent(body);
-    }
-
-    private EventListenerComponent eventListenerComponent() {
-        return new EventListenerComponent(e -> {
-            switch (e.eventType) {
-                case PLAYER_SPAWN -> reset();
-                case END_GAME_ROOM_TRANS -> {
-                    if (nextRoom.equals(e.getInfo(ConstKeys.ROOM, RectangleMapObject.class).getName())) {
-                        transFinished = true;
-                    }
-                }
-            }
-        });
     }
 
     private UpdatableComponent updatableComponent() {
@@ -119,8 +119,8 @@ public class Gate extends Entity implements Resettable {
                 logger.log("Set gate state OPEN");
                 timer.reset();
                 state = GateState.OPEN;
-                game.getEventMan().dispatchEvent(new Event(EventType.GATE_FINISH_OPENING));
-                game.getEventMan().dispatchEvent(new Event(EventType.NEXT_GAME_ROOM_REQ, new ObjectMap<>() {{
+                game.getEventMan().submitEvent(new Event(EventType.GATE_FINISH_OPENING));
+                game.getEventMan().submitEvent(new Event(EventType.NEXT_GAME_ROOM_REQ, new ObjectMap<>() {{
                     put(ConstKeys.ROOM, nextRoom);
                 }}));
             }
@@ -131,7 +131,7 @@ public class Gate extends Entity implements Resettable {
                 transFinished = false;
                 state = GateState.CLOSING;
                 game.getAudioMan().playSound(SoundAsset.BOSS_DOOR);
-                game.getEventMan().dispatchEvent(new Event(EventType.GATE_INIT_CLOSING));
+                game.getEventMan().submitEvent(new Event(EventType.GATE_INIT_CLOSING));
             }
         }, () -> state == GateState.OPEN);
         c.add(delta -> {
@@ -140,7 +140,7 @@ public class Gate extends Entity implements Resettable {
                 logger.log("Set gate state CLOSED");
                 timer.reset();
                 state = GateState.CLOSED;
-                game.getEventMan().dispatchEvent(new Event(EventType.GATE_FINISH_CLOSING));
+                game.getEventMan().submitEvent(new Event(EventType.GATE_FINISH_CLOSING));
             }
         }, () -> state == GateState.CLOSING);
         return c;

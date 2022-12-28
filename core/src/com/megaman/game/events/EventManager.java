@@ -2,14 +2,21 @@ package com.megaman.game.events;
 
 import com.badlogic.gdx.utils.OrderedSet;
 
-public class EventManager {
+import java.util.LinkedList;
+import java.util.Queue;
 
-    public final OrderedSet<EventListener> eventListeners = new OrderedSet<>();
+public class EventManager implements Runnable {
 
-    public void dispatchEvent(Event event) {
-        for (EventListener listener : eventListeners) {
-            listener.listenForEvent(event);
-        }
+    private final OrderedSet<EventListener> eventListeners;
+    private final Queue<Event> eventQueue;
+
+    public EventManager() {
+        eventListeners = new OrderedSet<>();
+        eventQueue = new LinkedList<>();
+    }
+
+    public void submitEvent(Event event) {
+        eventQueue.add(event);
     }
 
     public void add(EventListener e) {
@@ -18,6 +25,16 @@ public class EventManager {
 
     public void remove(EventListener e) {
         eventListeners.remove(e);
+    }
+
+    @Override
+    public void run() {
+        while (!eventQueue.isEmpty()) {
+            Event e = eventQueue.poll();
+            for (EventListener l : eventListeners) {
+                l.listenForEvent(e);
+            }
+        }
     }
 
 }

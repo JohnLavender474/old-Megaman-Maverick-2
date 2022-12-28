@@ -21,7 +21,6 @@ import com.megaman.game.cull.CullOnEventSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.events.EventListenerSystem;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.health.HealthSystem;
 import com.megaman.game.movement.pendulum.PendulumSystem;
@@ -85,7 +84,6 @@ public class MegamanGame implements ApplicationListener {
         gameEngine = new GameEngine(
                 new ControllerSystem(ctrlMan),
                 new WorldSystem(new WorldContactListenerImpl(this)),
-                new EventListenerSystem(eventMan),
                 new CullOnEventSystem(eventMan),
                 new CullOnOutOfBoundsSystem(),
                 new TrajectorySystem(),
@@ -153,6 +151,7 @@ public class MegamanGame implements ApplicationListener {
         }
         float delta = Gdx.graphics.getDeltaTime();
         ctrlMan.run();
+        eventMan.run();
         audioMan.update(delta);
         if (currScreen != null) {
             currScreen.render(delta);

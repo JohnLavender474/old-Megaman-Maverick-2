@@ -14,7 +14,6 @@ import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.blocks.Block;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
-import com.megaman.game.events.EventListenerComponent;
 import com.megaman.game.movement.trajectory.Trajectory;
 import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.shapes.ShapeUtils;
@@ -23,7 +22,7 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.WorldVals;
 
-public class RocketPlatform extends Block /* implements EventListener */ {
+public class RocketPlatform extends Block implements EventListener {
 
     private static final float WIDTH = .85f;
     private static final float HEIGHT = 3f;
@@ -42,16 +41,13 @@ public class RocketPlatform extends Block /* implements EventListener */ {
         putComponent(shapeComponent());
         putComponent(spriteComponent());
         putComponent(animationComponent());
-        putComponent(eventListenerComponent());
         putComponent(new TrajectoryComponent());
-        /*
-        game.getEventMan().add(this);
         runOnDeath.add(() -> game.getEventMan().remove(this));
-         */
     }
 
     @Override
     public void init(Rectangle ignore, ObjectMap<String, Object> data) {
+        game.getEventMan().add(this);
         Vector2 pos = ShapeUtils.getBottomCenterPoint((Rectangle) data.get(ConstKeys.SPAWN));
         Rectangle bounds = new Rectangle().setSize(WIDTH * WorldVals.PPM, HEIGHT * WorldVals.PPM);
         ShapeUtils.setBottomCenterToPoint(bounds, pos);
@@ -63,30 +59,15 @@ public class RocketPlatform extends Block /* implements EventListener */ {
         t.trajectory = new Trajectory(body, trajStr);
     }
 
-    // TODO: test comp
-    /*
     @Override
     public void listenForEvent(Event event) {
-        switch (event.eventType) {
+        switch (event.type) {
             case BEGIN_GAME_ROOM_TRANS -> {
                 spriteHandle.hidden = true;
                 getComponent(TrajectoryComponent.class).reset();
             }
             case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
         }
-    }
-     */
-
-    private EventListenerComponent eventListenerComponent() {
-        return new EventListenerComponent(e -> {
-            switch (e.eventType) {
-                case BEGIN_GAME_ROOM_TRANS -> {
-                    spriteHandle.hidden = true;
-                    getComponent(TrajectoryComponent.class).reset();
-                }
-                case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
-            }
-        });
     }
 
     private SpriteComponent spriteComponent() {

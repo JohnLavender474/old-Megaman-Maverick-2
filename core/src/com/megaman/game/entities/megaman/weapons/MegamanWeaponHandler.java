@@ -81,7 +81,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
     }
 
     private static final float MEGA_BUSTER_BULLET_VEL = 10f;
-    private static final Vector2 FLAME_TOSS_TRAJECTORY = new Vector2(35f, 10f);
+    private static final Vector2 FLAME_TOSS_TRAJ = new Vector2(35f, 10f);
 
     private final Megaman megaman;
     private final GameEngine engine;

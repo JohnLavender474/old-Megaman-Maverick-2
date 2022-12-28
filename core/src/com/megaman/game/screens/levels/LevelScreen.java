@@ -22,7 +22,6 @@ import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
 import com.megaman.game.behaviors.BehaviorSystem;
 import com.megaman.game.controllers.ControllerBtn;
-import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.EntityFactories;
@@ -32,7 +31,6 @@ import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
-import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.pathfinding.PathfindingSystem;
@@ -78,6 +76,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private static final Logger logger = new Logger(LevelScreen.class, MegamanGame.DEBUG && true);
 
     private static final float ON_PLAYER_DEATH_DELAY = 4f;
+    private static final float ENTER_BOSS_ROOM_DELAY = .5f;
+    private static final float BOSS_INTRO_DUR = 2f;
 
     private final MegamanGame game;
     private final OrthographicCamera uiCam;
@@ -88,6 +88,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final PlayerSpawnManager playerSpawnMan;
     private final Array<Runnable> runOnDispose;
     private final Timer playerDeathTimer;
+    private final Timer enterBossRoomTimer;
+    private final Timer bossIntroTimer;
     private final Array<Background> backgrounds;
     private final PriorityQueue<SpriteHandle> gameSpritesQ;
     private final PriorityQueue<RenderableShape> gameShapesQ;
@@ -103,6 +105,13 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         this.game = game;
         runOnDispose = new Array<>();
         playerDeathTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
+        enterBossRoomTimer = new Timer(ENTER_BOSS_ROOM_DELAY, true);
+        bossIntroTimer = new Timer(BOSS_INTRO_DUR, true, new Array<>() {{
+
+            // TODO: temp override int supplier in boss health bar
+            // TODO: runnables for filling up boss health bar
+
+        }});
         backgrounds = new Array<>();
         gameSpritesQ = new PriorityQueue<>();
         gameShapesQ = new PriorityQueue<>();
@@ -113,6 +122,42 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         spawnMan = new SpawnManager();
         playerSpawnMan = new PlayerSpawnManager();
         levelCamMan = new LevelCamManager(gameCam);
+        levelCamMan.setRunOnBeginTrans(() -> {
+            game.getGameEngine().setSystemsOn(false,
+                    ControllerSystem.class,
+                    TrajectorySystem.class,
+                    UpdatableSystem.class,
+                    BehaviorSystem.class,
+                    WorldSystem.class,
+                    SoundSystem.class);
+            game.getEventMan().submitEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                put(ConstKeys.POS, levelCamMan.getTransInterpolation());
+                put(ConstKeys.CURR, levelCamMan.getCurrGameRoom());
+                put(ConstKeys.PRIOR, levelCamMan.getPriorGameRoom());
+            }}));
+            ShapeUtils.setBottomCenterToPoint(game.getMegaman().body.bounds, levelCamMan.getTransInterpolation());
+        });
+        levelCamMan.setUpdateOnTrans(delta -> {
+            game.getEventMan().submitEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                put(ConstKeys.POS, levelCamMan.getTransInterpolation());
+            }}));
+            ShapeUtils.setBottomCenterToPoint(game.getMegaman().body.bounds, levelCamMan.getTransInterpolation());
+        });
+        levelCamMan.setRunOnEndTrans(() -> {
+            game.getGameEngine().setSystemsOn(true,
+                    ControllerSystem.class,
+                    TrajectorySystem.class,
+                    UpdatableSystem.class,
+                    BehaviorSystem.class,
+                    WorldSystem.class,
+                    SoundSystem.class);
+            game.getEventMan().submitEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
+            }}));
+            if (levelCamMan.getCurrGameRoom().getName().equals(ConstKeys.BOSS)) {
+                game.getEventMan().submitEvent(new Event(EventType.ENTER_BOSS_ROOM));
+            }
+        });
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
         AssetsManager assMan = game.getAssMan();
         Megaman megaman = game.getMegaman();
@@ -140,29 +185,24 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             setMusic(level.getMusicAss());
         }
         playerDeathTimer.setToEnd();
-        // reset cam positions
+        enterBossRoomTimer.setToEnd();
+        bossIntroTimer.setToEnd();
         uiCam.position.set(ConstFuncs.getCamInitPos());
         gameCam.position.set(ConstFuncs.getCamInitPos());
-        // set systems
         GameEngine engine = game.getGameEngine();
         engine.setAllSystemsOn(true);
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(ShapeSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(CullOnOutOfBoundsSystem.class).setGameCam(gameCam);
-        // set level map, get layer objs
         Map<LevelMapLayer, Array<RectangleMapObject>> m = levelMapMan.set(level.getTmxFile());
-        // set world system
         WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
         engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
         engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
-        // set game rooms
         Array<RectangleMapObject> gameRoomsObjs = m.get(LevelMapLayer.GAME_ROOMS);
         levelCamMan.set(gameRoomsObjs, game.getMegaman());
-        // set player spawns
         Array<RectangleMapObject> playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
         playerSpawnMan.set(gameCam, playerSpawns);
-        // set spawns
         Array<Spawn> spawns = new Array<>();
         EntityFactories factories = game.getEntityFactories();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
@@ -239,7 +279,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     public void listenForEvent(Event e) {
         GameEngine engine = game.getGameEngine();
         AudioManager audioMan = game.getAudioMan();
-        switch (e.eventType) {
+        switch (e.type) {
             case GAME_PAUSE -> pause();
             case GAME_RESUME -> resume();
             case PLAYER_DEAD -> {
@@ -257,8 +297,15 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             }
             case NEXT_GAME_ROOM_REQ -> levelCamMan.transToRoom(e.getInfo(ConstKeys.ROOM, String.class));
             case ENTER_BOSS_ROOM -> {
-                logger.log("Enter boss room");
+                enterBossRoomTimer.reset();
+                engine.setSystemsOn(false, ControllerSystem.class);
             }
+            case GATE_INIT_CLOSING -> engine.setSystemsOn(true,
+                    ControllerSystem.class,
+                    TrajectorySystem.class,
+                    BehaviorSystem.class,
+                    WorldSystem.class);
+            case BOSS_DROP_DOWN -> bossIntroTimer.reset(); // TODO: play boss intro music
         }
     }
 
@@ -276,17 +323,13 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         if (!set) {
             throw new IllegalStateException("Must call set method before rendering");
         }
-        ControllerManager ctrlMan = game.getCtrlMan();
-        if (ctrlMan.isJustPressed(ControllerBtn.START)) {
+        if (game.getCtrlMan().isJustPressed(ControllerBtn.START)) {
             if (game.isPaused()) {
                 game.resume();
             } else {
                 game.pause();
             }
         }
-        Megaman megaman = game.getMegaman();
-        GameEngine engine = game.getGameEngine();
-        EventManager eventMan = game.getEventMan();
         if (!game.isPaused()) {
             for (Background b : backgrounds) {
                 b.update(delta);
@@ -295,7 +338,11 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             if (levelCamMan.getTransState() == null) {
                 playerSpawnMan.run();
                 spawnMan.update(delta);
-            } else {
+            }
+
+            // TODO: test new process
+            /*
+            else {
                 switch (levelCamMan.getTransState()) {
                     case BEGIN -> {
                         engine.setSystemsOn(false,
@@ -305,7 +352,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                                 BehaviorSystem.class,
                                 WorldSystem.class,
                                 SoundSystem.class);
-                        eventMan.dispatchEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                        eventMan.submitEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.POS, levelCamMan.getTransInterpolation());
                             put(ConstKeys.NEXT, levelCamMan.getCurrGameRoom());
                             put(ConstKeys.PRIOR, levelCamMan.getPriorGameRoom());
@@ -313,7 +360,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                         ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
                     }
                     case CONTINUE -> {
-                        eventMan.dispatchEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                        eventMan.submitEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.POS, levelCamMan.getTransInterpolation());
                         }}));
                         ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
@@ -326,14 +373,21 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                                 BehaviorSystem.class,
                                 WorldSystem.class,
                                 SoundSystem.class);
-                        eventMan.dispatchEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
+                        eventMan.submitEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
                             put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
                         }}));
                         if (levelCamMan.getCurrGameRoom().getName().equals(ConstKeys.BOSS)) {
-                            eventMan.dispatchEvent(new Event(EventType.ENTER_BOSS_ROOM));
+                            eventMan.submitEvent(new Event(EventType.ENTER_BOSS_ROOM));
                         }
                     }
                 }
+            }
+             */
+
+
+            enterBossRoomTimer.update(delta);
+            if (enterBossRoomTimer.isJustFinished()) {
+                game.getEventMan().submitEvent(new Event(EventType.BOSS_DROP_DOWN));
             }
             playerDeathTimer.update(delta);
             if (playerDeathTimer.isJustFinished()) {
@@ -343,7 +397,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 spawnMegaman();
             }
         }
-        engine.update(delta);
+        game.getGameEngine().update(delta);
         SpriteBatch batch = game.getBatch();
         batch.setProjectionMatrix(gameCam.combined);
         batch.begin();
@@ -424,7 +478,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private void spawnMegaman() {
         KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = playerSpawnMan.getCurrPlayerCheckpoint();
         game.getGameEngine().spawnEntity(game.getMegaman(), spawn.key(), spawn.value());
-        game.getEventMan().dispatchEvent(new Event(EventType.PLAYER_SPAWN, new ObjectMap<>() {{
+        game.getEventMan().submitEvent(new Event(EventType.PLAYER_SPAWN, new ObjectMap<>() {{
             put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
         }}));
     }

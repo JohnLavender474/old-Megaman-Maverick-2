@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Event {
 
-    public final EventType eventType;
+    public final EventType type;
     public final ObjectMap<String, Object> info;
 
-    public Event(EventType eventType) {
-        this(eventType, new ObjectMap<>());
+    public Event(EventType type) {
+        this(type, new ObjectMap<>());
     }
 
     public <T> T getInfo(String key, Class<T> tClass) {

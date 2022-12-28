@@ -78,7 +78,7 @@ public abstract class Projectile extends Entity implements Damager {
                 EventType.PLAYER_SPAWN,
                 EventType.BEGIN_GAME_ROOM_TRANS,
                 EventType.GATE_INIT_OPENING);
-        c.preds.add(e -> s.contains(e.eventType));
+        c.preds.add(e -> s.contains(e.type));
         return c;
     }
 
