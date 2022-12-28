@@ -35,6 +35,7 @@ import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
+import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeComponent;
@@ -177,8 +178,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         putComponent(new HealthComponent());
         putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
         runOnDeath.add(() -> {
-            game.getEventMan().submitEvent(new Event(EventType.PLAYER_DEAD));
-            game.getEventMan().remove(this);
+            EventManager eventMan = game.getEventMan();
+            eventMan.remove(this);
+            eventMan.submitEvent(new Event(EventType.PLAYER_DEAD));
             game.getAudioMan().stopSound(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
             if (getHealth() > 0f) {
                 return;
@@ -207,6 +209,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
         game.getEventMan().add(this);
         body.bounds.setPosition(spawn);
+        body.velocity.setZero();
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler.reset();
         aButtonTask = AButtonTask.JUMP;
@@ -546,7 +549,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private BehaviorComponent behaviorComponent() {
         BehaviorComponent c = new BehaviorComponent();
         ControllerManager ctrlMan = game.getCtrlMan();
-        // wall slide
         Behavior wallSlide = new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
@@ -584,8 +586,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
             }
         };
-        c.behaviors.add(wallSlide);
-        // swim
+        c.add(wallSlide);
         Behavior swim = new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
@@ -623,8 +624,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 c.set(BehaviorType.SWIMMING, false);
             }
         };
-        c.behaviors.add(swim);
-        // jump
+        c.add(swim);
         Behavior jump = new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
@@ -675,8 +675,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 body.velocity.y = 0f;
             }
         };
-        c.behaviors.add(jump);
-        // air dash
+        c.add(jump);
         Behavior airDash = new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
@@ -735,8 +734,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 body.velocity.x += x;
             }
         };
-        c.behaviors.add(airDash);
-        // ground slide
+        c.add(airDash);
         Behavior groundSlide = new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
@@ -791,7 +789,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 body.velocity.x += endDash;
             }
         };
-        c.behaviors.add(groundSlide);
+        c.add(groundSlide);
         return c;
     }
 

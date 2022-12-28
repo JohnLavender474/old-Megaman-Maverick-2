@@ -245,7 +245,9 @@ public class LevelCamManager implements Updatable {
     }
 
     private void setCamToFocusable(float delta) {
-        Vector2 pos = interpolate(UtilMethods.toVec2(cam.position), focusable.getPosition(), delta * 10f);
+        // TODO: pros and cons of interpolation
+        // Vector2 pos = interpolate(UtilMethods.toVec2(cam.position), focusable.getPosition(), delta * 10f);
+        Vector2 pos = focusable.getPosition();
         cam.position.x = pos.x;
         cam.position.y = pos.y;
     }

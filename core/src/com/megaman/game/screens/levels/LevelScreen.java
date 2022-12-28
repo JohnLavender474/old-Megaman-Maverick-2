@@ -78,6 +78,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private static final float ON_PLAYER_DEATH_DELAY = 4f;
     private static final float ENTER_BOSS_ROOM_DELAY = .5f;
     private static final float BOSS_INTRO_DUR = 2f;
+    private static final float READY_DUR = 1f;
 
     private final MegamanGame game;
     private final OrthographicCamera uiCam;
@@ -88,6 +89,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final PlayerSpawnManager playerSpawnMan;
     private final Array<Runnable> runOnDispose;
     private final Timer playerDeathTimer;
+    private final Timer readyTimer;
     private final Timer enterBossRoomTimer;
     private final Timer bossIntroTimer;
     private final Array<Background> backgrounds;
@@ -97,15 +99,22 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables;
 
     private OrderedMap<Class<? extends System>, Boolean> sysStatesOnPause;
+    private boolean playerDead;
+    private boolean playerReady;
     private boolean set;
     @Setter
     private MusicAsset music;
 
     public LevelScreen(MegamanGame game) {
         this.game = game;
+        playerReady = true;
         runOnDispose = new Array<>();
         playerDeathTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
         enterBossRoomTimer = new Timer(ENTER_BOSS_ROOM_DELAY, true);
+
+        // TODO: flash "READY" text
+        readyTimer = new Timer(READY_DUR, true);
+
         bossIntroTimer = new Timer(BOSS_INTRO_DUR, true, new Array<>() {{
 
             // TODO: temp override int supplier in boss health bar
@@ -282,10 +291,22 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         switch (e.type) {
             case GAME_PAUSE -> pause();
             case GAME_RESUME -> resume();
+            case PLAYER_SPAWN -> {
+                playerDead = false;
+                // TODO: reset ready timer, set megaman.ready to false
+            }
+            case PLAYER_READY -> {
+                playerReady = true;
+                engine.setSystemsOn(true, ControllerSystem.class);
+                // TODO: on ready timer is finished, set megaman.ready to true
+            }
             case PLAYER_DEAD -> {
+                playerDead = true;
+                playerReady = false;
                 playerDeathTimer.reset();
-                audioMan.playSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
                 audioMan.stopMusic();
+                audioMan.playSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
+                engine.setSystemsOn(false, ControllerSystem.class);
             }
             case GATE_INIT_OPENING -> {
                 engine.setSystemsOn(false,
@@ -305,7 +326,10 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     TrajectorySystem.class,
                     BehaviorSystem.class,
                     WorldSystem.class);
-            case BOSS_DROP_DOWN -> bossIntroTimer.reset(); // TODO: play boss intro music
+            case BOSS_DROP_DOWN -> {
+                bossIntroTimer.reset();
+                // TODO: play boss intro music
+            }
         }
     }
 
@@ -335,7 +359,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 b.update(delta);
             }
             levelCamMan.update(delta);
-            if (levelCamMan.getTransState() == null) {
+            if (!playerDead && playerReady && levelCamMan.getTransState() == null) {
                 playerSpawnMan.run();
                 spawnMan.update(delta);
             }
@@ -383,8 +407,6 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 }
             }
              */
-
-
             enterBossRoomTimer.update(delta);
             if (enterBossRoomTimer.isJustFinished()) {
                 game.getEventMan().submitEvent(new Event(EventType.BOSS_DROP_DOWN));
@@ -394,7 +416,14 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 if (music != null) {
                     game.getAudioMan().playMusic(music, true);
                 }
+                readyTimer.reset();
                 spawnMegaman();
+                // TODO: test ready timer
+                // spawnMegaman();
+            }
+            readyTimer.update(delta);
+            if (readyTimer.isJustFinished()) {
+                game.getEventMan().submitEvent(new Event(EventType.PLAYER_READY));
             }
         }
         game.getGameEngine().update(delta);
@@ -478,9 +507,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private void spawnMegaman() {
         KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = playerSpawnMan.getCurrPlayerCheckpoint();
         game.getGameEngine().spawnEntity(game.getMegaman(), spawn.key(), spawn.value());
-        game.getEventMan().submitEvent(new Event(EventType.PLAYER_SPAWN, new ObjectMap<>() {{
-            put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
-        }}));
+        game.getEventMan().submitEvent(new Event(EventType.PLAYER_SPAWN));
     }
 
     private void addUiDrawable(Drawable drawable) {

@@ -3,16 +3,25 @@ package com.megaman.game.behaviors;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
 import com.megaman.game.utils.interfaces.Updatable;
+import lombok.Getter;
 
 import java.util.EnumSet;
 import java.util.Set;
 
+@Getter
 public class BehaviorComponent implements Component {
 
-    public Set<BehaviorType> activeBehaviors = EnumSet.noneOf(BehaviorType.class);
-    public Array<Behavior> behaviors = new Array<>();
-    public Updatable preProcess;
-    public Updatable postProcess;
+    private final Set<BehaviorType> activeBehaviors;
+    private final Array<Behavior> behaviors;
+
+    public BehaviorComponent() {
+        activeBehaviors = EnumSet.noneOf(BehaviorType.class);
+        behaviors = new Array<>();
+    }
+
+    public void add(Behavior behavior) {
+        behaviors.add(behavior);
+    }
 
     public boolean is(BehaviorType type) {
         return activeBehaviors.contains(type);
@@ -28,10 +37,10 @@ public class BehaviorComponent implements Component {
 
     @Override
     public void reset() {
+        activeBehaviors.clear();
         for (Behavior b : behaviors) {
-
+            b.reset();
         }
-
     }
 
 }

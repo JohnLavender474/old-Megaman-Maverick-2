@@ -6,6 +6,7 @@ public enum EventType {
 
     PLAYER_SPAWN,
     PLAYER_DEAD,
+    PLAYER_READY,
 
     BEGIN_GAME_ROOM_TRANS,
     CONTINUE_GAME_ROOM_TRANS,
