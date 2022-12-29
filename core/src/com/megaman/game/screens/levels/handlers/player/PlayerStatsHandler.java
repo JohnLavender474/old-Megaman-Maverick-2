@@ -2,19 +2,25 @@ package com.megaman.game.screens.levels.handlers.player;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.System;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.AudioManager;
+import com.megaman.game.entities.items.impl.HeartTank;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegaArmorPiece;
 import com.megaman.game.entities.megaman.upgrades.MegaHealthTank;
 import com.megaman.game.entities.megaman.upgrades.MegaHeartTank;
 import com.megaman.game.entities.megaman.vals.MegamanVals;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
+import com.megaman.game.events.Event;
+import com.megaman.game.events.EventManager;
+import com.megaman.game.events.EventType;
 import com.megaman.game.screens.utils.BitsBar;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.utils.interfaces.Drawable;
@@ -36,6 +42,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
 
     private final Megaman megaman;
     private final GameEngine engine;
+    private final EventManager eventMan;
     private final AudioManager audioMan;
 
     private final BitsBar healthBar;
@@ -49,6 +56,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         megaman = game.getMegaman();
         engine = game.getGameEngine();
         audioMan = game.getAudioMan();
+        eventMan = game.getEventMan();
         AssetsManager assMan = game.getAssMan();
         healthBar = new BitsBar(BAR_X, BAR_Y, megaman::getHealth, megaman::getMaxHealth, assMan, "StandardBit");
         Map<MegamanWeapon, BitsBar> weaponBars = new EnumMap<>(MegamanWeapon.class);
@@ -90,7 +98,12 @@ public class PlayerStatsHandler implements Updatable, Drawable {
             return;
         }
         audioMan.play(SoundAsset.LIFE_SOUND);
-        timer = new Timer(SPECIAL_ITEM_DUR, () -> megaman.add(heartTank));
+        timer = new Timer(SPECIAL_ITEM_DUR, () -> {
+            megaman.add(heartTank);
+            eventMan.submit(new Event(EventType.ADD_PLAYER_HEALTH, new ObjectMap<>() {{
+                put(ConstKeys.VAL, MegaHeartTank.HEALTH_BUMP);
+            }}));
+        });
         sysStates = engine.getStates();
         engine.setAll(false);
         engine.set(true, SpriteSystem.class);
