@@ -72,7 +72,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     protected void defineCullOnEventComponent(CullOnEventComponent c) {
         Set<EventType> s = EnumSet.of(
                 EventType.PLAYER_SPAWN,
-                EventType.BEGIN_GAME_ROOM_TRANS,
+                EventType.BEGIN_ROOM_TRANS,
                 EventType.GATE_INIT_OPENING);
         c.preds.add(e -> s.contains(e.type));
     }
@@ -113,13 +113,13 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     protected void disintegrate() {
         game.getAudioMan().playSound(SoundAsset.ENEMY_DAMAGE_SOUND);
-        game.getGameEngine().spawnEntity(game.getEntityFactories()
+        game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION), body.getCenter());
     }
 
     protected void explode() {
         game.getAudioMan().playSound(SoundAsset.EXPLOSION_SOUND);
-        game.getGameEngine().spawnEntity(game.getEntityFactories()
+        game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION), body.getCenter());
     }
 

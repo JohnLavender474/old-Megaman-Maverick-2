@@ -38,7 +38,7 @@ public class GameEngine implements Updatable, Resettable {
         }
     }
 
-    public OrderedMap<Class<? extends System>, Boolean> getCurrSysStates() {
+    public OrderedMap<Class<? extends System>, Boolean> getStates() {
         OrderedMap<Class<? extends System>, Boolean> sysStates = new OrderedMap<>();
         for (ObjectMap.Entry<Class<? extends System>, System> e : systems.entries()) {
             boolean on = e.value.on;
@@ -47,20 +47,20 @@ public class GameEngine implements Updatable, Resettable {
         return sysStates;
     }
 
-    public void setSysStates(OrderedMap<Class<? extends System>, Boolean> sysStates) {
+    public void set(OrderedMap<Class<? extends System>, Boolean> sysStates) {
         for (ObjectMap.Entry<Class<? extends System>, Boolean> e : sysStates) {
-            setSystemsOn(e.value, e.key);
+            set(e.value, e.key);
         }
     }
 
-    public final void setAllSystemsOn(boolean on) {
+    public final void setAll(boolean on) {
         for (System s : systems.values()) {
             s.on = on;
         }
     }
 
     @SafeVarargs
-    public final void setSystemsOn(boolean on, Class<? extends System>... sClasses) {
+    public final void set(boolean on, Class<? extends System>... sClasses) {
         for (Class<? extends System> sClass : sClasses) {
             if (!systems.containsKey(sClass)) {
                 throw new IllegalStateException("Not in engine: " + sClass);
@@ -73,19 +73,19 @@ public class GameEngine implements Updatable, Resettable {
         return sClass.cast(systems.get(sClass));
     }
 
-    public void spawnEntity(Entity e, Vector2 spawn) {
-        spawnEntity(e, spawn, new ObjectMap<>());
+    public void spawn(Entity e, Vector2 spawn) {
+        spawn(e, spawn, new ObjectMap<>());
     }
 
-    public void spawnEntity(Entity e, Vector2 spawn, ObjectMap<String, Object> data) {
+    public void spawn(Entity e, Vector2 spawn, ObjectMap<String, Object> data) {
         entitiesToAdd.add(KeyValuePair.of(e, () -> e.init(spawn, data)));
     }
 
-    public void spawnEntity(Entity e, Rectangle bounds) {
-        spawnEntity(e, bounds, new ObjectMap<>());
+    public void spawn(Entity e, Rectangle bounds) {
+        spawn(e, bounds, new ObjectMap<>());
     }
 
-    public void spawnEntity(Entity e, Rectangle bounds, ObjectMap<String, Object> data) {
+    public void spawn(Entity e, Rectangle bounds, ObjectMap<String, Object> data) {
         entitiesToAdd.add(KeyValuePair.of(e, () -> e.init(bounds, data)));
     }
 

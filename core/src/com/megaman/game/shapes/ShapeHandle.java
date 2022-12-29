@@ -41,6 +41,10 @@ public class ShapeHandle implements RenderableShape {
         this(shapeSupplier, () -> RED);
     }
 
+    public ShapeHandle(Supplier<Shape2D> shapeSupplier, Color color) {
+        this(shapeSupplier, () -> color);
+    }
+
     public ShapeHandle(Supplier<Shape2D> shapeSupplier, Supplier<Color> colorSupplier) {
         this.shapeSupplier = shapeSupplier;
         this.colorSupplier = colorSupplier;

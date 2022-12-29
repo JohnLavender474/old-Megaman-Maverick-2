@@ -45,6 +45,7 @@ import lombok.Getter;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Getter
 public class MegamanGame implements ApplicationListener {
@@ -55,20 +56,27 @@ public class MegamanGame implements ApplicationListener {
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+
     private Map<ScreenEnum, Screen> screens;
+
     private OrthographicCamera gameCam;
     private OrthographicCamera uiCam;
     private Viewport gameViewport;
     private Viewport uiViewport;
+
     private AssetsManager assMan;
     private AudioManager audioMan;
     private EventManager eventMan;
     private ControllerManager ctrlMan;
+
     private Megaman megaman;
+
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
+
     private boolean paused;
-    private Screen currScreen;
+
+    private Screen screen;
 
     @Override
     public void create() {
@@ -113,11 +121,11 @@ public class MegamanGame implements ApplicationListener {
 
         // TODO: test levels
         LevelScreen l = getScreen(ScreenEnum.LEVEL, LevelScreen.class);
-        l.set(Level.TEST1);
-        setCurrScreen(l);
+        l.set(Level.TEST5);
+        setScreen(l);
 
         // TODO: set to main menu
-        // setCurrScreen(getScreen(ScreenEnum.MAIN));
+        // setScreen(getScreen(ScreenEnum.MAIN));
     }
 
     public <S extends Screen> S getScreen(ScreenEnum e, Class<S> sClass) {
@@ -128,17 +136,23 @@ public class MegamanGame implements ApplicationListener {
         return screens.get(e);
     }
 
-    public void setCurrScreen(Screen screen) {
-        if (currScreen != null) {
-            currScreen.dispose();
+    public <S extends Screen> void setScreen(ScreenEnum e, Class<S> sClass, Consumer<S> sCons) {
+        S s = sClass.cast(getScreen(e));
+        sCons.accept(s);
+        setScreen(s);
+    }
+
+    public void setScreen(Screen screen) {
+        if (this.screen != null) {
+            this.screen.dispose();
         }
-        currScreen = screen;
-        if (currScreen != null) {
-            currScreen.show();
-            currScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        this.screen = screen;
+        if (this.screen != null) {
+            this.screen.show();
+            this.screen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         }
         if (paused) {
-            currScreen.pause();
+            this.screen.pause();
         }
     }
 
@@ -153,8 +167,8 @@ public class MegamanGame implements ApplicationListener {
         ctrlMan.run();
         eventMan.run();
         audioMan.update(delta);
-        if (currScreen != null) {
-            currScreen.render(delta);
+        if (screen != null) {
+            screen.render(delta);
         }
         gameViewport.apply();
         uiViewport.apply();
@@ -168,8 +182,8 @@ public class MegamanGame implements ApplicationListener {
         }
         logger.log("Game pause actuated");
         paused = true;
-        if (currScreen != null) {
-            currScreen.pause();
+        if (screen != null) {
+            screen.pause();
         }
     }
 
@@ -181,8 +195,8 @@ public class MegamanGame implements ApplicationListener {
         }
         logger.log("Game resume actuated");
         paused = false;
-        if (currScreen != null) {
-            currScreen.resume();
+        if (screen != null) {
+            screen.resume();
         }
     }
 
@@ -190,15 +204,15 @@ public class MegamanGame implements ApplicationListener {
     public void resize(int width, int height) {
         gameViewport.update(width, height);
         uiViewport.update(width, height);
-        if (currScreen != null) {
-            currScreen.resize(width, height);
+        if (screen != null) {
+            screen.resize(width, height);
         }
     }
 
     @Override
     public void dispose() {
-        if (currScreen != null) {
-            currScreen.dispose();
+        if (screen != null) {
+            screen.dispose();
         }
         batch.dispose();
         assMan.dispose();

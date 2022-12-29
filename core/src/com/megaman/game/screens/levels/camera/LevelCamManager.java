@@ -6,14 +6,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.megaman.game.ConstKeys;
-import com.megaman.game.events.Event;
-import com.megaman.game.events.EventManager;
-import com.megaman.game.events.EventType;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.ProcessState;
 import com.megaman.game.utils.interfaces.Positional;
+import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.WorldVals;
@@ -23,18 +20,25 @@ import lombok.Setter;
 import static com.megaman.game.utils.UtilMethods.interpolate;
 import static java.lang.Math.min;
 
-public class LevelCamManager implements Updatable {
+public class LevelCamManager implements Updatable, Resettable {
 
     public static final float TRANS_DUR = 1f;
     public static final float DIST_ON_TRANS = 3f;
 
     private final Camera cam;
     private final Timer transTimer;
-
     private final Vector2 transStartPos;
     private final Vector2 transTargetPos;
     private final Vector2 focusableStartPos;
     private final Vector2 focusableTargetPos;
+
+    private Positional focusable;
+    private ObjectMap<String, RectangleMapObject> gameRooms;
+
+    @Getter
+    private RectangleMapObject priorGameRoom;
+    @Getter
+    private RectangleMapObject currGameRoom;
 
     @Setter
     private Runnable runOnBeginTrans;
@@ -42,19 +46,13 @@ public class LevelCamManager implements Updatable {
     private Updatable updateOnTrans;
     @Setter
     private Runnable runOnEndTrans;
-    private Positional focusable;
-    @Getter
-    private RectangleMapObject priorGameRoom;
-    @Getter
-    private RectangleMapObject currGameRoom;
-    private ObjectMap<String, RectangleMapObject> gameRooms;
+
     @Getter
     private ProcessState transState;
     @Getter
     private Direction transDirection;
+
     private boolean reset;
-    @Getter
-    private boolean updating;
 
     public LevelCamManager(Camera cam) {
         this.cam = cam;
@@ -63,6 +61,27 @@ public class LevelCamManager implements Updatable {
         transTargetPos = new Vector2();
         focusableStartPos = new Vector2();
         focusableTargetPos = new Vector2();
+    }
+
+    @Override
+    public void update(float delta) {
+        if (reset) {
+            reset = false;
+            currGameRoom = priorGameRoom = null;
+            transDirection = null;
+            transState = null;
+            setCamToFocusable();
+            currGameRoom = nextGameRoom();
+        } else if (!isTransitioning()) {
+            onNoTrans();
+        } else {
+            onTrans(delta);
+        }
+    }
+
+    @Override
+    public void reset() {
+        reset = true;
     }
 
     public void set(Array<RectangleMapObject> gameRooms, Positional focusable) {
@@ -87,25 +106,6 @@ public class LevelCamManager implements Updatable {
 
     public boolean isTransState(ProcessState state) {
         return transState == state;
-    }
-
-    @Override
-    public void update(float delta) {
-        updating = true;
-        if (reset) {
-            reset = false;
-            setCamToFocusable(delta);
-            RectangleMapObject nextGameRoom = nextGameRoom();
-            if (nextGameRoom != null) {
-                priorGameRoom = currGameRoom;
-            }
-            currGameRoom = nextGameRoom;
-        } else if (transState == null) {
-            onNullTrans(delta);
-        } else {
-            onTrans(delta);
-        }
-        updating = false;
     }
 
     public void transToRoom(String name) {
@@ -156,7 +156,7 @@ public class LevelCamManager implements Updatable {
         }
     }
 
-    private void onNullTrans(float delta) {
+    private void onNoTrans() {
         if (currGameRoom == null) {
             RectangleMapObject nextGameRoom = nextGameRoom();
             if (nextGameRoom != null) {
@@ -167,7 +167,7 @@ public class LevelCamManager implements Updatable {
         }
         Rectangle currRoomBounds = currGameRoom.getRectangle();
         if (currRoomBounds.contains(focusable.getPosition())) {
-            setCamToFocusable(delta);
+            setCamToFocusable();
             if (cam.position.y > (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f) {
                 cam.position.y = (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f;
             }
@@ -244,9 +244,7 @@ public class LevelCamManager implements Updatable {
         return nextGameRoom;
     }
 
-    private void setCamToFocusable(float delta) {
-        // TODO: pros and cons of interpolation
-        // Vector2 pos = interpolate(UtilMethods.toVec2(cam.position), focusable.getPosition(), delta * 10f);
+    private void setCamToFocusable() {
         Vector2 pos = focusable.getPosition();
         cam.position.x = pos.x;
         cam.position.y = pos.y;

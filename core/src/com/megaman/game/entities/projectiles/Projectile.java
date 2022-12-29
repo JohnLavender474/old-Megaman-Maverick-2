@@ -73,13 +73,11 @@ public abstract class Projectile extends Entity implements Damager {
     }
 
     protected CullOnEventComponent cullOnEventComponent() {
-        CullOnEventComponent c = new CullOnEventComponent();
         Set<EventType> s = EnumSet.of(
                 EventType.PLAYER_SPAWN,
-                EventType.BEGIN_GAME_ROOM_TRANS,
+                EventType.BEGIN_ROOM_TRANS,
                 EventType.GATE_INIT_OPENING);
-        c.preds.add(e -> s.contains(e.type));
-        return c;
+        return new CullOnEventComponent(e -> s.contains(e.type));
     }
 
 }

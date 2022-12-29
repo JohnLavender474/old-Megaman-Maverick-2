@@ -1,7 +1,7 @@
 Items.png
 size: 320, 32
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 EmptyHealthTank
   rotate: false

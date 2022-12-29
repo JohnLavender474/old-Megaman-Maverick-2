@@ -145,7 +145,7 @@ public class SniperJoe extends Enemy implements Faceable {
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);
         data.put(ConstKeys.TRAJECTORY, traj);
-        game.getGameEngine().spawnEntity(bullet, spawn, data);
+        game.getGameEngine().spawn(bullet, spawn, data);
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_BULLET_SOUND);
     }
 

@@ -92,7 +92,7 @@ public class ChargedShot extends Projectile implements Faceable {
             put(ConstKeys.DIR, facing);
             put(ConstKeys.BOOL, fullyCharged);
         }};
-        game.getGameEngine().spawnEntity(e, ShapeUtils.getCenterPoint(body.bounds), data);
+        game.getGameEngine().spawn(e, ShapeUtils.getCenterPoint(body.bounds), data);
     }
 
     @Override

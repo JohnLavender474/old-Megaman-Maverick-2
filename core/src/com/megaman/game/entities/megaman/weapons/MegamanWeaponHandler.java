@@ -266,7 +266,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
             megaman.request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
             s.y += WorldVals.PPM / 10f;
         }
-        engine.spawnEntity(proj, s, data);
+        engine.spawn(proj, s, data);
         return proj;
     }
 
@@ -290,7 +290,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
              */
 
         };
-        engine.spawnEntity(proj, getSpawnCenter(), data);
+        engine.spawn(proj, getSpawnCenter(), data);
 
         // TODO: play different sounds
         megaman.request(SoundAsset.CRASH_BOMBER_SOUND, true);

@@ -15,7 +15,7 @@ public class EventManager implements Runnable {
         eventQueue = new LinkedList<>();
     }
 
-    public void submitEvent(Event event) {
+    public void submit(Event event) {
         eventQueue.add(event);
     }
 

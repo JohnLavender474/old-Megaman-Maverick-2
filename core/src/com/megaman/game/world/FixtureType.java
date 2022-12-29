@@ -2,6 +2,7 @@ package com.megaman.game.world;
 
 public enum FixtureType {
     BLOCK,
+    PLAYER,
     BODY,
     FEET,
     HEAD,

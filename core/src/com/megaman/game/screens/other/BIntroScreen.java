@@ -127,7 +127,7 @@ public class BIntroScreen extends ScreenAdapter {
         if (durTimer.isFinished()) {
             LevelScreen l = game.getScreen(ScreenEnum.LEVEL, LevelScreen.class);
             l.set(b.level);
-            game.setCurrScreen(l);
+            game.setScreen(l);
             return;
         }
         Sprite bSprite = currBAnim.key();

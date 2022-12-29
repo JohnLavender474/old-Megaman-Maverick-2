@@ -1,6 +1,6 @@
 package com.megaman.game.entities.megaman.health;
 
-public enum MegamanHealthTank {
+public enum MegaHealthTank {
     A,
     B,
     C,

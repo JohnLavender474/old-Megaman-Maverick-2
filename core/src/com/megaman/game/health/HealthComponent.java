@@ -2,19 +2,36 @@ package com.megaman.game.health;
 
 import com.megaman.game.Component;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.function.Supplier;
+
+@NoArgsConstructor
 public class HealthComponent implements Component {
 
     @Getter
-    private int health = HealthVals.MAX_HEALTH;
+    private int health;
+    @Setter
+    private Supplier<Integer> maxHealthSupplier;
+
+    public HealthComponent(Supplier<Integer> maxHealthSupplier) {
+        this.maxHealthSupplier = maxHealthSupplier;
+    }
 
     public void setDead() {
         setHealth(0);
     }
 
     public void setHealth(int h) {
-        if (h > HealthVals.MAX_HEALTH) {
-            h = HealthVals.MAX_HEALTH;
+        int max;
+        if (maxHealthSupplier != null) {
+            max = maxHealthSupplier.get();
+        } else {
+            max = HealthVals.MAX_HEALTH;
+        }
+        if (h > max) {
+            h = max;
         } else if (h < 0) {
             h = 0;
         }
@@ -24,9 +41,15 @@ public class HealthComponent implements Component {
     public int translateHealth(int delta) {
         int diff = 0;
         health += delta;
-        if (health > HealthVals.MAX_HEALTH) {
-            diff = health - HealthVals.MAX_HEALTH;
-            health = HealthVals.MAX_HEALTH;
+        int max;
+        if (maxHealthSupplier != null) {
+            max = maxHealthSupplier.get();
+        } else {
+            max = HealthVals.MAX_HEALTH;
+        }
+        if (health > max) {
+            diff = health - max;
+            health = max;
         } else if (health < 0) {
             diff = -health;
             health = 0;
@@ -36,7 +59,11 @@ public class HealthComponent implements Component {
 
     @Override
     public void reset() {
-        health = HealthVals.MAX_HEALTH;
+        if (maxHealthSupplier != null) {
+            health = maxHealthSupplier.get();
+        } else {
+            health = HealthVals.MAX_HEALTH;
+        }
     }
 
 }

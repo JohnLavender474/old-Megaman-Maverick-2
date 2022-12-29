@@ -2,190 +2,153 @@ package com.megaman.game.screens.levels;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
-import com.megaman.game.System;
-import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.MusicAsset;
-import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
 import com.megaman.game.behaviors.BehaviorSystem;
 import com.megaman.game.controllers.ControllerBtn;
+import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
-import com.megaman.game.entities.EntityFactories;
-import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
-import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
+import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.levels.camera.LevelCamManager;
+import com.megaman.game.screens.levels.handlers.player.PlayerDeathEventHandler;
+import com.megaman.game.screens.levels.handlers.player.PlayerSpawnEventHandler;
+import com.megaman.game.screens.levels.handlers.player.PlayerStatsHandler;
+import com.megaman.game.screens.levels.handlers.state.LevelStateHandler;
 import com.megaman.game.screens.levels.map.LevelMapLayer;
 import com.megaman.game.screens.levels.map.LevelMapManager;
-import com.megaman.game.screens.levels.map.LevelMapObjParser;
-import com.megaman.game.screens.levels.spawns.Spawn;
 import com.megaman.game.screens.levels.spawns.SpawnManager;
-import com.megaman.game.screens.levels.spawns.SpawnType;
-import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
 import com.megaman.game.screens.levels.spawns.player.PlayerSpawnManager;
-import com.megaman.game.screens.utils.BitsBar;
-import com.megaman.game.screens.utils.TextHandle;
 import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.RenderableShape;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.shapes.ShapeUtils;
-import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.Logger;
-import com.megaman.game.utils.UtilMethods;
-import com.megaman.game.utils.interfaces.Drawable;
-import com.megaman.game.utils.objs.KeyValuePair;
-import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.BodyComponent;
 import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
-import com.megaman.game.world.WorldVals;
 import lombok.Setter;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.function.Supplier;
 
 public class LevelScreen extends ScreenAdapter implements EventListener {
 
     private static final Logger logger = new Logger(LevelScreen.class, MegamanGame.DEBUG && true);
 
-    private static final float ON_PLAYER_DEATH_DELAY = 4f;
-    private static final float ENTER_BOSS_ROOM_DELAY = .5f;
-    private static final float BOSS_INTRO_DUR = 2f;
-    private static final float READY_DUR = 1f;
-
     private final MegamanGame game;
+
+    private final Megaman megaman;
+    private final GameEngine engine;
+    private final EventManager eventMan;
+    private final AudioManager audioMan;
+    private final ControllerManager ctrlMan;
+
     private final OrthographicCamera uiCam;
     private final OrthographicCamera gameCam;
+    private final SpriteBatch batch;
+    private final ShapeRenderer shapeRenderer;
+
     private final LevelMapManager levelMapMan;
     private final LevelCamManager levelCamMan;
-    private final SpawnManager spawnMan;
-    private final PlayerSpawnManager playerSpawnMan;
-    private final Array<Runnable> runOnDispose;
-    private final Timer playerDeathTimer;
-    private final Timer readyTimer;
-    private final Timer enterBossRoomTimer;
-    private final Timer bossIntroTimer;
+
     private final Array<Background> backgrounds;
     private final PriorityQueue<SpriteHandle> gameSpritesQ;
     private final PriorityQueue<RenderableShape> gameShapesQ;
-    private final Queue<TextHandle> uiText;
-    private final Array<KeyValuePair<Supplier<Boolean>, Drawable>> uiDrawables;
 
-    private OrderedMap<Class<? extends System>, Boolean> sysStatesOnPause;
-    private boolean playerDead;
-    private boolean playerReady;
-    private boolean set;
+    private final SpawnManager spawnMan;
+    private final PlayerSpawnManager playerSpawnMan;
+
+    private final LevelStateHandler stateHandler;
+    private final PlayerStatsHandler playerStatsHandler;
+    private final PlayerSpawnEventHandler playerSpawnEventHandler;
+    private final PlayerDeathEventHandler playerDeathEventHandler;
+
+    private final Array<Disposable> disposables;
+
     @Setter
     private MusicAsset music;
 
     public LevelScreen(MegamanGame game) {
         this.game = game;
-        playerReady = true;
-        runOnDispose = new Array<>();
-        playerDeathTimer = new Timer(ON_PLAYER_DEATH_DELAY, true);
-        enterBossRoomTimer = new Timer(ENTER_BOSS_ROOM_DELAY, true);
-
-        // TODO: flash "READY" text
-        readyTimer = new Timer(READY_DUR, true);
-
-        bossIntroTimer = new Timer(BOSS_INTRO_DUR, true, new Array<>() {{
-
-            // TODO: temp override int supplier in boss health bar
-            // TODO: runnables for filling up boss health bar
-
-        }});
-        backgrounds = new Array<>();
-        gameSpritesQ = new PriorityQueue<>();
-        gameShapesQ = new PriorityQueue<>();
-        uiText = new LinkedList<>();
+        batch = game.getBatch();
         uiCam = game.getUiCam();
-        uiDrawables = new Array<>();
         gameCam = game.getGameCam();
-        spawnMan = new SpawnManager();
-        playerSpawnMan = new PlayerSpawnManager();
+        backgrounds = new Array<>();
+        disposables = new Array<>();
+        megaman = game.getMegaman();
+        ctrlMan = game.getCtrlMan();
+        eventMan = game.getEventMan();
+        audioMan = game.getAudioMan();
+        engine = game.getGameEngine();
+        gameShapesQ = new PriorityQueue<>();
+        gameSpritesQ = new PriorityQueue<>();
+        shapeRenderer = game.getShapeRenderer();
+        stateHandler = new LevelStateHandler(game);
+        playerSpawnMan = new PlayerSpawnManager(gameCam);
+        playerStatsHandler = new PlayerStatsHandler(game);
+        playerSpawnEventHandler = new PlayerSpawnEventHandler(game);
+        playerDeathEventHandler = new PlayerDeathEventHandler(game);
         levelCamMan = new LevelCamManager(gameCam);
         levelCamMan.setRunOnBeginTrans(() -> {
-            game.getGameEngine().setSystemsOn(false,
+            engine.set(false,
                     ControllerSystem.class,
                     TrajectorySystem.class,
                     UpdatableSystem.class,
                     BehaviorSystem.class,
                     WorldSystem.class,
                     SoundSystem.class);
-            game.getEventMan().submitEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
+            eventMan.submit(new Event(EventType.BEGIN_ROOM_TRANS, new ObjectMap<>() {{
                 put(ConstKeys.POS, levelCamMan.getTransInterpolation());
                 put(ConstKeys.CURR, levelCamMan.getCurrGameRoom());
                 put(ConstKeys.PRIOR, levelCamMan.getPriorGameRoom());
             }}));
-            ShapeUtils.setBottomCenterToPoint(game.getMegaman().body.bounds, levelCamMan.getTransInterpolation());
+            ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
         });
         levelCamMan.setUpdateOnTrans(delta -> {
-            game.getEventMan().submitEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
+            eventMan.submit(new Event(EventType.CONTINUE_ROOM_TRANS, new ObjectMap<>() {{
                 put(ConstKeys.POS, levelCamMan.getTransInterpolation());
             }}));
-            ShapeUtils.setBottomCenterToPoint(game.getMegaman().body.bounds, levelCamMan.getTransInterpolation());
+            ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
         });
         levelCamMan.setRunOnEndTrans(() -> {
-            game.getGameEngine().setSystemsOn(true,
+            engine.set(true,
                     ControllerSystem.class,
                     TrajectorySystem.class,
                     UpdatableSystem.class,
                     BehaviorSystem.class,
                     WorldSystem.class,
                     SoundSystem.class);
-            game.getEventMan().submitEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
+            eventMan.submit(new Event(EventType.END_ROOM_TRANS, new ObjectMap<>() {{
                 put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
             }}));
             if (levelCamMan.getCurrGameRoom().getName().equals(ConstKeys.BOSS)) {
-                game.getEventMan().submitEvent(new Event(EventType.ENTER_BOSS_ROOM));
+                eventMan.submit(new Event(EventType.ENTER_BOSS_ROOM));
             }
         });
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
-        AssetsManager assMan = game.getAssMan();
-        Megaman megaman = game.getMegaman();
-        float healthBarX = WorldVals.PPM * .4f;
-        float healthBarY = WorldVals.PPM * 9f;
-        BitsBar healthBar = new BitsBar(healthBarX, healthBarY, megaman::getHealth, assMan, "StandardBit");
-        addUiDrawable(healthBar);
-        for (MegamanWeapon weapon : MegamanWeapon.values()) {
-            if (weapon == MegamanWeapon.MEGA_BUSTER) {
-                continue;
-            }
-            BitsBar weaponBar = new BitsBar(healthBarX + WorldVals.PPM, healthBarY,
-                    megaman::getCurrentAmmo, assMan, weapon.weaponBitSrc);
-            addUiDrawable(() -> weapon == megaman.currWeapon, weaponBar);
-        }
-    }
-
-    public boolean isPlayerDeathEvent() {
-        return !playerDeathTimer.isFinished();
+        spawnMan = new SpawnManager();
     }
 
     public void set(Level level) {
@@ -193,13 +156,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         if (level.getMusicAss() != null) {
             setMusic(level.getMusicAss());
         }
-        playerDeathTimer.setToEnd();
-        enterBossRoomTimer.setToEnd();
-        bossIntroTimer.setToEnd();
         uiCam.position.set(ConstFuncs.getCamInitPos());
         gameCam.position.set(ConstFuncs.getCamInitPos());
-        GameEngine engine = game.getGameEngine();
-        engine.setAllSystemsOn(true);
+        engine.setAll(true);
         engine.getSystem(SpriteSystem.class).set(gameCam, gameSpritesQ);
         engine.getSystem(LineSystem.class).setGameShapesQ(gameShapesQ);
         engine.getSystem(ShapeSystem.class).setGameShapesQ(gameShapesQ);
@@ -208,253 +167,118 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         WorldGraph worldGraph = new WorldGraph(levelMapMan.getWorldWidth(), levelMapMan.getWorldHeight());
         engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
         engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
-        Array<RectangleMapObject> gameRoomsObjs = m.get(LevelMapLayer.GAME_ROOMS);
-        levelCamMan.set(gameRoomsObjs, game.getMegaman());
-        Array<RectangleMapObject> playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
-        playerSpawnMan.set(gameCam, playerSpawns);
-        Array<Spawn> spawns = new Array<>();
-        EntityFactories factories = game.getEntityFactories();
-        for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
-            switch (e.getKey()) {
-                case GATES -> {
-                    for (RectangleMapObject o : e.getValue()) {
-                        engine.spawnEntity(factories.fetch(EntityType.SENSOR, SensorFactory.GATE),
-                                o.getRectangle(), LevelMapObjParser.parse(o));
-                    }
-                }
-                case DEATH -> {
-                    for (RectangleMapObject o : e.getValue()) {
-                        engine.spawnEntity(factories.fetch(EntityType.SENSOR, SensorFactory.DEATH), o.getRectangle());
-                    }
-                }
-                case ENEMY_SPAWNS, BLOCKS, HAZARDS, SPECIAL -> {
-                    EntityType type = switch (e.getKey()) {
-                        case BLOCKS -> EntityType.BLOCK;
-                        case HAZARDS -> EntityType.HAZARD;
-                        case SPECIAL -> EntityType.SPECIAL;
-                        case ENEMY_SPAWNS -> EntityType.ENEMY;
-                        default -> throw new IllegalStateException("No matching entity type for: " + e.getKey());
-                    };
-                    for (RectangleMapObject o : e.getValue()) {
-                        ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
-                        if (data.containsKey(SpawnType.SPAWN_TYPE)) {
-                            String spawnType = (String) data.get(SpawnType.SPAWN_TYPE);
-                            switch (spawnType) {
-                                case SpawnType.SPAWN_ROOM -> {
-                                    String roomName = (String) data.get(SpawnType.SPAWN_ROOM);
-                                    boolean roomFound = false;
-                                    for (RectangleMapObject room : gameRoomsObjs) {
-                                        if (roomName.equals(room.getName())) {
-                                            data.put(ConstKeys.SPAWN, o.getRectangle());
-                                            data.put(ConstKeys.ROOM, room.getRectangle());
-                                            spawns.add(new SpawnWhenInBounds(
-                                                    engine,
-                                                    gameCam,
-                                                    room.getRectangle(),
-                                                    data,
-                                                    () -> factories.fetch(type, o.getName())));
-                                            roomFound = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!roomFound) {
-                                        throw new IllegalStateException(
-                                                "Failed to create spawn for room: " + roomName);
-                                    }
-                                }
-                                case SpawnType.SPAWN_EVENT -> {
-
-                                    // TODO: create spawn by event
-
-                                }
-                            }
-                        } else {
-                            spawns.add(new SpawnWhenInBounds(
-                                    engine,
-                                    gameCam,
-                                    o.getRectangle(),
-                                    data,
-                                    () -> factories.fetch(type, o.getName())));
-                        }
-                    }
-                }
-            }
-        }
-        spawnMan.set(spawns);
-        set = true;
+        LevelBuilder builder = new LevelBuilder(game, m);
+        levelCamMan.set(builder.getGameRoomObjs(), megaman);
+        playerSpawnMan.set(builder.getPlayerSpawns());
+        spawnMan.set(builder.getSpawns());
+        disposables.add(builder);
     }
 
     @Override
     public void listenForEvent(Event e) {
-        GameEngine engine = game.getGameEngine();
-        AudioManager audioMan = game.getAudioMan();
         switch (e.type) {
             case GAME_PAUSE -> pause();
             case GAME_RESUME -> resume();
             case PLAYER_SPAWN -> {
-                playerDead = false;
-                // TODO: reset ready timer, set megaman.ready to false
+                levelCamMan.reset();
+                engine.spawn(megaman, playerSpawnMan.getSpawn(), playerSpawnMan.getData());
             }
-            case PLAYER_READY -> {
-                playerReady = true;
-                engine.setSystemsOn(true, ControllerSystem.class);
-                // TODO: on ready timer is finished, set megaman.ready to true
+            case PLAYER_JUST_DIED -> {
+                audioMan.clearMusic();
+                playerDeathEventHandler.init();
             }
-            case PLAYER_DEAD -> {
-                playerDead = true;
-                playerReady = false;
-                playerDeathTimer.reset();
-                audioMan.stopMusic();
-                audioMan.playSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
-                engine.setSystemsOn(false, ControllerSystem.class);
+            case PLAYER_DONE_DYIN -> {
+                audioMan.playMusic(music, true);
+                playerSpawnEventHandler.init();
+            }
+            case ADD_PLAYER_HEALTH -> {
+                int healthNeeded = megaman.maxHealth - megaman.getHealth();
+                if (healthNeeded > 0) {
+                    int health = e.getInfo(ConstKeys.VAL, Integer.class);
+                    playerStatsHandler.addHealth(health);
+                }
             }
             case GATE_INIT_OPENING -> {
-                engine.setSystemsOn(false,
+                engine.set(false,
                         ControllerSystem.class,
                         TrajectorySystem.class,
                         BehaviorSystem.class,
                         WorldSystem.class);
-                game.getMegaman().getComponent(BodyComponent.class).body.velocity.setZero();
+                megaman.getComponent(BodyComponent.class).body.velocity.setZero();
             }
-            case NEXT_GAME_ROOM_REQ -> levelCamMan.transToRoom(e.getInfo(ConstKeys.ROOM, String.class));
-            case ENTER_BOSS_ROOM -> {
-                enterBossRoomTimer.reset();
-                engine.setSystemsOn(false, ControllerSystem.class);
-            }
-            case GATE_INIT_CLOSING -> engine.setSystemsOn(true,
+            case NEXT_ROOM_REQ -> levelCamMan.transToRoom(e.getInfo(ConstKeys.ROOM, String.class));
+            case GATE_INIT_CLOSING -> engine.set(true,
                     ControllerSystem.class,
                     TrajectorySystem.class,
                     BehaviorSystem.class,
                     WorldSystem.class);
-            case BOSS_DROP_DOWN -> {
-                bossIntroTimer.reset();
-                // TODO: play boss intro music
-            }
         }
     }
 
     @Override
     public void show() {
-        spawnMegaman();
-        game.getEventMan().add(this);
+        eventMan.add(this);
         if (music != null) {
-            game.getAudioMan().playMusic(music, true);
+            audioMan.setMusic(music, true);
         }
+        playerSpawnEventHandler.init();
     }
 
     @Override
     public void render(float delta) {
-        if (!set) {
-            throw new IllegalStateException("Must call set method before rendering");
-        }
-        if (game.getCtrlMan().isJustPressed(ControllerBtn.START)) {
+        // game can only be paused if neither spawn nor death events are occurring
+        if (ctrlMan.isJustPressed(ControllerBtn.START) &&
+                playerSpawnEventHandler.isFinished() &&
+                playerDeathEventHandler.isFinished() &&
+                playerStatsHandler.isFinished()) {
             if (game.isPaused()) {
                 game.resume();
             } else {
                 game.pause();
             }
         }
+        // illegal for game to be paused when a handler is not finished, force resume
+        if (game.isPaused() && (!playerDeathEventHandler.isFinished() || !playerSpawnEventHandler.isFinished() ||
+                !playerStatsHandler.isFinished())) {
+            game.resume();
+        }
+        // update only if game is not paused
         if (!game.isPaused()) {
-            for (Background b : backgrounds) {
-                b.update(delta);
-            }
+            backgrounds.forEach(b -> b.update(delta));
             levelCamMan.update(delta);
-            if (!playerDead && playerReady && levelCamMan.getTransState() == null) {
+            if (playerSpawnEventHandler.isFinished() && !levelCamMan.isTransitioning()) {
                 playerSpawnMan.run();
                 spawnMan.update(delta);
             }
-
-            // TODO: test new process
-            /*
-            else {
-                switch (levelCamMan.getTransState()) {
-                    case BEGIN -> {
-                        engine.setSystemsOn(false,
-                                ControllerSystem.class,
-                                TrajectorySystem.class,
-                                UpdatableSystem.class,
-                                BehaviorSystem.class,
-                                WorldSystem.class,
-                                SoundSystem.class);
-                        eventMan.submitEvent(new Event(EventType.BEGIN_GAME_ROOM_TRANS, new ObjectMap<>() {{
-                            put(ConstKeys.POS, levelCamMan.getTransInterpolation());
-                            put(ConstKeys.NEXT, levelCamMan.getCurrGameRoom());
-                            put(ConstKeys.PRIOR, levelCamMan.getPriorGameRoom());
-                        }}));
-                        ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
-                    }
-                    case CONTINUE -> {
-                        eventMan.submitEvent(new Event(EventType.CONTINUE_GAME_ROOM_TRANS, new ObjectMap<>() {{
-                            put(ConstKeys.POS, levelCamMan.getTransInterpolation());
-                        }}));
-                        ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
-                    }
-                    case END -> {
-                        engine.setSystemsOn(true,
-                                ControllerSystem.class,
-                                TrajectorySystem.class,
-                                UpdatableSystem.class,
-                                BehaviorSystem.class,
-                                WorldSystem.class,
-                                SoundSystem.class);
-                        eventMan.submitEvent(new Event(EventType.END_GAME_ROOM_TRANS, new ObjectMap<>() {{
-                            put(ConstKeys.ROOM, levelCamMan.getCurrGameRoom());
-                        }}));
-                        if (levelCamMan.getCurrGameRoom().getName().equals(ConstKeys.BOSS)) {
-                            eventMan.submitEvent(new Event(EventType.ENTER_BOSS_ROOM));
-                        }
-                    }
-                }
-            }
-             */
-            enterBossRoomTimer.update(delta);
-            if (enterBossRoomTimer.isJustFinished()) {
-                game.getEventMan().submitEvent(new Event(EventType.BOSS_DROP_DOWN));
-            }
-            playerDeathTimer.update(delta);
-            if (playerDeathTimer.isJustFinished()) {
-                if (music != null) {
-                    game.getAudioMan().playMusic(music, true);
-                }
-                readyTimer.reset();
-                spawnMegaman();
-                // TODO: test ready timer
-                // spawnMegaman();
-            }
-            readyTimer.update(delta);
-            if (readyTimer.isJustFinished()) {
-                game.getEventMan().submitEvent(new Event(EventType.PLAYER_READY));
+            // only update one handler at a time
+            if (!playerSpawnEventHandler.isFinished()) {
+                playerSpawnEventHandler.update(delta);
+            } else if (!playerDeathEventHandler.isFinished()) {
+                playerDeathEventHandler.update(delta);
+            } else if (!playerStatsHandler.isFinished()) {
+                playerStatsHandler.update(delta);
             }
         }
-        game.getGameEngine().update(delta);
-        SpriteBatch batch = game.getBatch();
+        // update engine
+        engine.update(delta);
+        // render game sprites
         batch.setProjectionMatrix(gameCam.combined);
         batch.begin();
-        for (Background b : backgrounds) {
-            b.draw(batch);
-        }
+        backgrounds.forEach(b -> b.draw(batch));
         levelMapMan.draw();
         while (!gameSpritesQ.isEmpty()) {
             gameSpritesQ.poll().draw(batch);
         }
         batch.end();
+        // render ui
         batch.setProjectionMatrix(uiCam.combined);
         batch.begin();
-        for (KeyValuePair<Supplier<Boolean>, Drawable> uiDrawable : uiDrawables) {
-            if (!uiDrawable.key().get()) {
-                continue;
-            }
-            if (uiDrawable.value() instanceof Sprite s) {
-                SpriteDrawer.draw(s, batch);
-            } else {
-                uiDrawable.value().draw(batch);
-            }
-        }
-        while (!uiText.isEmpty()) {
-            uiText.poll().draw(batch);
+        playerStatsHandler.draw(batch);
+        if (!playerSpawnEventHandler.isFinished()) {
+            playerSpawnEventHandler.draw(batch);
         }
         batch.end();
-        ShapeRenderer shapeRenderer = game.getShapeRenderer();
+        // render shapes
         shapeRenderer.setProjectionMatrix(gameCam.combined);
         shapeRenderer.begin();
         while (!gameShapesQ.isEmpty()) {
@@ -466,56 +290,24 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     @Override
     public void pause() {
         logger.log("Level screen pause method called");
-        GameEngine engine = game.getGameEngine();
-        sysStatesOnPause = engine.getCurrSysStates();
-        engine.setAllSystemsOn(false);
-        engine.setSystemsOn(true, SpriteSystem.class);
-        AudioManager audioMan = game.getAudioMan();
-        audioMan.pauseSound();
-        audioMan.pauseMusic();
-        audioMan.playSound(SoundAsset.PAUSE_SOUND);
+        stateHandler.pause();
     }
 
     @Override
     public void resume() {
         logger.log("Level screen resume method called");
-        GameEngine engine = game.getGameEngine();
-        logger.log("Sys states on resume: " + UtilMethods.toString(sysStatesOnPause));
-        engine.setSysStates(sysStatesOnPause);
-        AudioManager audioMan = game.getAudioMan();
-        audioMan.resumeSound();
-        if (!isPlayerDeathEvent()) {
-            audioMan.resumeMusic();
-        }
-        audioMan.playSound(SoundAsset.PAUSE_SOUND);
+        stateHandler.resume();
     }
 
     @Override
     public void dispose() {
-        set = false;
+        engine.reset();
         spawnMan.reset();
+        audioMan.stopMusic();
+        eventMan.remove(this);
         levelMapMan.dispose();
         playerSpawnMan.reset();
-        game.getGameEngine().reset();
-        game.getAudioMan().stopMusic();
-        game.getEventMan().remove(this);
-        for (Runnable r : runOnDispose) {
-            r.run();
-        }
-    }
-
-    private void spawnMegaman() {
-        KeyValuePair<Vector2, ObjectMap<String, Object>> spawn = playerSpawnMan.getCurrPlayerCheckpoint();
-        game.getGameEngine().spawnEntity(game.getMegaman(), spawn.key(), spawn.value());
-        game.getEventMan().submitEvent(new Event(EventType.PLAYER_SPAWN));
-    }
-
-    private void addUiDrawable(Drawable drawable) {
-        addUiDrawable(() -> true, drawable);
-    }
-
-    private void addUiDrawable(Supplier<Boolean> doDraw, Drawable drawable) {
-        uiDrawables.add(KeyValuePair.of(doDraw, drawable));
+        disposables.forEach(Disposable::dispose);
     }
 
 }

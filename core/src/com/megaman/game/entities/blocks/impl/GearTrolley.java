@@ -61,11 +61,11 @@ public class GearTrolley extends Block implements EventListener {
     @Override
     public void listenForEvent(Event event) {
         switch (event.type) {
-            case BEGIN_GAME_ROOM_TRANS -> {
+            case BEGIN_ROOM_TRANS -> {
                 spriteHandle.hidden = true;
                 getComponent(TrajectoryComponent.class).reset();
             }
-            case END_GAME_ROOM_TRANS -> spriteHandle.hidden = false;
+            case END_ROOM_TRANS -> spriteHandle.hidden = false;
         }
     }
 

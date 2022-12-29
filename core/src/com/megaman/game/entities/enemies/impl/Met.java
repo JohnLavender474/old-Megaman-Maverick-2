@@ -193,7 +193,7 @@ public class Met extends Enemy implements Faceable {
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);
         data.put(ConstKeys.TRAJECTORY, traj);
-        game.getGameEngine().spawnEntity(b, spawn, data);
+        game.getGameEngine().spawn(b, spawn, data);
     }
 
     private SpriteComponent spriteComponent() {

@@ -16,10 +16,7 @@ public class SpawnWhenInBounds extends Spawn {
 
     private boolean inCamBounds;
 
-    public SpawnWhenInBounds(GameEngine engine,
-                             Camera gameCam,
-                             Rectangle bounds,
-                             ObjectMap<String, Object> data,
+    public SpawnWhenInBounds(GameEngine engine, Camera gameCam, Rectangle bounds, ObjectMap<String, Object> data,
                              Supplier<Entity> entitySupplier) {
         super(engine, bounds, data, entitySupplier);
         this.gameCam = gameCam;
@@ -34,7 +31,7 @@ public class SpawnWhenInBounds extends Spawn {
         inCamBounds = gameCam.frustum.boundsInFrustum(ShapeUtils.rectToBBox(bounds));
         if (entity == null && !wasInCamBounds && inCamBounds) {
             entity = entitySupplier.get();
-            engine.spawnEntity(entity, bounds, data);
+            engine.spawn(entity, bounds, data);
         }
     }
 

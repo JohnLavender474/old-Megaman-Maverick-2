@@ -94,15 +94,33 @@ public class AudioManager implements Updatable {
         sounds.get(ass).stop();
     }
 
-    public void playMusic(MusicAsset ass, boolean loop) {
-        Music m = music.get(ass);
+    public void clearMusic() {
         if (currMusic != null) {
             currMusic.stop();
         }
-        currMusic = m;
+        currMusic = null;
+    }
+
+    public void setMusic(MusicAsset ass, boolean loop) {
+        if (currMusic != null) {
+            currMusic.stop();
+        }
+        currMusic = music.get(ass);
         currMusic.setLooping(loop);
         currMusic.setVolume((float) musicVolume / MAX_VOLUME);
-        currMusic.play();
+    }
+
+    public void playMusic(MusicAsset ass, boolean loop) {
+        setMusic(ass, loop);
+        if (currMusic != null) {
+            currMusic.play();
+        }
+    }
+
+    public void playMusic() {
+        if (currMusic != null && !currMusic.isPlaying()) {
+            currMusic.play();
+        }
     }
 
     public void pauseMusic() {

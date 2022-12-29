@@ -8,6 +8,7 @@ public enum LevelMapLayer {
 
     GATES("Gates"),
     DEATH("Death"),
+    ITEMS("Items"),
     BLOCKS("Blocks"),
     SPECIAL("Special"),
     HAZARDS("Hazards"),

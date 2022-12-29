@@ -19,24 +19,19 @@ import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
-import com.megaman.game.entities.enemies.impl.*;
-import com.megaman.game.entities.explosions.ExplosionFactory;
-import com.megaman.game.entities.hazards.impl.LaserBeamer;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
-import com.megaman.game.entities.megaman.health.MegamanHealthHandler;
+import com.megaman.game.entities.megaman.events.MegamanDeathEvent;
+import com.megaman.game.entities.megaman.health.MegaHealthTank;
+import com.megaman.game.entities.megaman.health.MegamanHealthTankHandler;
 import com.megaman.game.entities.megaman.upgrades.MegamanAbility;
 import com.megaman.game.entities.megaman.upgrades.MegamanUpgradeHandler;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
+import com.megaman.game.entities.megaman.vals.MegamanDamageNegs;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
 import com.megaman.game.entities.projectiles.ChargeStatus;
-import com.megaman.game.entities.projectiles.impl.Bullet;
-import com.megaman.game.entities.projectiles.impl.ChargedShot;
-import com.megaman.game.entities.projectiles.impl.Fireball;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
-import com.megaman.game.events.EventManager;
-import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
@@ -46,17 +41,18 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Positional;
+import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.TimeMarkedRunnable;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
+
+    public static final int START_MAX_HEALTH = 14;
 
     public static final float CLAMP_X = 25f;
     public static final float CLAMP_Y = 35f;
@@ -93,31 +89,12 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float TIME_TO_HALFWAY_CHARGED = .5f;
     public static final float TIME_TO_FULLY_CHARGED = 1.25f;
 
-    public static final float EXPLOSION_ORB_SPEED = 3.5f;
-
     public static final float SHOOT_ANIM_TIME = .5f;
     public static final float CHARGING_ANIM_TIME = .125f;
 
-    private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
-        put(Bat.class, new DamageNegotiation(5));
-        put(Met.class, new DamageNegotiation(5));
-        put(MagFly.class, new DamageNegotiation(5));
-        put(Bullet.class, new DamageNegotiation(10));
-        put(ChargedShot.class, new DamageNegotiation(15));
-        put(Fireball.class, new DamageNegotiation(5));
-        put(Dragonfly.class, new DamageNegotiation(5));
-        put(Matasaburo.class, new DamageNegotiation(5));
-        put(SniperJoe.class, new DamageNegotiation(10));
-        put(SpringHead.class, new DamageNegotiation(5));
-        put(FloatingCan.class, new DamageNegotiation(10));
-        put(LaserBeamer.class, new DamageNegotiation(10));
-        put(SuctionRoller.class, new DamageNegotiation(10));
-        put(GapingFish.class, new DamageNegotiation(5));
-    }};
-
     public final MegamanWeaponHandler weaponHandler;
-    public final MegamanHealthHandler healthHandler;
     public final MegamanUpgradeHandler upgradeHandler;
+    public final MegamanHealthTankHandler healthTankHandler;
 
     public final Sprite sprite;
     public final Body body;
@@ -131,13 +108,22 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private final Timer groundSlideTimer;
     private final Timer dmgRecovBlinkTimer;
 
+    @Getter
+    @Setter
+    public int maxHealth;
+
     public MegamanWeapon currWeapon;
     public AButtonTask aButtonTask;
+
     @Getter
     @Setter
     public Facing facing;
 
     private boolean recoveryBlink;
+
+    @Getter
+    @Setter
+    private boolean ready;
 
     public Megaman(MegamanGame game) {
         super(game, EntityType.MEGAMAN);
@@ -150,10 +136,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         dmgRecovTimer = new Timer(DAMAGE_RECOVERY_TIME, true);
         wallJumpTimer = new Timer(WALL_JUMP_IMPETUS_TIME, true);
         dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
-        chargingTimer = new Timer(
-                TIME_TO_FULLY_CHARGED,
-                new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED, () ->
-                        request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
+        chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
+                () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler = new MegamanWeaponHandler(this);
 
@@ -161,73 +145,48 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
         weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
 
-        healthHandler = new MegamanHealthHandler(this);
         upgradeHandler = new MegamanUpgradeHandler(this);
-
         // TODO: for now add all abilities
         upgradeHandler.add(MegamanAbility.WALL_JUMP);
         upgradeHandler.add(MegamanAbility.AIR_DASH);
         upgradeHandler.add(MegamanAbility.GROUND_SLIDE);
 
+        healthTankHandler = new MegamanHealthTankHandler(this);
+        maxHealth = START_MAX_HEALTH;
         putComponent(updatableComponent());
         putComponent(bodyComponent());
         putComponent(spriteComponent());
         putComponent(behaviorComponent());
         putComponent(controllerComponent());
         putComponent(new SoundComponent());
-        putComponent(new HealthComponent());
+        putComponent(new HealthComponent(this::getMaxHealth));
         putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
-        runOnDeath.add(() -> {
-            EventManager eventMan = game.getEventMan();
-            eventMan.remove(this);
-            eventMan.submitEvent(new Event(EventType.PLAYER_DEAD));
-            game.getAudioMan().stopSound(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
-            if (getHealth() > 0f) {
-                return;
-            }
-            Array<Vector2> trajs = new Array<>() {{
-                add(new Vector2(-EXPLOSION_ORB_SPEED, 0f));
-                add(new Vector2(-EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
-                add(new Vector2(0f, EXPLOSION_ORB_SPEED));
-                add(new Vector2(EXPLOSION_ORB_SPEED, EXPLOSION_ORB_SPEED));
-                add(new Vector2(EXPLOSION_ORB_SPEED, 0f));
-                add(new Vector2(EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
-                add(new Vector2(0f, -EXPLOSION_ORB_SPEED));
-                add(new Vector2(-EXPLOSION_ORB_SPEED, -EXPLOSION_ORB_SPEED));
-            }};
-            for (Vector2 traj : trajs) {
-                game.getGameEngine().spawnEntity(
-                        game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION_ORB),
-                        ShapeUtils.getCenterPoint(body.bounds), new ObjectMap<>() {{
-                            put(ConstKeys.TRAJECTORY, traj);
-                        }});
-            }
-        });
+        runOnDeath.add(new MegamanDeathEvent(this));
     }
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
-        game.getEventMan().add(this);
-        body.bounds.setPosition(spawn);
         body.velocity.setZero();
+        body.bounds.setPosition(spawn);
+        facing = Facing.RIGHT;
+        aButtonTask = AButtonTask.JUMP;
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler.reset();
-        aButtonTask = AButtonTask.JUMP;
-        facing = Facing.RIGHT;
-        airDashTimer.reset();
-        dmgTimer.setToEnd();
+        dmgRecovBlinkTimer.reset();
         shootAnimTimer.setToEnd();
         groundSlideTimer.reset();
         dmgRecovTimer.setToEnd();
         wallJumpTimer.setToEnd();
-        dmgRecovBlinkTimer.reset();
         chargingTimer.reset();
+        airDashTimer.reset();
+        dmgTimer.setToEnd();
+        game.getEventMan().add(this);
     }
 
     @Override
     public void listenForEvent(Event e) {
         switch (e.type) {
-            case BEGIN_GAME_ROOM_TRANS, CONTINUE_GAME_ROOM_TRANS -> {
+            case BEGIN_ROOM_TRANS, CONTINUE_ROOM_TRANS -> {
                 body.velocity.set(Vector2.Zero);
                 Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
                 body.setPos(pos, Position.BOTTOM_CENTER);
@@ -242,17 +201,17 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public Set<Class<? extends Damager>> getDamagerMaskSet() {
-        return dmgNegs.keySet();
+        return MegamanDamageNegs.getDamagerMaskSet();
     }
 
     @Override
     public void takeDamageFrom(Damager damager) {
-        DamageNegotiation damageNegotiation = dmgNegs.get(damager.getClass());
+        DamageNegotiation dmgNeg = MegamanDamageNegs.get(damager);
         dmgTimer.reset();
-        damageNegotiation.runOnDamage();
-        healthHandler.removeHealth(damageNegotiation.getDamage(damager));
-        request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+        dmgNeg.runOnDamage();
+        removeHealth(dmgNeg.getDamage(damager));
         request(SoundAsset.MEGAMAN_DAMAGE_SOUND, true);
+        request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
     }
 
     @Override
@@ -278,7 +237,31 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return getComponent(HealthComponent.class).getHealth();
     }
 
-    public int getCurrentAmmo() {
+    public void addHealth(int health) {
+        getComponent(HealthComponent.class).translateHealth(Math.abs(health));
+    }
+
+    public boolean addHealthToTanks(int health) {
+        return healthTankHandler.add(health);
+    }
+
+    public void removeHealth(int health) {
+        getComponent(HealthComponent.class).translateHealth(-Math.abs(health));
+    }
+
+    public boolean has(MegaHealthTank tank) {
+        return healthTankHandler.has(tank);
+    }
+
+    public void put(MegaHealthTank tank) {
+        put(tank, getMaxHealth());
+    }
+
+    public void put(MegaHealthTank tank, int health) {
+        healthTankHandler.put(tank, health);
+    }
+
+    public int getAmmo() {
         if (currWeapon == MegamanWeapon.MEGA_BUSTER) {
             return Integer.MAX_VALUE;
         }
@@ -467,6 +450,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 aButtonTask = AButtonTask.AIR_DASH;
             }
         };
+        Fixture playerFixture = new Fixture(this, FixtureType.PLAYER,
+                new Rectangle().setWidth(.8f * WorldVals.PPM));
+        body.fixtures.add(playerFixture);
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setWidth(.8f * WorldVals.PPM));
         body.fixtures.add(bodyFixture);
@@ -511,6 +497,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 feetFixture.offset.y = -WorldVals.PPM / 2f;
             }
             ((Rectangle) bodyFixture.shape).set(body.bounds);
+            ((Rectangle) playerFixture.shape).set(body.bounds);
             boolean wallSlidingOnIce = is(BehaviorType.WALL_SLIDING) &&
                     (is(BodySense.TOUCHING_ICE_LEFT) || is(BodySense.TOUCHING_ICE_RIGHT));
             float gravityY;
@@ -538,10 +525,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         SpriteHandle handle = new SpriteHandle(sprite);
         handle.priority = 3;
         handle.updatable = delta -> {
+            handle.hidden = !ready;
             handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
-            sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
             sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
+            sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
         };
         return new SpriteComponent(handle);
     }

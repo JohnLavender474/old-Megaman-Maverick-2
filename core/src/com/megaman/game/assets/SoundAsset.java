@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public enum SoundAsset implements Asset {
 
+    LIFE_SOUND("1up.mp3", 1),
     DINK_SOUND("Dink.mp3", 1),
     ERROR_SOUND("Error.mp3", 1),
     THUMP_SOUND("Thump.mp3", 1),

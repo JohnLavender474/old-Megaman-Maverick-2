@@ -176,7 +176,7 @@ public class BSelectScreen extends MenuScreen {
             if (outTimer.isFinished()) {
                 BIntroScreen s = game.getScreen(ScreenEnum.BOSS_INTRO, BIntroScreen.class);
                 s.set(bSelect);
-                game.setCurrScreen(s);
+                game.setScreen(s);
                 return;
             }
             for (ObjectMap.Entry<Sprite, Animation> e : bars) {
@@ -246,7 +246,7 @@ public class BSelectScreen extends MenuScreen {
         menuButtons.put(BACK, new MenuButton() {
             @Override
             public boolean onSelect(float delta) {
-                game.setCurrScreen(game.getScreen(ScreenEnum.MAIN));
+                game.setScreen(game.getScreen(ScreenEnum.MAIN));
                 return true;
             }
 

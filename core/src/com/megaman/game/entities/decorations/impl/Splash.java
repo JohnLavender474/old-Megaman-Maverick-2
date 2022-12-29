@@ -49,7 +49,7 @@ public class Splash extends Entity {
                     splasher.bounds.x + (WorldVals.PPM / 2f) + i * WorldVals.PPM,
                     water.bounds.y + water.bounds.height);
             Splash s = (Splash) game.getEntityFactories().fetch(EntityType.DECORATION, DecorationFactory.SPLASH);
-            game.getGameEngine().spawnEntity(s, pos);
+            game.getGameEngine().spawn(s, pos);
         }
     }
 

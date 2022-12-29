@@ -13,6 +13,7 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.items.Item;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegamanAbility;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
@@ -133,6 +134,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 case BODY -> p.hitBody(f);
                 case SHIELD -> p.hitShield(f);
                 case WATER -> p.hitWater(f);
+            }
+        } else if (contact.acceptMask(FixtureType.PLAYER, FixtureType.ITEM)) {
+            if (contact.mask1stEntity() instanceof Megaman m && contact.mask2ndEntity() instanceof Item i) {
+                i.contactWithPlayer(m);
             }
         }
     }

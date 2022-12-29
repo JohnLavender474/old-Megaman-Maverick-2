@@ -9,20 +9,33 @@ import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.world.WorldVals;
+import lombok.Setter;
 
 import java.util.function.Supplier;
 
 public class BitsBar implements Drawable {
 
     private static final int BITS = 30;
+    private static final float BIT_WIDTH = WorldVals.PPM / 2f;
+    private static final float BIT_HEIGHT = WorldVals.PPM / 8f;
 
     private final Sprite blackBackground;
     private final Array<Sprite> bitSprites;
-    private final Supplier<Integer> countSupplier;
+
+    @Setter
+    private Supplier<Integer> countSupplier;
+    @Setter
+    private Supplier<Integer> maxSupplier = () -> BITS;
 
     public BitsBar(float x, float y, Supplier<Integer> countSupplier, AssetsManager assMan, String bitRegion) {
         this(x, y, countSupplier, assMan.getTextureRegion(TextureAsset.BITS, bitRegion),
                 assMan.getTextureRegion(TextureAsset.DECORATIONS, "Black"));
+    }
+
+    public BitsBar(float x, float y, Supplier<Integer> countSupplier, Supplier<Integer> maxSupplier,
+                   AssetsManager assMan, String bitRegion) {
+        this(x, y, countSupplier, assMan, bitRegion);
+        this.maxSupplier = maxSupplier;
     }
 
     public BitsBar(float x, float y, Supplier<Integer> countSupplier,
@@ -30,22 +43,27 @@ public class BitsBar implements Drawable {
         this.countSupplier = countSupplier;
         this.blackBackground = new Sprite();
         this.bitSprites = new Array<>();
-        float bitWidth = WorldVals.PPM / 2f;
-        float bitHeight = WorldVals.PPM / 8f;
         Sprite bitSprite = new Sprite(bitRegion);
-        bitSprite.setSize(bitWidth, bitHeight);
+        bitSprite.setSize(BIT_WIDTH, BIT_HEIGHT);
         bitSprite.setX(x);
         for (int i = 0; i < BITS; i++) {
             Sprite bitSpriteCpy = new Sprite(bitSprite);
-            bitSpriteCpy.setY(y + i * bitHeight);
+            bitSpriteCpy.setY(y + i * BIT_HEIGHT);
             bitSprites.add(bitSpriteCpy);
         }
         blackBackground.setRegion(backgroundRegion);
-        blackBackground.setBounds(x, y, bitWidth, bitHeight * BITS);
+        blackBackground.setPosition(x, y);
+    }
+
+    public BitsBar(float x, float y, Supplier<Integer> countSupplier, Supplier<Integer> maxSupplier,
+                   TextureRegion bitRegion, TextureRegion backgroundRegion) {
+        this(x, y, countSupplier, bitRegion, backgroundRegion);
+        this.maxSupplier = maxSupplier;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
+        blackBackground.setSize(BIT_WIDTH, maxSupplier.get() * BIT_HEIGHT);
         SpriteDrawer.draw(blackBackground, batch);
         int count = countSupplier.get();
         for (int i = 0; i < Integer.min(count, BITS); i++) {

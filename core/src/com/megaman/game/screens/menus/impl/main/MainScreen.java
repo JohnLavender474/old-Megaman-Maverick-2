@@ -191,7 +191,7 @@ public class MainScreen extends MenuScreen {
             put(MainBtn.GAME_START.name(), new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
-                    game.setCurrScreen(game.getScreen(ScreenEnum.BOSS_SELECT));
+                    game.setScreen(game.getScreen(ScreenEnum.BOSS_SELECT));
                     return true;
                 }
 
@@ -252,7 +252,7 @@ public class MainScreen extends MenuScreen {
             put(MainBtn.EXTRAS.name(), new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
-                    game.setCurrScreen(game.getScreen(ScreenEnum.EXTRAS));
+                    game.setScreen(game.getScreen(ScreenEnum.EXTRAS));
                     return true;
                 }
 

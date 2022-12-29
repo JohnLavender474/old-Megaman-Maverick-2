@@ -29,7 +29,9 @@ public class Animator implements Updatable, Resettable {
     public void update(float delta) {
         String priorAnimKey = currAnimKey;
         String newAnimKey = animKeySupplier.get();
-        currAnimKey = newAnimKey != null ? newAnimKey : priorAnimKey;
+        if (newAnimKey != null) {
+            currAnimKey = newAnimKey;
+        }
         Animation anim = anims.get(currAnimKey);
         if (anim == null) {
             return;

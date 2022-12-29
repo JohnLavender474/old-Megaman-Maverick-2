@@ -2,6 +2,7 @@ package com.megaman.game;
 
 public class ConstKeys {
 
+    public static final String LARGE = "Large";
     public static final String X = "X";
     public static final String Y = "Y";
     public static final String COLLECTION = "Collection";
@@ -34,5 +35,6 @@ public class ConstKeys {
     public static final String CURR = "Curr";
     public static final String NEXT = "Next";
     public static final String BOSS = "Boss";
+    public static final String READY = "Ready";
 
 }

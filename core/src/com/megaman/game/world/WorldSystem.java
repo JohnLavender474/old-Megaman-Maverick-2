@@ -15,6 +15,8 @@ public class WorldSystem extends System {
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
         put(FixtureType.SCANNER, EnumSet.allOf(FixtureType.class));
+        put(FixtureType.PLAYER, EnumSet.of(
+                FixtureType.ITEM));
         put(FixtureType.DAMAGEABLE, EnumSet.of(
                 FixtureType.DEATH,
                 FixtureType.DAMAGER));

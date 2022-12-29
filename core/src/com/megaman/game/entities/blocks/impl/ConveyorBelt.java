@@ -56,6 +56,7 @@ public class ConveyorBelt extends Block {
             middle = atlas.findRegion("MiddlePart");
         }
         forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
+        forceFixture.offset.y = WorldVals.PPM / 8f;
         body.fixtures.add(forceFixture);
         putComponent(new ShapeComponent(new ShapeHandle(forceFixture.shape, Color.BLUE)));
     }
@@ -64,9 +65,7 @@ public class ConveyorBelt extends Block {
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         super.init(bounds, data);
         boolean left = (boolean) data.get(ConstKeys.LEFT);
-        Rectangle forceBounds = new Rectangle().setSize(bounds.width - WorldVals.PPM / 4f, bounds.height);
-        ((Rectangle) forceFixture.shape).set(forceBounds);
-        forceFixture.offset.y += WorldVals.PPM / 8f;
+        ((Rectangle) forceFixture.shape).setSize(bounds.width - WorldVals.PPM / 4f, bounds.height);
         Vector2 force = new Vector2(FORCE_AMOUNT * WorldVals.PPM, 0f);
         if (left) {
             force.x *= -1f;
@@ -88,11 +87,7 @@ public class ConveyorBelt extends Block {
             }
             Animation anim = new Animation(reg, 2, .15f);
             Sprite sprite = new Sprite();
-            sprite.setBounds(
-                    bounds.x + i * WorldVals.PPM,
-                    bounds.y,
-                    WorldVals.PPM,
-                    WorldVals.PPM);
+            sprite.setBounds(bounds.x + i * WorldVals.PPM, bounds.y, WorldVals.PPM, WorldVals.PPM);
             handles.add(new SpriteHandle(sprite));
             animators.add(new Animator(sprite, anim));
         }

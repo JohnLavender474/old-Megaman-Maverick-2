@@ -62,7 +62,7 @@ public class Bullet extends Projectile {
 
     public void disintegrate() {
         dead = true;
-        game.getGameEngine().spawnEntity(
+        game.getGameEngine().spawn(
                 game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
                 ShapeUtils.getCenterPoint(body.bounds));
         game.getAudioMan().playSound(SoundAsset.THUMP_SOUND);
