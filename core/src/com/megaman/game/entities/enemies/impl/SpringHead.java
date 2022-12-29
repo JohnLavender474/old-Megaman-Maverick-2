@@ -161,8 +161,8 @@ public class SpringHead extends Enemy implements Faceable {
                     ((isMegamanRight() && is(Facing.LEFT)) || (!isMegamanRight() && is(Facing.RIGHT)))) {
                 turnTimer.reset();
             }
-            if ((is(Facing.LEFT) && !is(BodySense.TOUCHING_BLOCK_LEFT)) ||
-                    (is(Facing.RIGHT) && !is(BodySense.TOUCHING_BLOCK_RIGHT))) {
+            if ((is(Facing.LEFT) && !is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                    (is(Facing.RIGHT) && !is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT))) {
                 body.velocity.x = 0f;
             } else {
                 float vel = (megamanOverlapSpeedUpScanner() ? SPEED_SUPER : SPEED_NORMAL) * WorldVals.PPM;

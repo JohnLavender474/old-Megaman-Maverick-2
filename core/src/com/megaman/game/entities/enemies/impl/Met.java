@@ -157,7 +157,7 @@ public class Met extends Enemy implements Faceable {
                 }
                 case RUNNING -> {
                     Timer runningTimer = metBehavTimers[MetBehavior.RUNNING.ordinal()];
-                    body.velocity.x = (is(BodySense.IN_WATER) ? RUN_IN_WATER_VEL : RUN_VEL) * WorldVals.PPM;
+                    body.velocity.x = (is(BodySense.BODY_IN_WATER) ? RUN_IN_WATER_VEL : RUN_VEL) * WorldVals.PPM;
                     if (is(Facing.LEFT)) {
                         body.velocity.x *= -1f;
                     }

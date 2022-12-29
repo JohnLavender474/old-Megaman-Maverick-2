@@ -38,7 +38,6 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static com.badlogic.gdx.graphics.Color.GRAY;
 
@@ -144,8 +143,8 @@ public class MagFly extends Enemy implements Faceable {
             if (!slow && !isMegamanAbove() && !doFacingAndMMDirMatch()) {
                 setFacing(isMegamanRight() ? Facing.RIGHT : Facing.LEFT);
             }
-            if ((is(Facing.LEFT) && is(BodySense.TOUCHING_BLOCK_LEFT)) ||
-                    (is(Facing.RIGHT) && is(BodySense.TOUCHING_BLOCK_RIGHT))) {
+            if ((is(Facing.LEFT) && is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                    (is(Facing.RIGHT) && is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT))) {
                 body.velocity.x = 0f;
             } else {
                 body.velocity.x = (slow ? X_VEL_SLOW : X_VEL_NORMAL) * WorldVals.PPM;

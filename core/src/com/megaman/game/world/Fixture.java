@@ -34,23 +34,20 @@ public class Fixture {
         return ShapeUtils.overlaps(shape, fixture.shape);
     }
 
-    public void putUserData(String key, Object o) {
-        userData.put(key, o);
-    }
-
     public boolean hasUserData(String key) {
         return userData.containsKey(key);
+    }
+
+    public void putUserData(String key, Object o) {
+        userData.put(key, o);
     }
 
     public <T> T getUserData(String key, Class<T> tClass) {
         return tClass.cast(userData.get(key));
     }
 
-    public <T> T getUserDataOrDefault(String key, Class<T> tClass, T def) {
-        if (!hasUserData(key)) {
-            return def;
-        }
-        return getUserData(key, tClass);
+    public void removeUserData(String key) {
+        userData.remove(key);
     }
 
 }

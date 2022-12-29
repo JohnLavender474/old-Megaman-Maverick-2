@@ -16,7 +16,7 @@ import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.backgrounds.Background;
 import com.megaman.game.behaviors.BehaviorSystem;
-import com.megaman.game.controllers.ControllerBtn;
+import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
@@ -235,7 +235,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     @Override
     public void render(float delta) {
         // game can only be paused if neither spawn nor death events are occurring
-        if (ctrlMan.isJustPressed(ControllerBtn.START) &&
+        if (ctrlMan.isJustPressed(CtrlBtn.START) &&
                 playerSpawnEventHandler.isFinished() &&
                 playerDeathEventHandler.isFinished() &&
                 playerStatsHandler.isFinished()) {

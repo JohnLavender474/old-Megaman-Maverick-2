@@ -46,6 +46,12 @@ public class MegamanAnimator {
             add("ClimbShoot");
             add("ClimbHalfCharging");
             add("ClimbCharging");
+            add("StillClimb");
+            add("StillClimbCharging");
+            add("StillClimbHalfCharging");
+            add("FinishClimb");
+            add("FinishClimbCharging");
+            add("FinishClimbHalfCharging");
             add("Stand");
             add("StandCharging");
             add("StandHalfCharging");
@@ -94,71 +100,69 @@ public class MegamanAnimator {
         };
     }
 
-    private static Animation getAnimation(String key, TextureAtlas textureAtlas) {
+    private static Animation getAnimation(String key, TextureAtlas t) {
         return switch (key) {
-            case "Climb" -> new Animation(textureAtlas.findRegion("Climb"), 2, .125f);
-            case "ClimbShoot" -> new Animation(textureAtlas.findRegion("ClimbShoot"));
+            case "Climb" -> new Animation(t.findRegion("Climb"), 2, .125f);
+            case "ClimbShoot" -> new Animation(t.findRegion("ClimbShoot"));
             case "ClimbHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("ClimbHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("ClimbHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "ClimbCharging" -> new Animation(
-                    textureAtlas.findRegion("ClimbCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "Stand" -> new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f});
+                    t.findRegion("ClimbCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "FinishClimb" -> new Animation(t.findRegion("FinishClimb"));
+            case "FinishClimbCharging" -> new Animation(t.findRegion("FinishClimbCharging"), 2, .15f);
+            case "FinishClimbHalfCharging" -> new Animation(t.findRegion("FinishClimbHalfCharging"), 2, .15f);
+            case "StillClimb" -> new Animation(t.findRegion("StillClimb"));
+            case "StillClimbCharging" -> new Animation(t.findRegion("StillClimbCharging"), 2, .15f);
+            case "StillClimbHalfCharging" -> new Animation(t.findRegion("StillClimbHalfCharging"), 2, .15f);
+            case "Stand" -> new Animation(t.findRegion("Stand"), new float[]{1.5f, .15f});
             case "StandCharging" -> new Animation(
-                    textureAtlas.findRegion("StandCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("StandCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "StandHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("StandHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "StandShoot" -> new Animation(textureAtlas.findRegion("StandShoot"));
-            // damaged
-            case "Damaged" -> new Animation(textureAtlas.findRegion("Damaged"), 3, .05f);
-            case "LayDownDamaged" -> new Animation(textureAtlas.findRegion("LayDownDamaged"), 3, .05f);
-            // run
-            case "Run" -> new Animation(textureAtlas.findRegion("Run"), 4, .125f);
-            case "RunCharging" -> new Animation(textureAtlas
+                    t.findRegion("StandHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "StandShoot" -> new Animation(t.findRegion("StandShoot"));
+            case "Damaged" -> new Animation(t.findRegion("Damaged"), 3, .05f);
+            case "LayDownDamaged" -> new Animation(t.findRegion("LayDownDamaged"), 3, .05f);
+            case "Run" -> new Animation(t.findRegion("Run"), 4, .125f);
+            case "RunCharging" -> new Animation(t
                     .findRegion("RunCharging"), 4, Megaman.CHARGING_ANIM_TIME);
             case "RunHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("RunHalfCharging"), 4, Megaman.CHARGING_ANIM_TIME);
-            case "RunShoot" -> new Animation(textureAtlas.findRegion("RunShoot"), 4, .125f);
-            // jump
-            case "Jump" -> new Animation(textureAtlas.findRegion("Jump"));
+                    t.findRegion("RunHalfCharging"), 4, Megaman.CHARGING_ANIM_TIME);
+            case "RunShoot" -> new Animation(t.findRegion("RunShoot"), 4, .125f);
+            case "Jump" -> new Animation(t.findRegion("Jump"));
             case "JumpCharging" -> new Animation(
-                    textureAtlas.findRegion("JumpCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("JumpCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "JumpHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("JumpHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "JumpShoot" -> new Animation(textureAtlas.findRegion("JumpShoot"));
-            // swim
-            case "Swim" -> new Animation(textureAtlas.findRegion("Swim"));
-            case "SwimAttack" -> new Animation(textureAtlas.findRegion("SwimAttack"));
+                    t.findRegion("JumpHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "JumpShoot" -> new Animation(t.findRegion("JumpShoot"));
+            case "Swim" -> new Animation(t.findRegion("Swim"));
+            case "SwimAttack" -> new Animation(t.findRegion("SwimAttack"));
             case "SwimCharging" -> new Animation(
-                    textureAtlas.findRegion("SwimCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("SwimCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "SwimHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("SwimHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "SwimShoot" -> new Animation(textureAtlas.findRegion("SwimShoot"));
-            // wall slide
-            case "WallSlide" -> new Animation(textureAtlas.findRegion("WallSlide"));
+                    t.findRegion("SwimHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "SwimShoot" -> new Animation(t.findRegion("SwimShoot"));
+            case "WallSlide" -> new Animation(t.findRegion("WallSlide"));
             case "WallSlideCharging" -> new Animation(
-                    textureAtlas.findRegion("WallSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("WallSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "WallSlideHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("WallSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "WallSlideShoot" -> new Animation(textureAtlas.findRegion("WallSlideShoot"));
-            // ground slide
-            case "GroundSlide" -> new Animation(textureAtlas.findRegion("GroundSlide"));
+                    t.findRegion("WallSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "WallSlideShoot" -> new Animation(t.findRegion("WallSlideShoot"));
+            case "GroundSlide" -> new Animation(t.findRegion("GroundSlide"));
             case "GroundSlideCharging" -> new Animation(
-                    textureAtlas.findRegion("GroundSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("GroundSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "GroundSlideHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("GroundSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            // air dash
-            case "AirDash" -> new Animation(textureAtlas.findRegion("AirDash"));
+                    t.findRegion("GroundSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "AirDash" -> new Animation(t.findRegion("AirDash"));
             case "AirDashCharging" -> new Animation(
-                    textureAtlas.findRegion("AirDashCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("AirDashCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "AirDashHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("AirDashHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            // slip slide
-            case "SlipSlide" -> new Animation(textureAtlas.findRegion("SlipSlide"));
+                    t.findRegion("AirDashHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "SlipSlide" -> new Animation(t.findRegion("SlipSlide"));
             case "SlipSlideCharging" -> new Animation(
-                    textureAtlas.findRegion("SlipSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+                    t.findRegion("SlipSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "SlipSlideHalfCharging" -> new Animation(
-                    textureAtlas.findRegion("SlipSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
-            case "SlipSlideShoot" -> new Animation(textureAtlas.findRegion("SlipSlideShoot"));
+                    t.findRegion("SlipSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
+            case "SlipSlideShoot" -> new Animation(t.findRegion("SlipSlideShoot"));
             default -> throw new IllegalStateException("No animation for key: " + key);
         };
     }
@@ -168,6 +172,38 @@ public class MegamanAnimator {
             String key;
             if (megaman.isDamaged()) {
                 key = megaman.is(BehaviorType.GROUND_SLIDING) ? "LayDownDamaged" : "Damaged";
+            } else if (megaman.is(BehaviorType.CLIMBING)) {
+                if (!megaman.is(BodySense.HEAD_TOUCHING_LADDER)) {
+                    if (megaman.isShooting()) {
+                        key = "ClimbShoot";
+                    } else if (megaman.isChargingFully()) {
+                        key = "FinishClimbCharging";
+                    } else if (megaman.isCharging()) {
+                        key = "FinishClimbHalfCharging";
+                    } else {
+                        key = "FinishClimb";
+                    }
+                } else if (megaman.body.getPosDelta().y != 0f) {
+                    if (megaman.isShooting()) {
+                        key = "ClimbShoot";
+                    } else if (megaman.isChargingFully()) {
+                        key = "ClimbCharging";
+                    } else if (megaman.isCharging()) {
+                        key = "ClimbHalfCharging";
+                    } else {
+                        key = "Climb";
+                    }
+                } else {
+                    if (megaman.isShooting()) {
+                        key = "ClimbShoot";
+                    } else if (megaman.isChargingFully()) {
+                        key = "StillClimbCharging";
+                    } else if (megaman.isCharging()) {
+                        key = "StillClimbHalfCharging";
+                    } else {
+                        key = "StillClimb";
+                    }
+                }
             } else if (megaman.is(BehaviorType.AIR_DASHING)) {
                 if (megaman.isChargingFully()) {
                     key = "AirDashCharging";
@@ -223,16 +259,6 @@ public class MegamanAnimator {
                     key = "RunHalfCharging";
                 } else {
                     key = "Run";
-                }
-            } else if (megaman.is(BehaviorType.CLIMBING)) {
-                if (megaman.isShooting()) {
-                    key = "ClimbShoot";
-                } else if (megaman.isChargingFully()) {
-                    key = "ClimbCharging";
-                } else if (megaman.isCharging()) {
-                    key = "ClimbHalfCharging";
-                } else {
-                    key = "Climb";
                 }
             } else if (megaman.is(BodySense.FEET_ON_GROUND) &&
                     Math.abs(megaman.body.velocity.x) > WorldVals.PPM / 8f) {

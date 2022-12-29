@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.audio.AudioManager;
-import com.megaman.game.controllers.ControllerBtn;
+import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.enums.Direction;
@@ -68,20 +68,20 @@ public abstract class MenuScreen extends ScreenAdapter {
         MenuButton menuButton = menuButtons.get(currBtnKey);
         if (menuButton != null) {
             Direction dir = null;
-            if (ctrlMan.isJustPressed(ControllerBtn.DPAD_UP)) {
+            if (ctrlMan.isJustPressed(CtrlBtn.DPAD_UP)) {
                 dir = Direction.UP;
-            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_DOWN)) {
+            } else if (ctrlMan.isJustPressed(CtrlBtn.DPAD_DOWN)) {
                 dir = Direction.DOWN;
-            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_LEFT)) {
+            } else if (ctrlMan.isJustPressed(CtrlBtn.DPAD_LEFT)) {
                 dir = Direction.LEFT;
-            } else if (ctrlMan.isJustPressed(ControllerBtn.DPAD_RIGHT)) {
+            } else if (ctrlMan.isJustPressed(CtrlBtn.DPAD_RIGHT)) {
                 dir = Direction.RIGHT;
             }
             if (dir != null) {
                 onAnyMovement();
                 menuButton.onNavigate(dir, delta);
             }
-            if (ctrlMan.isJustPressed(ControllerBtn.START) || ctrlMan.isJustPressed(ControllerBtn.X)) {
+            if (ctrlMan.isJustPressed(CtrlBtn.START) || ctrlMan.isJustPressed(CtrlBtn.X)) {
                 onAnySelection();
                 selectionMade = menuButton.onSelect(delta);
             }

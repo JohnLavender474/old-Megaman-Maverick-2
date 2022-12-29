@@ -88,8 +88,8 @@ public class SuctionRoller extends Enemy implements Faceable {
                 return;
             }
             wasOnWall = onWall;
-            onWall = (is(Facing.LEFT) && body.is(BodySense.TOUCHING_BLOCK_LEFT)) ||
-                    (is(Facing.RIGHT) && body.is(BodySense.TOUCHING_BLOCK_RIGHT));
+            onWall = (is(Facing.LEFT) && body.is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                    (is(Facing.RIGHT) && body.is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT));
             if (body.is(BodySense.FEET_ON_GROUND)) {
                 if (ShapeUtils.getBottomRightPoint(game.getMegaman().body.bounds).x < body.bounds.x) {
                     setFacing(Facing.LEFT);

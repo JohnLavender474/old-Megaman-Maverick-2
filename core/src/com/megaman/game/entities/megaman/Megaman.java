@@ -15,9 +15,9 @@ import com.megaman.game.behaviors.Behavior;
 import com.megaman.game.behaviors.BehaviorComponent;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.controllers.ControllerAdapter;
-import com.megaman.game.controllers.ControllerBtn;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
+import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.events.MegamanDeathEvent;
@@ -27,6 +27,8 @@ import com.megaman.game.entities.megaman.vals.MegamanDamageNegs;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
 import com.megaman.game.entities.megaman.weapons.MegamanWeaponHandler;
 import com.megaman.game.entities.projectiles.ChargeStatus;
+import com.megaman.game.entities.special.SpecialFactory;
+import com.megaman.game.entities.special.impl.Ladder;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.health.HealthComponent;
@@ -62,6 +64,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float WALL_JUMP_VEL = 42f;
     public static final float WALL_JUMP_HORIZ = 12.5f;
     public static final float WALL_JUMP_IMPETUS_TIME = .1f;
+
     public static final float GROUNDED_GRAVITY = -.0015f;
     public static final float GRAVITY = -.375f;
     public static final float ICE_GRAVITY = -1f;
@@ -77,6 +80,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float GROUND_SLIDE_VEL = 12f;
     public static final float WATER_GROUND_SLIDE_VEL = 6f;
     public static final float MAX_GROUND_SLIDE_TIME = .35f;
+
+    public static final float CLIMB_VEL = 2.5f;
 
     public static final float DAMAGE_DURATION = .75f;
     public static final float DAMAGE_RECOVERY_TIME = 1.5f;
@@ -103,22 +108,20 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private final Timer groundSlideTimer;
     private final Timer dmgRecovBlinkTimer;
 
-    @Getter
-    @Setter
-    public int maxHealth;
-
     public MegamanWeapon currWeapon;
     public AButtonTask aButtonTask;
 
     @Getter
     @Setter
+    public int maxHealth;
+    @Getter
+    @Setter
     public Facing facing;
-
-    private boolean recoveryBlink;
 
     @Getter
     @Setter
     private boolean ready;
+    private boolean recoveryBlink;
 
     public Megaman(MegamanGame game) {
         super(game, EntityType.MEGAMAN);
@@ -334,8 +337,24 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return getComponent(BehaviorComponent.class).is(behaviorType);
     }
 
+    public boolean isAny(BehaviorType... behaviorTypes) {
+        return getComponent(BehaviorComponent.class).isAny(behaviorTypes);
+    }
+
+    public boolean isAll(BehaviorType... behaviorTypes) {
+        return getComponent(BehaviorComponent.class).isAll(behaviorTypes);
+    }
+
     public boolean is(BodySense bodySense) {
         return body.is(bodySense);
+    }
+
+    public boolean isAny(BodySense... bodySenses) {
+        return body.isAny(bodySenses);
+    }
+
+    public boolean isAll(BodySense... bodySenses) {
+        return body.isAll(bodySenses);
     }
 
     public void request(SoundAsset ass, boolean play) {
@@ -351,15 +370,18 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         ControllerComponent c = new ControllerComponent();
         BehaviorComponent bc = getComponent(BehaviorComponent.class);
         ControllerManager ctrlMan = game.getCtrlMan();
-        c.ctrlAdapters.put(ControllerBtn.DPAD_LEFT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.DPAD_LEFT, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
-                if (isDamaged() || ctrlMan.isPressed(ControllerBtn.DPAD_RIGHT)) {
+                if (isDamaged() || ctrlMan.isPressed(CtrlBtn.DPAD_RIGHT)) {
                     return;
                 }
                 setFacing(is(BehaviorType.WALL_SLIDING) ? Facing.RIGHT : Facing.LEFT);
+                if (is(BehaviorType.CLIMBING)) {
+                    return;
+                }
                 bc.set(BehaviorType.RUNNING, !is(BehaviorType.WALL_SLIDING));
-                float threshold = (body.is(BodySense.IN_WATER) ? WATER_RUN_SPEED : RUN_SPEED) * WorldVals.PPM;
+                float threshold = (body.is(BodySense.BODY_IN_WATER) ? WATER_RUN_SPEED : RUN_SPEED) * WorldVals.PPM;
                 if (body.velocity.x > -threshold) {
                     body.velocity.x += -RUN_IMPULSE * delta * WorldVals.PPM;
                 }
@@ -367,27 +389,30 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             public void onJustReleased() {
-                if (!ctrlMan.isPressed(ControllerBtn.DPAD_RIGHT)) {
+                if (!ctrlMan.isPressed(CtrlBtn.DPAD_RIGHT)) {
                     bc.set(BehaviorType.RUNNING, false);
                 }
             }
 
             @Override
             public void onReleaseContinued() {
-                if (!ctrlMan.isPressed(ControllerBtn.DPAD_RIGHT)) {
+                if (!ctrlMan.isPressed(CtrlBtn.DPAD_RIGHT)) {
                     bc.set(BehaviorType.RUNNING, false);
                 }
             }
         });
-        c.ctrlAdapters.put(ControllerBtn.DPAD_RIGHT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.DPAD_RIGHT, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
-                if (isDamaged() || ctrlMan.isPressed(ControllerBtn.DPAD_LEFT)) {
+                if (isDamaged() || ctrlMan.isPressed(CtrlBtn.DPAD_LEFT)) {
                     return;
                 }
                 setFacing(is(BehaviorType.WALL_SLIDING) ? Facing.LEFT : Facing.RIGHT);
+                if (is(BehaviorType.CLIMBING)) {
+                    return;
+                }
                 bc.set(BehaviorType.RUNNING, !is(BehaviorType.WALL_SLIDING));
-                float threshold = (body.is(BodySense.IN_WATER) ? WATER_RUN_SPEED : RUN_SPEED) * WorldVals.PPM;
+                float threshold = (body.is(BodySense.BODY_IN_WATER) ? WATER_RUN_SPEED : RUN_SPEED) * WorldVals.PPM;
                 if (body.velocity.x < threshold) {
                     body.velocity.x += RUN_IMPULSE * delta * WorldVals.PPM;
                 }
@@ -395,19 +420,19 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             public void onJustReleased() {
-                if (!ctrlMan.isPressed(ControllerBtn.DPAD_LEFT)) {
+                if (!ctrlMan.isPressed(CtrlBtn.DPAD_LEFT)) {
                     bc.set(BehaviorType.RUNNING, false);
                 }
             }
 
             @Override
             public void onReleaseContinued() {
-                if (!ctrlMan.isPressed(ControllerBtn.DPAD_LEFT)) {
+                if (!ctrlMan.isPressed(CtrlBtn.DPAD_LEFT)) {
                     bc.set(BehaviorType.RUNNING, false);
                 }
             }
         });
-        c.ctrlAdapters.put(ControllerBtn.X, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.X, new ControllerAdapter() {
             @Override
             public void onPressContinued(float delta) {
                 if (isDamaged()) {
@@ -432,7 +457,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 stopCharging();
             }
         });
-        c.ctrlAdapters.put(ControllerBtn.SELECT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.SELECT, new ControllerAdapter() {
             @Override
             public void onJustPressed() {
                 int x = currWeapon.ordinal() + 1;
@@ -446,126 +471,124 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     private BodyComponent bodyComponent() {
-        Array<ShapeHandle> shapeHandles = new Array<>();
+        body.labels.add(BodyLabel.PLAYER_BODY);
         body.velClamp.set(CLAMP_X * WorldVals.PPM, CLAMP_Y * WorldVals.PPM);
         body.bounds.width = .8f * WorldVals.PPM;
         body.affectedByResistance = true;
-        Rectangle m1 = new Rectangle();
-        m1.setSize(.575f * WorldVals.PPM, WorldVals.PPM / 16f);
-        Runnable onBounce = () -> {
-            if (!body.is(BodySense.IN_WATER)) {
-                aButtonTask = AButtonTask.AIR_DASH;
-            }
-        };
+
+        Array<ShapeHandle> h = new Array<>();
+
+        // player fixture
         Fixture playerFixture = new Fixture(this, FixtureType.PLAYER,
                 new Rectangle().setWidth(.8f * WorldVals.PPM));
         body.fixtures.add(playerFixture);
+
+        // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setWidth(.8f * WorldVals.PPM));
         body.fixtures.add(bodyFixture);
-        shapeHandles.add(new ShapeHandle(bodyFixture.shape, Color.YELLOW));
-        Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
-        feetFixture.offset.y = -WorldVals.PPM / 2f;
+        h.add(new ShapeHandle(bodyFixture.shape, Color.YELLOW));
+
+        Runnable onBounce = () -> {
+            if (!body.is(BodySense.BODY_IN_WATER)) {
+                aButtonTask = AButtonTask.AIR_DASH;
+            }
+        };
+
+        // feet fixture
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET,
+                new Rectangle().setSize(.6f * WorldVals.PPM, .25f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.fixtures.add(feetFixture);
-        shapeHandles.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
-        Fixture headFixture = new Fixture(this, FixtureType.HEAD, new Rectangle(m1));
-        headFixture.offset.y = WorldVals.PPM / 2f;
+        h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
+
+        // head fixture
+        Fixture headFixture = new Fixture(this, FixtureType.HEAD,
+                new Rectangle().setSize(.6f * WorldVals.PPM, .15f * WorldVals.PPM));
+        headFixture.offset.y = .45f * WorldVals.PPM;
         headFixture.putUserData(ConstKeys.RUN, onBounce);
         body.fixtures.add(headFixture);
-        shapeHandles.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
-        Rectangle m2 = new Rectangle().setSize(WorldVals.PPM / 6f, WorldVals.PPM / 2.25f);
-        Fixture leftFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
+        h.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
+
+        // left fixture
+        Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(.15f * WorldVals.PPM, .35f * WorldVals.PPM));
         leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.fixtures.add(leftFixture);
-        shapeHandles.add(new ShapeHandle(leftFixture.shape, Color.PINK));
-        Fixture rightFixture = new Fixture(this, FixtureType.SIDE, new Rectangle(m2));
+        h.add(new ShapeHandle(leftFixture.shape, Color.PINK));
+
+        // right fixture
+        Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
+                new Rectangle().setSize(.15f * WorldVals.PPM, .35f * WorldVals.PPM));
         rightFixture.offset.set(.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         body.fixtures.add(rightFixture);
-        shapeHandles.add(new ShapeHandle(rightFixture.shape, Color.PINK));
-        Fixture hitboxFixture = new Fixture(this, FixtureType.DAMAGEABLE,
+        h.add(new ShapeHandle(rightFixture.shape, Color.PINK));
+
+        // damageable fixture
+        Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.8f * WorldVals.PPM));
-        body.fixtures.add(hitboxFixture);
-        shapeHandles.add(new ShapeHandle(hitboxFixture.shape, Color.RED));
+        body.fixtures.add(damageableFixture);
+        h.add(new ShapeHandle(damageableFixture.shape, Color.RED));
+
+        // water listener fixture
         Fixture waterListenerFixture = new Fixture(this, FixtureType.WATER_LISTENER,
                 new Rectangle().setSize(.8f * WorldVals.PPM, WorldVals.PPM / 4f));
-        shapeHandles.add(new ShapeHandle(waterListenerFixture.shape, Color.BLUE));
+        h.add(new ShapeHandle(waterListenerFixture.shape, Color.BLUE));
         body.fixtures.add(waterListenerFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             if (is(BehaviorType.GROUND_SLIDING)) {
                 body.bounds.height = .45f * WorldVals.PPM;
-                feetFixture.offset.y = -WorldVals.PPM / 4f;
+                feetFixture.offset.y = -.25f * WorldVals.PPM;
             } else {
                 body.bounds.height = .95f * WorldVals.PPM;
-                feetFixture.offset.y = -WorldVals.PPM / 2f;
+                feetFixture.offset.y = -.45f * WorldVals.PPM;
             }
             ((Rectangle) bodyFixture.shape).set(body.bounds);
             ((Rectangle) playerFixture.shape).set(body.bounds);
             boolean wallSlidingOnIce = is(BehaviorType.WALL_SLIDING) &&
-                    (is(BodySense.TOUCHING_ICE_LEFT) || is(BodySense.TOUCHING_ICE_RIGHT));
+                    (is(BodySense.SIDE_TOUCHING_ICE_LEFT) || is(BodySense.SIDE_TOUCHING_ICE_RIGHT));
             float gravityY;
-            if (is(BodySense.IN_WATER)) {
+            if (is(BodySense.BODY_IN_WATER)) {
                 gravityY = wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY;
             } else if (wallSlidingOnIce) {
                 gravityY = ICE_GRAVITY;
             } else {
                 gravityY = is(BodySense.FEET_ON_GROUND) ? GROUNDED_GRAVITY : GRAVITY;
             }
-            /*
-            float gravityY = is(BodySense.IN_WATER) ?
-                    (wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY) :
-                    (wallSlidingOnIce ? ICE_GRAVITY : GRAVITY);
-             */
             body.gravity.y = gravityY * WorldVals.PPM;
-            // body.gravityOn = !is(BodySense.FEET_ON_GROUND) && !is(BehaviorType.AIR_DASHING);
         };
-        putComponent(new ShapeComponent(shapeHandles));
+        putComponent(new ShapeComponent(h));
         return new BodyComponent(body);
-    }
-
-    private SpriteComponent spriteComponent() {
-        sprite.setSize(1.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
-        SpriteHandle handle = new SpriteHandle(sprite);
-        handle.priority = 3;
-        handle.updatable = delta -> {
-            handle.hidden = !ready;
-            handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
-            sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
-            sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
-            sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
-        };
-        return new SpriteComponent(handle);
     }
 
     private BehaviorComponent behaviorComponent() {
         BehaviorComponent c = new BehaviorComponent();
         ControllerManager ctrlMan = game.getCtrlMan();
-        Behavior wallSlide = new Behavior() {
+
+        // wall slide
+        c.add(new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
-                if (isDamaged() ||
-                        c.is(BehaviorType.JUMPING) ||
-                        is(BodySense.FEET_ON_GROUND) ||
-                        !wallJumpTimer.isFinished() // ||
-                    // TODO: Fix
-                    // !stats.canUseSpecialAbility(MegamanAbility.WALL_JUMP)
-                ) {
+                if (isDamaged() || is(BehaviorType.JUMPING) || is(BodySense.FEET_ON_GROUND) ||
+                        !wallJumpTimer.isFinished() || !upgradeHandler.has(MegaAbility.WALL_JUMP)) {
                     return false;
                 }
-                if (is(BodySense.TOUCHING_BLOCK_LEFT) && ctrlMan.isPressed(ControllerBtn.DPAD_LEFT)) {
+                if (is(BodySense.SIDE_TOUCHING_BLOCK_LEFT) && ctrlMan.isPressed(CtrlBtn.DPAD_LEFT)) {
                     return true;
                 }
-                return is(BodySense.TOUCHING_BLOCK_RIGHT) && ctrlMan.isPressed(ControllerBtn.DPAD_RIGHT);
+                return is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT) && ctrlMan.isPressed(CtrlBtn.DPAD_RIGHT);
             }
 
             @Override
             protected void init() {
                 c.set(BehaviorType.WALL_SLIDING, true);
-                aButtonTask = is(BodySense.IN_WATER) ? AButtonTask.SWIM : AButtonTask.JUMP;
+                aButtonTask = is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.JUMP;
             }
 
             @Override
@@ -576,22 +599,23 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             protected void end() {
                 c.set(BehaviorType.WALL_SLIDING, false);
-                if (!is(BodySense.IN_WATER)) {
+                if (!is(BodySense.BODY_IN_WATER)) {
                     aButtonTask = AButtonTask.AIR_DASH;
                 }
             }
-        };
-        c.add(wallSlide);
-        Behavior swim = new Behavior() {
+        });
+
+        // swim
+        c.add(new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
-                if (isDamaged() || !is(BodySense.IN_WATER) || is(BodySense.HEAD_TOUCHING_BLOCK)) {
+                if (isDamaged() || !is(BodySense.BODY_IN_WATER) || is(BodySense.HEAD_TOUCHING_BLOCK)) {
                     return false;
                 }
                 if (c.is(BehaviorType.SWIMMING)) {
                     return body.velocity.y > 0f;
                 }
-                return ctrlMan.isJustPressed(ControllerBtn.A) && aButtonTask == AButtonTask.SWIM;
+                return ctrlMan.isJustPressed(CtrlBtn.A) && aButtonTask == AButtonTask.SWIM;
             }
 
             @Override
@@ -618,22 +642,19 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             protected void end() {
                 c.set(BehaviorType.SWIMMING, false);
             }
-        };
-        c.add(swim);
-        Behavior jump = new Behavior() {
+        });
+
+        // jump
+        c.add(new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
-                if (isDamaged() ||
-                        is(BehaviorType.SWIMMING) ||
-                        is(BodySense.HEAD_TOUCHING_BLOCK) ||
-                        !ctrlMan.isPressed(ControllerBtn.A) ||
-                        ctrlMan.isPressed(ControllerBtn.DPAD_DOWN)) {
+                if (isDamaged() || isAny(BehaviorType.SWIMMING, BehaviorType.CLIMBING) ||
+                        is(BodySense.HEAD_TOUCHING_BLOCK) || !ctrlMan.isPressed(CtrlBtn.A) ||
+                        ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
                     return false;
                 }
-                return is(BehaviorType.JUMPING) ?
-                        body.velocity.y >= 0f :
-                        aButtonTask == AButtonTask.JUMP &&
-                                ctrlMan.isJustPressed(ControllerBtn.A) &&
+                return is(BehaviorType.JUMPING) ? body.velocity.y >= 0f :
+                        aButtonTask == AButtonTask.JUMP && ctrlMan.isJustPressed(CtrlBtn.A) &&
                                 (is(BodySense.FEET_ON_GROUND) || is(BehaviorType.WALL_SLIDING));
             }
 
@@ -649,7 +670,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 } else {
                     v.x = body.velocity.x;
                 }
-                if (is(BodySense.IN_WATER)) {
+                if (is(BodySense.BODY_IN_WATER)) {
                     v.y = WATER_JUMP_VEL * WorldVals.PPM;
                 } else {
                     v.y = (is(BehaviorType.WALL_SLIDING) ? WALL_JUMP_VEL : JUMP_VEL) * WorldVals.PPM;
@@ -669,31 +690,24 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 c.set(BehaviorType.JUMPING, false);
                 body.velocity.y = 0f;
             }
-        };
-        c.add(jump);
-        Behavior airDash = new Behavior() {
+        });
+
+        // air dash
+        c.add(new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
-                if (isDamaged() ||
-                        airDashTimer.isFinished() ||
-                        is(BehaviorType.WALL_SLIDING) ||
-                        is(BodySense.FEET_ON_GROUND) // ||
-                    // TODO: fix
-                    // !stats.canUseSpecialAbility(MegamanAbility.AIR_DASH)
-                ) {
+                if (isDamaged() || airDashTimer.isFinished() || is(BodySense.FEET_ON_GROUND) ||
+                        isAny(BehaviorType.WALL_SLIDING, BehaviorType.CLIMBING) ||
+                        !upgradeHandler.has(MegaAbility.AIR_DASH)) {
                     return false;
                 }
-                return is(BehaviorType.AIR_DASHING) ?
-                        ctrlMan.isPressed(ControllerBtn.A) :
-                        ctrlMan.isJustPressed(ControllerBtn.A) && aButtonTask == AButtonTask.AIR_DASH;
+                return is(BehaviorType.AIR_DASHING) ? ctrlMan.isPressed(CtrlBtn.A) :
+                        ctrlMan.isJustPressed(CtrlBtn.A) && aButtonTask == AButtonTask.AIR_DASH;
             }
 
             @Override
             protected void init() {
-
-                // TODO: gravity on toggled only in body pre-process
                 body.gravityOn = false;
-
                 aButtonTask = AButtonTask.JUMP;
                 request(SoundAsset.WHOOSH_SOUND, true);
                 c.set(BehaviorType.AIR_DASHING, true);
@@ -703,11 +717,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             protected void act(float delta) {
                 airDashTimer.update(delta);
                 body.velocity.y = 0f;
-                if ((is(Facing.LEFT) && is(BodySense.TOUCHING_BLOCK_LEFT)) ||
-                        (is(Facing.RIGHT) && is(BodySense.TOUCHING_BLOCK_RIGHT))) {
+                if ((is(Facing.LEFT) && is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                        (is(Facing.RIGHT) && is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT))) {
                     return;
                 }
-                float x = (is(BodySense.IN_WATER) ? WATER_AIR_DASH_VEL : AIR_DASH_VEL) * WorldVals.PPM;
+                float x = (is(BodySense.BODY_IN_WATER) ? WATER_AIR_DASH_VEL : AIR_DASH_VEL) * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     x *= -1f;
                 }
@@ -722,35 +736,106 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 body.gravityOn = true;
 
                 c.set(BehaviorType.AIR_DASHING, false);
-                float x = (is(BodySense.IN_WATER) ? WATER_AIR_DASH_END_BUMP : AIR_DASH_END_BUMP) * WorldVals.PPM;
+                float x = (is(BodySense.BODY_IN_WATER) ? WATER_AIR_DASH_END_BUMP : AIR_DASH_END_BUMP) * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     x *= -1f;
                 }
                 body.velocity.x += x;
             }
-        };
-        c.add(airDash);
-        Behavior groundSlide = new Behavior() {
+        });
+
+        // climb
+        c.add(new Behavior() {
+
+            private Ladder ladder;
+
             @Override
             protected boolean evaluate(float delta) {
-                // TODO: Fix
-                /*
-                if (!stats.canUseSpecialAbility(MegamanAbility.GROUND_SLIDE)) {
+                if (isDamaged() || isAny(BehaviorType.JUMPING, BehaviorType.AIR_DASHING) ||
+                        (ladder = body.getUserData(SpecialFactory.LADDER, Ladder.class)) == null) {
                     return false;
                 }
-                 */
+                if (is(BehaviorType.CLIMBING)) {
+                    if (!is(BodySense.HEAD_TOUCHING_BLOCK) &&
+                            (body.getCenter().y - .25f * WorldVals.PPM) > ladder.body.getMaxY()) {
+                        return false;
+                    } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
+                            (body.getCenter().y + .25f * WorldVals.PPM) < ladder.body.getY()) {
+                        return false;
+                    } else if (ctrlMan.isJustPressed(CtrlBtn.A)) {
+                        return false;
+                    }
+                    return true;
+                } else {
+                    if (is(BodySense.FEET_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                        return true;
+                    } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            protected void init() {
+                aButtonTask = null;
+                body.gravityOn = false;
+                body.collisionOn = false;
+                c.set(BehaviorType.CLIMBING, true);
+                body.setCenterX(ladder.body.getCenter().x);
+                if (body.getMaxY() <= ladder.body.getY()) {
+                    body.setY(ladder.body.getY());
+                } else if (body.getY() >= ladder.body.getMaxY()) {
+                    body.setMaxY(ladder.body.getMaxY());
+                }
+                body.velocity.setZero();
+            }
+
+            @Override
+            protected void act(float delta) {
+                if (isShooting()) {
+                    body.velocity.setZero();
+                    return;
+                }
+                if (ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
+                    body.velocity.y = CLIMB_VEL * WorldVals.PPM;
+                } else if (ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                    body.velocity.y = -CLIMB_VEL * WorldVals.PPM;
+                } else {
+                    body.velocity.y = 0f;
+                }
+            }
+
+            @Override
+            protected void end() {
+                body.gravityOn = true;
+                body.collisionOn = true;
+                body.velocity.setZero();
+                c.set(BehaviorType.CLIMBING, false);
+                aButtonTask = is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
+            }
+
+        });
+
+        // ground slide
+        c.add(new Behavior() {
+            @Override
+            protected boolean evaluate(float delta) {
+                if (!upgradeHandler.has(MegaAbility.GROUND_SLIDE)) {
+                    return false;
+                }
                 if (is(BehaviorType.GROUND_SLIDING) && is(BodySense.HEAD_TOUCHING_BLOCK)) {
                     return true;
                 }
                 if (isDamaged() || groundSlideTimer.isFinished() || !is(BodySense.FEET_ON_GROUND)) {
                     return false;
                 }
-                if (!ctrlMan.isPressed(ControllerBtn.DPAD_DOWN)) {
+                if (!ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
                     return false;
                 }
                 return is(BehaviorType.GROUND_SLIDING) ?
-                        ctrlMan.isPressed(ControllerBtn.A) :
-                        ctrlMan.isJustPressed(ControllerBtn.A);
+                        ctrlMan.isPressed(CtrlBtn.A) :
+                        ctrlMan.isJustPressed(CtrlBtn.A);
             }
 
             @Override
@@ -761,12 +846,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             protected void act(float delta) {
                 groundSlideTimer.update(delta);
-                if (isDamaged() ||
-                        (is(Facing.LEFT) && is(BodySense.TOUCHING_BLOCK_LEFT)) ||
-                        (is(Facing.RIGHT) && is(BodySense.TOUCHING_BLOCK_RIGHT))) {
+                if (isDamaged() || (is(Facing.LEFT) && is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                        (is(Facing.RIGHT) && is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT))) {
                     return;
                 }
-                float x = (is(BodySense.IN_WATER) ? WATER_GROUND_SLIDE_VEL : GROUND_SLIDE_VEL) * WorldVals.PPM;
+                float x = (is(BodySense.BODY_IN_WATER) ? WATER_GROUND_SLIDE_VEL : GROUND_SLIDE_VEL) * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     x *= -1f;
                 }
@@ -777,14 +861,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             protected void end() {
                 groundSlideTimer.reset();
                 c.set(BehaviorType.GROUND_SLIDING, false);
-                float endDash = (is(BodySense.IN_WATER) ? 2f : 5f) * WorldVals.PPM;
+                float endDash = (is(BodySense.BODY_IN_WATER) ? 2f : 5f) * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     endDash *= -1;
                 }
                 body.velocity.x += endDash;
             }
-        };
-        c.add(groundSlide);
+        });
         return c;
     }
 
@@ -820,6 +903,20 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             shootAnimTimer.update(delta);
             wallJumpTimer.update(delta);
         });
+    }
+
+    private SpriteComponent spriteComponent() {
+        sprite.setSize(1.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
+        SpriteHandle handle = new SpriteHandle(sprite);
+        handle.priority = 3;
+        handle.updatable = delta -> {
+            handle.hidden = !ready;
+            handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
+            sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
+            sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
+            sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
+        };
+        return new SpriteComponent(handle);
     }
 
 }

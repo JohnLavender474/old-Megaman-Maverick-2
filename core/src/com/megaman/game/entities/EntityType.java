@@ -7,6 +7,7 @@ public enum EntityType {
     ENEMY,
     HAZARD,
     ITEM,
+    TEST,
     INTERACTIVE,
     MEGAMAN,
     PROJECTILE,

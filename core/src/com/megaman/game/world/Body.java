@@ -3,10 +3,13 @@ package com.megaman.game.world;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.ObjectSet;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
+
+import java.util.Arrays;
 
 public class Body implements Updatable, Resettable {
 
@@ -18,6 +21,7 @@ public class Body implements Updatable, Resettable {
     public boolean[] senses;
     public BodyType bodyType;
     public Array<Fixture> fixtures;
+    public ObjectSet<String> labels;
     public ObjectMap<String, Object> userData;
 
     public Updatable preProcess;
@@ -30,6 +34,7 @@ public class Body implements Updatable, Resettable {
     public Vector2 resistance;
 
     public boolean gravityOn;
+    public boolean collisionOn;
     public boolean affectedByResistance;
 
     private final Vector2 prevPos;
@@ -45,15 +50,18 @@ public class Body implements Updatable, Resettable {
     public Body(BodyType bodyType, boolean gravityOn, float gravityX, float gravityY) {
         this.bodyType = bodyType;
         this.gravityOn = gravityOn;
-        this.prevPos = new Vector2();
-        this.bounds = new Rectangle();
-        this.fixtures = new Array<>();
-        this.velocity = new Vector2();
-        this.friction = new Vector2();
-        this.gravity = new Vector2(gravityX, gravityY);
-        this.senses = new boolean[BodySense.values().length];
-        this.velClamp = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        this.resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
+        collisionOn = true;
+        prevPos = new Vector2();
+        bounds = new Rectangle();
+        fixtures = new Array<>();
+        velocity = new Vector2();
+        friction = new Vector2();
+        labels = new ObjectSet<>();
+        userData = new ObjectMap<>();
+        gravity = new Vector2(gravityX, gravityY);
+        senses = new boolean[BodySense.values().length];
+        velClamp = new Vector2(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        resistance = new Vector2(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
     }
 
     public boolean hasUserData(String key) {
@@ -65,11 +73,11 @@ public class Body implements Updatable, Resettable {
     }
 
     public <T> T getUserData(String key, Class<T> tClass) {
-        return tClass.cast(getUserData(key));
+        return tClass.cast(userData.get(key));
     }
 
-    public Object getUserData(String key) {
-        return userData.get(key);
+    public void removeUserData(String key) {
+        userData.remove(key);
     }
 
     public boolean isRightOf(Body body) {
@@ -80,8 +88,39 @@ public class Body implements Updatable, Resettable {
         return getCenter().y > body.getCenter().y;
     }
 
+    public boolean is(BodyType bodyType) {
+        return this.bodyType == bodyType;
+    }
+
+    public boolean isAny(BodyType... bodyTypes) {
+        for (BodyType type : bodyTypes) {
+            if (is(bodyType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean is(BodySense sense) {
         return senses[sense.ordinal()];
+    }
+
+    public boolean isAny(BodySense... bodySenses) {
+        for (BodySense bodySense : bodySenses) {
+            if (is(bodySense)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAll(BodySense... bodySenses) {
+        for (BodySense bodySense : bodySenses) {
+            if (!is(bodySense)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void set(BodySense sense, boolean is) {
@@ -104,12 +143,62 @@ public class Body implements Updatable, Resettable {
         return overlaps(body.bounds);
     }
 
+    public void setX(float x) {
+        bounds.x = x;
+    }
+
+    public void setY(float y) {
+        bounds.y = y;
+    }
+
+    public void setMaxX(float x) {
+        bounds.x = x - bounds.width;
+    }
+
+    public void setMaxY(float y) {
+        bounds.y = y - bounds.height;
+    }
+
+    public void setPos(Vector2 pos) {
+        bounds.setPosition(pos);
+    }
+
     public void setPos(Vector2 pos, Position position) {
         ShapeUtils.setToPoint(bounds, pos, position);
     }
 
+    public float getX() {
+        return bounds.x;
+    }
+
+    public float getY() {
+        return bounds.y;
+    }
+
+    public float getMaxX() {
+        return bounds.x + bounds.width;
+    }
+
+    public float getMaxY() {
+        return bounds.y + bounds.height;
+    }
+
     public Vector2 getPos() {
-        return new Vector2(bounds.x, bounds.y);
+        return new Vector2(getX(), getY());
+    }
+
+    public void setCenterX(float x) {
+        float centerY = getCenter().y;
+        bounds.setCenter(x, centerY);
+    }
+
+    public void setCenterY(float y) {
+        float centerX = getCenter().x;
+        bounds.setCenter(centerX, y);
+    }
+
+    public Vector2 getCenter() {
+        return ShapeUtils.getCenterPoint(bounds);
     }
 
     public void setPrevPos(float x, float y) {
@@ -118,10 +207,6 @@ public class Body implements Updatable, Resettable {
 
     public Vector2 getPosDelta() {
         return getPos().sub(prevPos);
-    }
-
-    public Vector2 getCenter() {
-        return ShapeUtils.getCenterPoint(bounds);
     }
 
     @Override
@@ -172,6 +257,7 @@ public class Body implements Updatable, Resettable {
     @Override
     public void reset() {
         velocity.setZero();
+        Arrays.fill(senses, false);
         resistance.set(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);
         for (Fixture f : fixtures) {
             Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);

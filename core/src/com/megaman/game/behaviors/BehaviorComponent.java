@@ -27,6 +27,25 @@ public class BehaviorComponent implements Component {
         return activeBehaviors.contains(type);
     }
 
+    public boolean isAny(BehaviorType... behaviorTypes) {
+        for (BehaviorType behaviorType : behaviorTypes) {
+            if (is(behaviorType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAll(BehaviorType... behaviorTypes) {
+        for (BehaviorType behaviorType : behaviorTypes) {
+            if (!is(behaviorType)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     public void set(BehaviorType type, boolean is) {
         if (is) {
             activeBehaviors.add(type);

@@ -114,7 +114,7 @@ public class Bat extends Enemy {
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD, new Rectangle(m));
         body.fixtures.add(shieldFixture);
         this.shieldFixture = shieldFixture;
-        Fixture scannerFixture = new Fixture(this, FixtureType.SCANNER, new Rectangle(m));
+        Fixture scannerFixture = new Fixture(this, FixtureType.CONSUMER, new Rectangle(m));
         Consumer<Fixture> scanner = f -> {
             if (f.fixtureType == FixtureType.DAMAGEABLE && f.entity.equals(game.getMegaman())) {
                 currStat = BatStatus.FLYING_TO_RETREAT;

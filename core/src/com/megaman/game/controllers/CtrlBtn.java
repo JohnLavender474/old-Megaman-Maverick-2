@@ -1,6 +1,6 @@
 package com.megaman.game.controllers;
 
-public enum ControllerBtn {
+public enum CtrlBtn {
     START,
     SELECT,
     DPAD_UP,

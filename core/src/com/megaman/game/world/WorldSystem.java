@@ -14,7 +14,7 @@ public class WorldSystem extends System {
     private static final int PROCESS_CYCLES = 3;
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
-        put(FixtureType.SCANNER, EnumSet.allOf(FixtureType.class));
+        put(FixtureType.CONSUMER, EnumSet.allOf(FixtureType.class));
         put(FixtureType.PLAYER, EnumSet.of(
                 FixtureType.ITEM));
         put(FixtureType.DAMAGEABLE, EnumSet.of(
@@ -24,6 +24,9 @@ public class WorldSystem extends System {
                 FixtureType.FORCE));
         put(FixtureType.WATER_LISTENER, EnumSet.of(
                 FixtureType.WATER));
+        put(FixtureType.LADDER, EnumSet.of(
+                FixtureType.HEAD,
+                FixtureType.FEET));
         put(FixtureType.SIDE, EnumSet.of(
                 FixtureType.ICE,
                 FixtureType.GATE,
@@ -184,10 +187,10 @@ public class WorldSystem extends System {
                 currContacts.add(new Contact(f, o));
             }
         }
-        if (body.bodyType == BodyType.ABSTRACT || body.bodyType == BodyType.STATIC) {
+        if (body.is(BodyType.ABSTRACT) || body.is(BodyType.STATIC)) {
             return;
         }
-        Array<Body> overlapping = worldGraph.getBodiesOverlapping(body, o -> o.bodyType == BodyType.STATIC);
+        Array<Body> overlapping = worldGraph.getBodiesOverlapping(body, o -> o.is(BodyType.STATIC) && o.collisionOn);
         for (Body o : overlapping) {
             handleCollision(body, o);
         }
@@ -199,6 +202,9 @@ public class WorldSystem extends System {
         }
         Rectangle overlap = new Rectangle();
         if (!dynamicBody.intersects(staticBody, overlap)) {
+            return;
+        }
+        if (handleSpecial(dynamicBody, staticBody, overlap)) {
             return;
         }
         if (overlap.width > overlap.height) {
@@ -216,6 +222,14 @@ public class WorldSystem extends System {
                 dynamicBody.bounds.x -= overlap.width;
             }
         }
+    }
+
+    public boolean handleSpecial(Body dynamicBody, Body staticBody, Rectangle overlap) {
+        if (staticBody.labels.contains(BodyLabel.COLLIDE_DOWN_ONLY) &&
+                (dynamicBody.velocity.y >= 0f || overlap.width < overlap.height)) {
+            return true;
+        }
+        return false;
     }
 
 }

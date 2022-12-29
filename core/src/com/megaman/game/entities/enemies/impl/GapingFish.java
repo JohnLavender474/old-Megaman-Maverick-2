@@ -86,7 +86,7 @@ public class GapingFish extends Enemy implements Faceable {
     protected void defineBody(Body body) {
         body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
         Array<Fixture> scanner = new Array<>();
-        Fixture scannerFixture = new Fixture(this, FixtureType.SCANNER,
+        Fixture scannerFixture = new Fixture(this, FixtureType.CONSUMER,
                 new Rectangle().setSize(WorldVals.PPM, WorldVals.PPM / 2f));
         scannerFixture.putUserData(ConstKeys.CONSUMER, (Consumer<Fixture>) scanner::add);
         scannerFixture.offset.y += WorldVals.PPM / 4f;

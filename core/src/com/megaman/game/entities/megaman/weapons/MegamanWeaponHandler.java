@@ -116,8 +116,8 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
             case MEGA_BUSTER -> new MegaWeaponEntry(.01f);
             case FLAME_TOSS -> {
                 MegaWeaponEntry e = new MegaWeaponEntry(.5f);
-                e.chargeable = () -> !megaman.is(BodySense.IN_WATER);
-                e.canFireWeapon = () -> !megaman.is(BodySense.IN_WATER) && e.spawned.size == 0;
+                e.chargeable = () -> !megaman.is(BodySense.BODY_IN_WATER);
+                e.canFireWeapon = () -> !megaman.is(BodySense.BODY_IN_WATER) && e.spawned.size == 0;
                 yield e;
             }
         };
@@ -231,12 +231,12 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         }
         spawnCenter.x += xOffset;
         float yOffset = WorldVals.PPM / 16f;
-        if (megaman.is(BehaviorType.WALL_SLIDING)) {
+        if (megaman.is(BehaviorType.CLIMBING) || megaman.is(BehaviorType.WALL_SLIDING)) {
             yOffset += .15f * WorldVals.PPM;
         } else if (megaman.is(BodySense.FEET_ON_GROUND)) {
             yOffset -= .05f * WorldVals.PPM;
         } else {
-            yOffset += WorldVals.PPM / 4f;
+            yOffset += .25f * WorldVals.PPM;
         }
         spawnCenter.y += yOffset;
         return spawnCenter;

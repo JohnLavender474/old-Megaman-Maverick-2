@@ -7,6 +7,6 @@ import java.util.Map;
 
 public class ControllerComponent implements Component {
 
-    public final Map<ControllerBtn, ControllerAdapter> ctrlAdapters = new EnumMap<>(ControllerBtn.class);
+    public final Map<CtrlBtn, ControllerAdapter> ctrlAdapters = new EnumMap<>(CtrlBtn.class);
 
 }

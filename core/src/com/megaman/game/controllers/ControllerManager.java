@@ -11,35 +11,35 @@ import java.util.function.Supplier;
 
 public class ControllerManager implements Runnable {
 
-    private static final Map<ControllerBtn, Supplier<Integer>> defaultCtrlCodes = new EnumMap<>(ControllerBtn.class) {{
-        put(ControllerBtn.DPAD_LEFT, () -> getController().getMapping().buttonDpadLeft);
-        put(ControllerBtn.DPAD_RIGHT, () -> getController().getMapping().buttonDpadRight);
-        put(ControllerBtn.DPAD_UP, () -> getController().getMapping().buttonDpadUp);
-        put(ControllerBtn.DPAD_DOWN, () -> getController().getMapping().buttonDpadDown);
-        put(ControllerBtn.A, () -> getController().getMapping().buttonA);
-        put(ControllerBtn.X, () -> getController().getMapping().buttonX);
-        put(ControllerBtn.START, () -> getController().getMapping().buttonStart);
-        put(ControllerBtn.SELECT, () -> getController().getMapping().buttonB);
+    private static final Map<CtrlBtn, Supplier<Integer>> defaultCtrlCodes = new EnumMap<>(CtrlBtn.class) {{
+        put(CtrlBtn.DPAD_LEFT, () -> getController().getMapping().buttonDpadLeft);
+        put(CtrlBtn.DPAD_RIGHT, () -> getController().getMapping().buttonDpadRight);
+        put(CtrlBtn.DPAD_UP, () -> getController().getMapping().buttonDpadUp);
+        put(CtrlBtn.DPAD_DOWN, () -> getController().getMapping().buttonDpadDown);
+        put(CtrlBtn.A, () -> getController().getMapping().buttonA);
+        put(CtrlBtn.X, () -> getController().getMapping().buttonX);
+        put(CtrlBtn.START, () -> getController().getMapping().buttonStart);
+        put(CtrlBtn.SELECT, () -> getController().getMapping().buttonB);
     }};
-    private static final Map<ControllerBtn, Integer> defaultKeyboardCodes = new EnumMap<>(ControllerBtn.class) {{
-        put(ControllerBtn.DPAD_LEFT, Input.Keys.LEFT);
-        put(ControllerBtn.DPAD_RIGHT, Input.Keys.RIGHT);
-        put(ControllerBtn.DPAD_UP, Input.Keys.UP);
-        put(ControllerBtn.DPAD_DOWN, Input.Keys.DOWN);
-        put(ControllerBtn.A, Input.Keys.W);
-        put(ControllerBtn.X, Input.Keys.D);
-        put(ControllerBtn.START, Input.Keys.S);
-        put(ControllerBtn.SELECT, Input.Keys.A);
+    private static final Map<CtrlBtn, Integer> defaultKeyboardCodes = new EnumMap<>(CtrlBtn.class) {{
+        put(CtrlBtn.DPAD_LEFT, Input.Keys.LEFT);
+        put(CtrlBtn.DPAD_RIGHT, Input.Keys.RIGHT);
+        put(CtrlBtn.DPAD_UP, Input.Keys.UP);
+        put(CtrlBtn.DPAD_DOWN, Input.Keys.DOWN);
+        put(CtrlBtn.A, Input.Keys.W);
+        put(CtrlBtn.X, Input.Keys.D);
+        put(CtrlBtn.START, Input.Keys.S);
+        put(CtrlBtn.SELECT, Input.Keys.A);
     }};
 
-    private final Map<ControllerBtn, Integer> keyboardCodes = new EnumMap<>(ControllerBtn.class);
-    private final Map<ControllerBtn, Supplier<Integer>> ctrlCodes = new EnumMap<>(ControllerBtn.class);
-    private final Map<ControllerBtn, ControllerBtnStat> ctrlBtnStats = new EnumMap<>(ControllerBtn.class);
+    private final Map<CtrlBtn, Integer> keyboardCodes = new EnumMap<>(CtrlBtn.class);
+    private final Map<CtrlBtn, Supplier<Integer>> ctrlCodes = new EnumMap<>(CtrlBtn.class);
+    private final Map<CtrlBtn, ControllerBtnStat> ctrlBtnStats = new EnumMap<>(CtrlBtn.class);
 
     public boolean doUpdateController = true;
 
     public ControllerManager() {
-        for (ControllerBtn ctrlBtn : ControllerBtn.values()) {
+        for (CtrlBtn ctrlBtn : CtrlBtn.values()) {
             keyboardCodes.put(ctrlBtn, defaultKeyboardCodes.get(ctrlBtn));
             ctrlCodes.put(ctrlBtn, defaultCtrlCodes.get(ctrlBtn));
             ctrlBtnStats.put(ctrlBtn, ControllerBtnStat.RELEASED);
@@ -51,7 +51,7 @@ public class ControllerManager implements Runnable {
         if (!doUpdateController) {
             return;
         }
-        for (ControllerBtn btn : ControllerBtn.values()) {
+        for (CtrlBtn btn : CtrlBtn.values()) {
             boolean pressed = (isControllerConnected() && isCtrlBtnPressed(btn)) || isKeyboardBtnPressed(btn);
             ControllerBtnStat stat = ctrlBtnStats.get(btn);
             ControllerBtnStat newStat;
@@ -81,23 +81,41 @@ public class ControllerManager implements Runnable {
         return getController() != null;
     }
 
-    public boolean isPressed(ControllerBtn btn) {
+    public boolean isPressed(CtrlBtn btn) {
         return ctrlBtnStats.get(btn) == ControllerBtnStat.PRESSED || isJustPressed(btn);
     }
 
-    public boolean isJustPressed(ControllerBtn btn) {
+    public boolean isAnyPressed(CtrlBtn... btns) {
+        for (CtrlBtn btn : btns) {
+            if (isPressed(btn)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isAllPressed(CtrlBtn... btns) {
+        for (CtrlBtn btn : btns) {
+            if (!isPressed(btn)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isJustPressed(CtrlBtn btn) {
         return ctrlBtnStats.get(btn) == ControllerBtnStat.JUST_PRESSED;
     }
 
-    public boolean isJustReleased(ControllerBtn btn) {
+    public boolean isJustReleased(CtrlBtn btn) {
         return ctrlBtnStats.get(btn) == ControllerBtnStat.JUST_RELEASED;
     }
 
-    private boolean isCtrlBtnPressed(ControllerBtn btn) {
+    private boolean isCtrlBtnPressed(CtrlBtn btn) {
         return getController().getButton(ctrlCodes.get(btn).get());
     }
 
-    private boolean isKeyboardBtnPressed(ControllerBtn btn) {
+    private boolean isKeyboardBtnPressed(CtrlBtn btn) {
         return Gdx.input.isKeyPressed(keyboardCodes.get(btn));
     }
 
