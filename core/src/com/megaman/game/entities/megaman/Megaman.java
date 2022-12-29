@@ -90,7 +90,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float TIME_TO_HALFWAY_CHARGED = .5f;
     public static final float TIME_TO_FULLY_CHARGED = 1.25f;
 
-    public static final float SHOOT_ANIM_TIME = .5f;
+    public static final float SHOOT_ANIM_TIME = .3f;
     public static final float CHARGING_ANIM_TIME = .125f;
 
     public final Sprite sprite;

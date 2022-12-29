@@ -38,6 +38,7 @@ import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.updatables.UpdatableSystem;
 import com.megaman.game.utils.Logger;
+import com.megaman.game.world.SpecialCollisionHandlerImpl;
 import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
@@ -90,7 +91,9 @@ public class MegamanGame implements ApplicationListener {
         entityFactories = new EntityFactories(this);
         gameEngine = new GameEngine(
                 new ControllerSystem(ctrlMan),
-                new WorldSystem(new WorldContactListenerImpl(this)),
+                new WorldSystem(
+                        new WorldContactListenerImpl(this),
+                        new SpecialCollisionHandlerImpl(this)),
                 new CullOnEventSystem(eventMan),
                 new CullOnOutOfBoundsSystem(),
                 new TrajectorySystem(),

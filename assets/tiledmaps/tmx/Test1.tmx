@@ -118,9 +118,9 @@
   <object id="81" x="5152" y="1472" width="64" height="96"/>
   <object id="83" x="4864" y="1184" width="64" height="384"/>
   <object id="85" x="3744" y="1184" width="64" height="392"/>
-  <object id="87" x="2176" y="1469" width="96" height="3">
+  <object id="87" x="2176" y="1464" width="96" height="8">
    <properties>
-    <property name="BodyLabel" value="CollideDownOnly"/>
+    <property name="BodyLabel" value="PressUpFallThru,CollideDownOnly"/>
    </properties>
   </object>
   <object id="89" x="2624" y="1344" width="224" height="16">

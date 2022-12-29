@@ -56,7 +56,8 @@ public class WorldSystem extends System {
                 (masks.containsKey(f2.fixtureType) && masks.get(f2.fixtureType).contains(f1.fixtureType));
     }
 
-    private final WorldContactListener listener;
+    private final WorldContactListener contactListener;
+    private final SpecialCollisionHandler specialCollisionHandler;
 
     private OrderedSet<Contact> priorContacts;
     private OrderedSet<Contact> currContacts;
@@ -66,11 +67,12 @@ public class WorldSystem extends System {
     @Setter
     private WorldGraph worldGraph;
 
-    public WorldSystem(WorldContactListener listener) {
+    public WorldSystem(WorldContactListener contactListener, SpecialCollisionHandler specialCollisionHandler) {
         super(BodyComponent.class);
-        this.listener = listener;
-        this.priorContacts = new OrderedSet<>();
-        this.currContacts = new OrderedSet<>();
+        this.contactListener = contactListener;
+        this.specialCollisionHandler = specialCollisionHandler;
+        priorContacts = new OrderedSet<>();
+        currContacts = new OrderedSet<>();
     }
 
     @Override
@@ -118,14 +120,14 @@ public class WorldSystem extends System {
         }
         for (Contact c : currContacts) {
             if (priorContacts.contains(c)) {
-                listener.continueContact(c, delta);
+                contactListener.continueContact(c, delta);
             } else {
-                listener.beginContact(c, delta);
+                contactListener.beginContact(c, delta);
             }
         }
         for (Contact c : priorContacts) {
             if (!currContacts.contains(c)) {
-                listener.endContact(c, delta);
+                contactListener.endContact(c, delta);
             }
         }
         priorContacts = currContacts;
@@ -204,7 +206,7 @@ public class WorldSystem extends System {
         if (!dynamicBody.intersects(staticBody, overlap)) {
             return;
         }
-        if (handleSpecial(dynamicBody, staticBody, overlap)) {
+        if (specialCollisionHandler.handleSpecial(dynamicBody, staticBody, overlap)) {
             return;
         }
         if (overlap.width > overlap.height) {
@@ -222,14 +224,6 @@ public class WorldSystem extends System {
                 dynamicBody.bounds.x -= overlap.width;
             }
         }
-    }
-
-    public boolean handleSpecial(Body dynamicBody, Body staticBody, Rectangle overlap) {
-        if (staticBody.labels.contains(BodyLabel.COLLIDE_DOWN_ONLY) &&
-                (dynamicBody.velocity.y >= 0f || overlap.width < overlap.height)) {
-            return true;
-        }
-        return false;
     }
 
 }
