@@ -17,13 +17,13 @@ public class Animator implements Updatable, Resettable {
     private final Supplier<String> animKeySupplier;
     private final ObjectMap<String, Animation> anims;
 
+    private String currAnimKey;
+
     public Animator(Sprite sprite, Animation anim) {
         this(sprite, () -> DEFAULT, new ObjectMap<>() {{
             put(DEFAULT, anim);
         }});
     }
-
-    private String currAnimKey;
 
     @Override
     public void update(float delta) {
