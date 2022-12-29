@@ -21,10 +21,7 @@ import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.megaman.events.MegamanDeathEvent;
-import com.megaman.game.entities.megaman.health.MegaHealthTank;
-import com.megaman.game.entities.megaman.health.MegamanHealthTankHandler;
-import com.megaman.game.entities.megaman.upgrades.MegamanAbility;
-import com.megaman.game.entities.megaman.upgrades.MegamanUpgradeHandler;
+import com.megaman.game.entities.megaman.upgrades.*;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.megaman.vals.MegamanDamageNegs;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
@@ -41,7 +38,6 @@ import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Positional;
-import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.TimeMarkedRunnable;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
@@ -92,12 +88,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float SHOOT_ANIM_TIME = .5f;
     public static final float CHARGING_ANIM_TIME = .125f;
 
-    public final MegamanWeaponHandler weaponHandler;
-    public final MegamanUpgradeHandler upgradeHandler;
-    public final MegamanHealthTankHandler healthTankHandler;
-
     public final Sprite sprite;
     public final Body body;
+
+    public final MegamanWeaponHandler weaponHandler;
+    public final MegaUpgradeHandler upgradeHandler;
 
     private final Timer dmgTimer;
     private final Timer airDashTimer;
@@ -145,13 +140,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         weaponHandler.putWeapon(MegamanWeapon.MEGA_BUSTER);
         weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
 
-        upgradeHandler = new MegamanUpgradeHandler(this);
-        // TODO: for now add all abilities
-        upgradeHandler.add(MegamanAbility.WALL_JUMP);
-        upgradeHandler.add(MegamanAbility.AIR_DASH);
-        upgradeHandler.add(MegamanAbility.GROUND_SLIDE);
 
-        healthTankHandler = new MegamanHealthTankHandler(this);
+        upgradeHandler = new MegaUpgradeHandler(this);
+        // TODO: for now add all abilities
+        upgradeHandler.add(MegaAbility.WALL_JUMP);
+        upgradeHandler.add(MegaAbility.AIR_DASH);
+        upgradeHandler.add(MegaAbility.GROUND_SLIDE);
+
         maxHealth = START_MAX_HEALTH;
         putComponent(updatableComponent());
         putComponent(bodyComponent());
@@ -241,24 +236,40 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         getComponent(HealthComponent.class).translateHealth(Math.abs(health));
     }
 
-    public boolean addHealthToTanks(int health) {
-        return healthTankHandler.add(health);
-    }
-
     public void removeHealth(int health) {
         getComponent(HealthComponent.class).translateHealth(-Math.abs(health));
     }
 
-    public boolean has(MegaHealthTank tank) {
-        return healthTankHandler.has(tank);
+    public boolean addHealthToTanks(int health) {
+        return upgradeHandler.add(health);
     }
 
     public void put(MegaHealthTank tank) {
-        put(tank, getMaxHealth());
+        put(tank, 0);
     }
 
     public void put(MegaHealthTank tank, int health) {
-        healthTankHandler.put(tank, health);
+        upgradeHandler.put(tank, health);
+    }
+
+    public void add(MegaHeartTank heartTank) {
+        upgradeHandler.add(heartTank);
+    }
+
+    public void add(MegaArmorPiece armorPiece) {
+        upgradeHandler.add(armorPiece);
+    }
+
+    public boolean has(MegaHealthTank tank) {
+        return upgradeHandler.has(tank);
+    }
+
+    public boolean has(MegaHeartTank heartTank) {
+        return upgradeHandler.has(heartTank);
+    }
+
+    public boolean has(MegaArmorPiece armorPiece) {
+        return upgradeHandler.has(armorPiece);
     }
 
     public int getAmmo() {
@@ -311,16 +322,12 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         return weaponHandler.isChargeable(currWeapon) && chargingTimer.getTime() >= TIME_TO_HALFWAY_CHARGED;
     }
 
-    public boolean has(MegamanAbility ability) {
+    public boolean has(MegaAbility ability) {
         return upgradeHandler.has(ability);
     }
 
-    public void add(MegamanAbility ability) {
+    public void add(MegaAbility ability) {
         upgradeHandler.add(ability);
-    }
-
-    public void remove(MegamanAbility ability) {
-        upgradeHandler.remove(ability);
     }
 
     public boolean is(BehaviorType behaviorType) {
@@ -600,7 +607,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 body.velocity.add(x, y);
                 c.set(BehaviorType.SWIMMING, true);
-                game.getAudioMan().playSound(SoundAsset.SWIM_SOUND);
+                game.getAudioMan().play(SoundAsset.SWIM_SOUND);
             }
 
             @Override

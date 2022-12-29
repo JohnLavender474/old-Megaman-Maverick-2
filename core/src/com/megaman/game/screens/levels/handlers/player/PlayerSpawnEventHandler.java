@@ -57,7 +57,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
         blinkReady = false;
         readyTimer.reset();
         blinkTimer.reset();
-        audioMan.playMusic();
+        audioMan.play();
         megaman.body.gravityOn = false;
         engine.set(false, ControllerSystem.class);
         eventMan.submit(new Event(EventType.PLAYER_SPAWN));

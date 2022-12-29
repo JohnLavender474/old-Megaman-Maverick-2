@@ -10,11 +10,11 @@ import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.megaman.upgrades.MegaArmorPiece;
+import com.megaman.game.entities.megaman.upgrades.MegaHealthTank;
+import com.megaman.game.entities.megaman.upgrades.MegaHeartTank;
 import com.megaman.game.entities.megaman.vals.MegamanVals;
 import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
-import com.megaman.game.events.Event;
-import com.megaman.game.events.EventManager;
-import com.megaman.game.events.EventType;
 import com.megaman.game.screens.utils.BitsBar;
 import com.megaman.game.sprites.SpriteSystem;
 import com.megaman.game.utils.interfaces.Drawable;
@@ -31,24 +31,24 @@ public class PlayerStatsHandler implements Updatable, Drawable {
 
     private static final float BAR_X = .4f * WorldVals.PPM;
     private static final float BAR_Y = 9f * WorldVals.PPM;
+    private static final float SPECIAL_ITEM_DUR = .5f;
     private static final float DUR_PER_BIT = .2f;
 
     private final Megaman megaman;
     private final GameEngine engine;
     private final AudioManager audioMan;
-    private final EventManager eventMan;
 
     private final BitsBar healthBar;
     private final Supplier<BitsBar> weaponBarSupplier;
 
     private OrderedMap<Class<? extends System>, Boolean> sysStates;
+
     private Timer timer;
 
     public PlayerStatsHandler(MegamanGame game) {
         megaman = game.getMegaman();
         engine = game.getGameEngine();
         audioMan = game.getAudioMan();
-        eventMan = game.getEventMan();
         AssetsManager assMan = game.getAssMan();
         healthBar = new BitsBar(BAR_X, BAR_Y, megaman::getHealth, megaman::getMaxHealth, assMan, "StandardBit");
         Map<MegamanWeapon, BitsBar> weaponBars = new EnumMap<>(MegamanWeapon.class);
@@ -71,7 +71,45 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         return timer == null || timer.isFinished();
     }
 
+    public void attain(MegaArmorPiece armorPiece) {
+        if (!isFinished()) {
+            throw new IllegalStateException("Cannot call attain if handler is not finished");
+        }
+        if (megaman.has(armorPiece)) {
+            return;
+        }
+        audioMan.play(SoundAsset.LIFE_SOUND);
+        timer = new Timer(SPECIAL_ITEM_DUR, () -> megaman.add(armorPiece));
+    }
+
+    public void attain(MegaHeartTank heartTank) {
+        if (!isFinished()) {
+            throw new IllegalStateException("Cannot call attain if handler is not finished");
+        }
+        if (megaman.has(heartTank)) {
+            return;
+        }
+        audioMan.play(SoundAsset.LIFE_SOUND);
+        timer = new Timer(SPECIAL_ITEM_DUR, () -> megaman.add(heartTank));
+        sysStates = engine.getStates();
+        engine.setAll(false);
+        engine.set(true, SpriteSystem.class);
+    }
+
+    public void attain(MegaHealthTank healthTank) {
+        if (!isFinished()) {
+            throw new IllegalStateException("Cannot call attain if handler is not finished");
+        }
+        if (megaman.has(healthTank)) {
+            return;
+        }
+        timer = new Timer(SPECIAL_ITEM_DUR, () -> megaman.put(healthTank));
+    }
+
     public void addHealth(int health) {
+        if (!isFinished()) {
+            throw new IllegalStateException("Cannot call add health if handler is not finished");
+        }
         if (health < 0) {
             throw new IllegalArgumentException("Health to add cannot be negative");
         }
@@ -96,12 +134,12 @@ public class PlayerStatsHandler implements Updatable, Drawable {
             for (int i = 0; i < healthToAdd; i++) {
                 add(new TimeMarkedRunnable(i * DUR_PER_BIT, () -> {
                     megaman.addHealth(1);
-                    audioMan.playSound(SoundAsset.ENERGY_FILL_SOUND);
+                    audioMan.play(SoundAsset.ENERGY_FILL_SOUND);
                 }));
             }
             if (addToTanks) {
                 add(new TimeMarkedRunnable((healthToAdd + 1) * DUR_PER_BIT,
-                        () -> audioMan.playSound(SoundAsset.LIFE_SOUND)));
+                        () -> audioMan.play(SoundAsset.LIFE_SOUND)));
             }
         }});
         sysStates = engine.getStates();
@@ -117,7 +155,6 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         timer.update(delta);
         if (timer.isJustFinished()) {
             engine.set(sysStates);
-            eventMan.submit(new Event(EventType.FINISH_ADD_PLAYER_HEALTH));
         }
     }
 

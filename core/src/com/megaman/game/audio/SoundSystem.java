@@ -16,10 +16,10 @@ public class SoundSystem extends System {
     protected void processEntity(Entity e, float delta) {
         SoundComponent c = e.getComponent(SoundComponent.class);
         while (!c.playReqs.isEmpty()) {
-            audioMan.playSound(c.playReqs.poll());
+            audioMan.play(c.playReqs.poll());
         }
         while (!c.stopReqs.isEmpty()) {
-            audioMan.stopSound(c.stopReqs.poll());
+            audioMan.stop(c.stopReqs.poll());
         }
     }
 

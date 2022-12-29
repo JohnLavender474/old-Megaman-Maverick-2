@@ -26,14 +26,14 @@ public class LevelStateHandler {
         engine.set(true, SpriteSystem.class);
         audioMan.pauseSound();
         audioMan.pauseMusic();
-        audioMan.playSound(SoundAsset.PAUSE_SOUND);
+        audioMan.play(SoundAsset.PAUSE_SOUND);
     }
 
     public void resume() {
         engine.set(sysStatesOnPause);
         audioMan.resumeSound();
         audioMan.resumeMusic();
-        audioMan.playSound(SoundAsset.PAUSE_SOUND);
+        audioMan.play(SoundAsset.PAUSE_SOUND);
     }
 
 }

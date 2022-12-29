@@ -5,6 +5,8 @@ import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Iterator;
+
 @RequiredArgsConstructor
 public class SpawnManager implements Updatable, Resettable {
 
@@ -19,8 +21,13 @@ public class SpawnManager implements Updatable, Resettable {
         if (spawns == null) {
             throw new IllegalStateException("Set method must first be called with non-null values");
         }
-        for (Spawn s : spawns) {
+        Iterator<Spawn> spawnIter = spawns.iterator();
+        while (spawnIter.hasNext()) {
+            Spawn s = spawnIter.next();
             s.update(delta);
+            if (s.doRemove()) {
+                spawnIter.remove();
+            }
         }
     }
 

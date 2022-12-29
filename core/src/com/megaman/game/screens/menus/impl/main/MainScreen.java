@@ -140,7 +140,7 @@ public class MainScreen extends MenuScreen {
     @Override
     public void show() {
         super.show();
-        game.getAudioMan().playMusic(MusicAsset.MM11_WILY_STAGE_MUSIC, true);
+        game.getAudioMan().play(MusicAsset.MM11_WILY_STAGE_MUSIC, true);
     }
 
     @Override
@@ -177,12 +177,12 @@ public class MainScreen extends MenuScreen {
 
     @Override
     protected void onAnyMovement() {
-        audioMan.playSound(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
+        audioMan.play(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
     }
 
     @Override
     protected void onAnySelection() {
-        audioMan.playSound(SoundAsset.SELECT_PING_SOUND);
+        audioMan.play(SoundAsset.SELECT_PING_SOUND);
     }
 
     @Override

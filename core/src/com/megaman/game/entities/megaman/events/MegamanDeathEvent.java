@@ -28,7 +28,7 @@ public class MegamanDeathEvent implements Runnable {
         EventManager eventMan = megaman.game.getEventMan();
         eventMan.remove(megaman);
         eventMan.submit(new Event(EventType.PLAYER_JUST_DIED));
-        megaman.game.getAudioMan().stopSound(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
+        megaman.game.getAudioMan().stop(SoundAsset.MEGA_BUSTER_CHARGING_SOUND);
         if (megaman.getHealth() > 0f) {
             return;
         }

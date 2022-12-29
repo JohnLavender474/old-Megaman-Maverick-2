@@ -15,24 +15,35 @@ public class SpawnWhenInBounds extends Spawn {
     private final Camera gameCam;
 
     private boolean inCamBounds;
+    private boolean respawnable;
 
     public SpawnWhenInBounds(GameEngine engine, Camera gameCam, Rectangle bounds, ObjectMap<String, Object> data,
                              Supplier<Entity> entitySupplier) {
+        this(engine, gameCam, bounds, data, entitySupplier, true);
+    }
+
+    public SpawnWhenInBounds(GameEngine engine, Camera gameCam, Rectangle bounds, ObjectMap<String, Object> data,
+                             Supplier<Entity> entitySupplier, boolean respawnable) {
         super(engine, bounds, data, entitySupplier);
+        this.respawnable = respawnable;
         this.gameCam = gameCam;
     }
 
     @Override
     public void update(float delta) {
-        if (entity != null && entity.dead) {
+        if (entity != null && entity.dead && respawnable) {
             entity = null;
         }
         boolean wasInCamBounds = inCamBounds;
         inCamBounds = gameCam.frustum.boundsInFrustum(ShapeUtils.rectToBBox(bounds));
         if (entity == null && !wasInCamBounds && inCamBounds) {
-            entity = entitySupplier.get();
-            engine.spawn(entity, bounds, data);
+            spawnEntity();
         }
+    }
+
+    @Override
+    public boolean doRemove() {
+        return !respawnable && entity != null && entity.dead;
     }
 
 }

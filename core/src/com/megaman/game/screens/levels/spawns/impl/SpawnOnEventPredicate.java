@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 public class SpawnOnEventPredicate extends Spawn implements EventListener {
 
-    private static final Logger logger = new Logger(SpawnOnEventPredicate.class, MegamanGame.DEBUG && true);
+    private static final Logger logger = new Logger(SpawnOnEventPredicate.class, MegamanGame.DEBUG && false);
 
     private final Predicate<Event> pred;
     private final Queue<Event> q;
@@ -46,9 +46,7 @@ public class SpawnOnEventPredicate extends Spawn implements EventListener {
         }
         q.clear();
         if (entity == null && predPassed) {
-            entity = entitySupplier.get();
-            logger.log("Spawn: " + entity);
-            engine.spawn(entity, bounds, data);
+            spawnEntity();
         }
     }
 

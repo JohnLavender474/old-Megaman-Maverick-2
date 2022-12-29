@@ -41,7 +41,7 @@ public class PlayerDeathEventHandler implements Initializable, Updatable {
         engine.set(false, ControllerSystem.class);
         megaman.body.gravityOn = false;
         megaman.setReady(false);
-        audioMan.playSound(SoundAsset.MEGAMAN_DEFEAT_SOUND);
+        audioMan.play(SoundAsset.MEGAMAN_DEFEAT_SOUND);
     }
 
     @Override

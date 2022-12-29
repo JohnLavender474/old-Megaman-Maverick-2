@@ -119,11 +119,7 @@ public class BSelectScreen extends MenuScreen {
         TextureAtlas decorationsAtlas = assMan.getTextureAtlas(TextureAsset.DECORATIONS);
         TextureRegion whiteReg = decorationsAtlas.findRegion("White");
         white.setRegion(whiteReg);
-        white.setBounds(
-                0f,
-                0f,
-                ViewVals.VIEW_WIDTH * WorldVals.PPM,
-                ViewVals.VIEW_HEIGHT * WorldVals.PPM);
+        white.setBounds(0f, 0f, ViewVals.VIEW_WIDTH * WorldVals.PPM, ViewVals.VIEW_HEIGHT * WorldVals.PPM);
         TextureRegion black = decorationsAtlas.findRegion("Black");
         bar1.setRegion(black);
         bar1.setBounds(-WorldVals.PPM, -WorldVals.PPM,
@@ -138,11 +134,8 @@ public class BSelectScreen extends MenuScreen {
                 for (int x = 0; x < 2; x++) {
                     for (int y = 0; y < 2; y++) {
                         Sprite blueBlock = new Sprite(blueBlockRegion);
-                        blueBlock.setBounds(
-                                i * WorldVals.PPM + (x * halfPPM),
-                                j * WorldVals.PPM + (y * halfPPM),
-                                halfPPM,
-                                halfPPM);
+                        blueBlock.setBounds(i * WorldVals.PPM + (x * halfPPM), j * WorldVals.PPM + (y * halfPPM),
+                                halfPPM, halfPPM);
                         bkgd.add(blueBlock);
                     }
                 }
@@ -155,14 +148,14 @@ public class BSelectScreen extends MenuScreen {
     public void show() {
         super.show();
         slide.init();
-        outTimer.reset();
         outro = false;
-        game.getAudioMan().playMusic(MusicAsset.STAGE_SELECT_MM3_MUSIC, true);
+        outTimer.reset();
+        game.getAudioMan().play(MusicAsset.STAGE_SELECT_MM3_MUSIC, true);
     }
 
     @Override
     protected void onAnyMovement() {
-        audioMan.playSound(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
+        audioMan.play(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
     }
 
     @Override
@@ -174,9 +167,7 @@ public class BSelectScreen extends MenuScreen {
                 outTimer.update(delta);
             }
             if (outTimer.isFinished()) {
-                BIntroScreen s = game.getScreen(ScreenEnum.BOSS_INTRO, BIntroScreen.class);
-                s.set(bSelect);
-                game.setScreen(s);
+                game.setScreen(ScreenEnum.BOSS_INTRO, BIntroScreen.class, s -> s.set(bSelect));
                 return;
             }
             for (ObjectMap.Entry<Sprite, Animation> e : bars) {
@@ -262,7 +253,7 @@ public class BSelectScreen extends MenuScreen {
             menuButtons.put(bEnum.name, new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
-                    audioMan.playSound(SoundAsset.BEAM_OUT_SOUND);
+                    audioMan.play(SoundAsset.BEAM_OUT_SOUND);
                     audioMan.stopMusic();
                     bSelect = bEnum;
                     outro = true;

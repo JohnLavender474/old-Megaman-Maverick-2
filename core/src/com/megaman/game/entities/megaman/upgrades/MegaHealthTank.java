@@ -1,4 +1,4 @@
-package com.megaman.game.entities.megaman.health;
+package com.megaman.game.entities.megaman.upgrades;
 
 public enum MegaHealthTank {
     A,

@@ -21,6 +21,7 @@ import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.megaman.upgrades.MegaHeartTank;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.events.EventManager;
@@ -95,9 +96,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         batch = game.getBatch();
         uiCam = game.getUiCam();
         gameCam = game.getGameCam();
+        megaman = game.getMegaman();
         backgrounds = new Array<>();
         disposables = new Array<>();
-        megaman = game.getMegaman();
         ctrlMan = game.getCtrlMan();
         eventMan = game.getEventMan();
         audioMan = game.getAudioMan();
@@ -188,7 +189,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 playerDeathEventHandler.init();
             }
             case PLAYER_DONE_DYIN -> {
-                audioMan.playMusic(music, true);
+                audioMan.play(music, true);
                 playerSpawnEventHandler.init();
             }
             case ADD_PLAYER_HEALTH -> {
@@ -197,6 +198,13 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     int health = e.getInfo(ConstKeys.VAL, Integer.class);
                     playerStatsHandler.addHealth(health);
                 }
+            }
+            case ADD_HEART_TANK -> {
+                MegaHeartTank h = e.getInfo(ConstKeys.VAL, MegaHeartTank.class);
+                if (megaman.has(h)) {
+                    break;
+                }
+                playerStatsHandler.attain(h);
             }
             case GATE_INIT_OPENING -> {
                 engine.set(false,
@@ -219,7 +227,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     public void show() {
         eventMan.add(this);
         if (music != null) {
-            audioMan.setMusic(music, true);
+            audioMan.set(music, true);
         }
         playerSpawnEventHandler.init();
     }
@@ -238,7 +246,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             }
         }
         // illegal for game to be paused when a handler is not finished, force resume
-        if (game.isPaused() && (!playerDeathEventHandler.isFinished() || !playerSpawnEventHandler.isFinished() ||
+        if (game.isPaused() && (!playerDeathEventHandler.isFinished() ||
+                !playerSpawnEventHandler.isFinished() ||
                 !playerStatsHandler.isFinished())) {
             game.resume();
         }
@@ -246,6 +255,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         if (!game.isPaused()) {
             backgrounds.forEach(b -> b.update(delta));
             levelCamMan.update(delta);
+            // spawns do not update when player is first spawning or if there is room transition
             if (playerSpawnEventHandler.isFinished() && !levelCamMan.isTransitioning()) {
                 playerSpawnMan.run();
                 spawnMan.update(delta);

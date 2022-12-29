@@ -2,6 +2,7 @@ package com.megaman.game.utils.objs;
 
 import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.PriorityQueue;
@@ -17,6 +18,9 @@ public class Timer {
     private float duration;
     private boolean justFinished;
 
+    @Setter
+    public Runnable runOnEnd;
+
     public Timer() {
         this(1f);
     }
@@ -29,6 +33,12 @@ public class Timer {
         time = timer.time;
         duration = timer.duration;
         justFinished = timer.justFinished;
+        runOnEnd = timer.runOnEnd;
+    }
+
+    public Timer(float duration, Runnable runOnEnd) {
+        this(duration);
+        this.runOnEnd = runOnEnd;
     }
 
     public Timer(float duration, TimeMarkedRunnable... tmRunnables) {
@@ -98,6 +108,9 @@ public class Timer {
             tmr.runnable().run();
         }
         justFinished = !finishedBefore && isFinished();
+        if (runOnEnd != null && justFinished) {
+            runOnEnd.run();
+        }
         return isFinished();
     }
 

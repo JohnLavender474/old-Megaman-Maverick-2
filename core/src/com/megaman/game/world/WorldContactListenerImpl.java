@@ -15,7 +15,7 @@ import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.items.Item;
 import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.entities.megaman.upgrades.MegamanAbility;
+import com.megaman.game.entities.megaman.upgrades.MegaAbility;
 import com.megaman.game.entities.megaman.vals.AButtonTask;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.entities.sensors.impl.Gate;
@@ -92,7 +92,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Vector2 bounce = ((Function<Fixture, Vector2>) contact.mask1stData(ConstKeys.FUNCTION))
                     .apply(contact.mask.getSecond());
             if (contact.mask1stEntity() instanceof SpringBouncer s && contact.mask2ndEntity() instanceof Megaman m) {
-                if (!m.is(BodySense.IN_WATER) && m.has(MegamanAbility.AIR_DASH)) {
+                if (!m.is(BodySense.IN_WATER) && m.has(MegaAbility.AIR_DASH)) {
                     m.aButtonTask = AButtonTask.AIR_DASH;
                 }
                 if (s.getDir() == Direction.UP && game.getCtrlMan().isPressed(ControllerBtn.DPAD_UP)) {
@@ -116,7 +116,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
             if (e instanceof Megaman || e instanceof Enemy) {
-                game.getAudioMan().playSound(SoundAsset.SPLASH_SOUND);
+                game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
             }
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
             Vector2 force = ((Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION))
@@ -227,7 +227,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.AIR_DASH;
             }
-            game.getAudioMan().playSound(SoundAsset.SPLASH_SOUND);
+            game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
         }
     }

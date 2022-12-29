@@ -10,6 +10,8 @@ import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
+import com.megaman.game.entities.items.ItemFactory;
+import com.megaman.game.entities.megaman.upgrades.MegaHeartTank;
 import com.megaman.game.entities.sensors.SensorFactory;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
@@ -29,7 +31,6 @@ public class LevelBuilder implements Disposable {
     private final Array<Spawn> spawns;
     private final Array<RectangleMapObject> playerSpawns;
     private final Array<RectangleMapObject> gameRoomObjs;
-
     private final Array<Runnable> runOnDispose;
 
     public LevelBuilder(MegamanGame game, Map<LevelMapLayer, Array<RectangleMapObject>> m) {
@@ -96,6 +97,18 @@ public class LevelBuilder implements Disposable {
                                     eventMan.add(s);
                                     runOnDispose.add(() -> eventMan.remove(s));
                                 }
+                            }
+                        } else if (o.getName() != null) {
+                            switch (o.getName()) {
+                                case ItemFactory.HEART_TANK -> {
+                                    if (game.getMegaman().has(MegaHeartTank.get((String) data.get(ConstKeys.VAL)))) {
+                                        continue;
+                                    }
+                                    spawns.add(new SpawnWhenInBounds(engine, gameCam, o.getRectangle(), data,
+                                            () -> factories.fetch(entityType, o.getName()), false));
+                                }
+                                default -> spawns.add(new SpawnWhenInBounds(engine, gameCam, o.getRectangle(), data,
+                                        () -> factories.fetch(entityType, o.getName())));
                             }
                         } else {
                             spawns.add(new SpawnWhenInBounds(engine, gameCam, o.getRectangle(), data,

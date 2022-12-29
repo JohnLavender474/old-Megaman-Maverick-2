@@ -19,6 +19,10 @@ public abstract class Spawn implements Updatable {
 
     protected Entity entity;
 
+    public boolean doRemove() {
+        return false;
+    }
+
     protected void spawnEntity() {
         entity = entitySupplier.get();
         engine.spawn(entity, bounds, data);

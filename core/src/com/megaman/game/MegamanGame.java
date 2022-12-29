@@ -70,7 +70,6 @@ public class MegamanGame implements ApplicationListener {
     private ControllerManager ctrlMan;
 
     private Megaman megaman;
-
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
 
@@ -119,12 +118,8 @@ public class MegamanGame implements ApplicationListener {
         screens.put(ScreenEnum.BOSS_SELECT, new BSelectScreen(this));
         screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
 
-        // TODO: test levels
-        LevelScreen l = getScreen(ScreenEnum.LEVEL, LevelScreen.class);
-        l.set(Level.TEST5);
-        setScreen(l);
+        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
 
-        // TODO: set to main menu
         // setScreen(getScreen(ScreenEnum.MAIN));
     }
 
@@ -155,6 +150,7 @@ public class MegamanGame implements ApplicationListener {
             this.screen.pause();
         }
     }
+
 
     @Override
     public void render() {

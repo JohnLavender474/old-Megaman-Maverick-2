@@ -89,11 +89,9 @@
     <property name="SpawnType" value="SpawnEvent"/>
    </properties>
   </object>
-  <object id="264" name="HealthBulb" x="384" y="9376" width="32" height="32">
+  <object id="264" name="HeartTank" x="384" y="9408" width="32" height="32">
    <properties>
-    <property name="Large" type="bool" value="false"/>
-    <property name="SpawnEvent" value="PlayerReady"/>
-    <property name="SpawnType" value="SpawnEvent"/>
+    <property name="Val" value="A"/>
    </properties>
   </object>
  </objectgroup>

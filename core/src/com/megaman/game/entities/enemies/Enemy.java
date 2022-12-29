@@ -112,13 +112,13 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     protected void disintegrate() {
-        game.getAudioMan().playSound(SoundAsset.ENEMY_DAMAGE_SOUND);
+        game.getAudioMan().play(SoundAsset.ENEMY_DAMAGE_SOUND);
         game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION), body.getCenter());
     }
 
     protected void explode() {
-        game.getAudioMan().playSound(SoundAsset.EXPLOSION_SOUND);
+        game.getAudioMan().play(SoundAsset.EXPLOSION_SOUND);
         game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION), body.getCenter());
     }

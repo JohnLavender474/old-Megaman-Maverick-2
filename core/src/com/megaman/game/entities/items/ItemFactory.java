@@ -6,16 +6,21 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactory;
 import com.megaman.game.entities.EntityPool;
 import com.megaman.game.entities.items.impl.HealthBulb;
+import com.megaman.game.entities.items.impl.HeartTank;
 
 public class ItemFactory implements EntityFactory {
 
     public static final String HEALTH_BULB = "HealthBulb";
+    public static final String ARMOR_PIECE = "ArmorPiece";
+    public static final String HEALTH_TANK = "HealthTank";
+    public static final String HEART_TANK = "HeartTank";
 
     private final ObjectMap<String, EntityPool> pools;
 
     public ItemFactory(MegamanGame game) {
         pools = new ObjectMap<>() {{
             put(HEALTH_BULB, new EntityPool(5, () -> new HealthBulb(game)));
+            put(HEART_TANK, new EntityPool(8, () -> new HeartTank(game)));
         }};
     }
 

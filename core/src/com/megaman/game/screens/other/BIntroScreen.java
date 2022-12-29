@@ -97,7 +97,7 @@ public class BIntroScreen extends ScreenAdapter {
                 if (Character.isWhitespace(b.name.charAt(finalI))) {
                     return;
                 }
-                game.getAudioMan().playSound(SoundAsset.THUMP_SOUND);
+                game.getAudioMan().play(SoundAsset.THUMP_SOUND);
             });
         }
     }
@@ -119,7 +119,7 @@ public class BIntroScreen extends ScreenAdapter {
             e.key().reset();
             e.value().reset();
         }
-        game.getAudioMan().playMusic(MusicAsset.MM2_BOSS_INTRO_MUSIC, false);
+        game.getAudioMan().play(MusicAsset.MM2_BOSS_INTRO_MUSIC, false);
     }
 
     @Override

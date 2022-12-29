@@ -18,6 +18,7 @@ public class AudioManager implements Updatable {
     private static final int MIN_VOLUME = 0;
     private static final int MAX_VOLUME = 10;
     private static final int DEFAULT_VOLUME = 5;
+    // private static final int DEFAULT_VOLUME = 0;
 
     @RequiredArgsConstructor
     private static final class SoundEntry {
@@ -84,13 +85,13 @@ public class AudioManager implements Updatable {
         }
     }
 
-    public void playSound(SoundAsset ass) {
+    public void play(SoundAsset ass) {
         Sound sound = sounds.get(ass);
         long id = sound.play((float) soundVolume / MAX_VOLUME);
         playingSounds.add(new SoundEntry(id, ass));
     }
 
-    public void stopSound(SoundAsset ass) {
+    public void stop(SoundAsset ass) {
         sounds.get(ass).stop();
     }
 
@@ -101,7 +102,7 @@ public class AudioManager implements Updatable {
         currMusic = null;
     }
 
-    public void setMusic(MusicAsset ass, boolean loop) {
+    public void set(MusicAsset ass, boolean loop) {
         if (currMusic != null) {
             currMusic.stop();
         }
@@ -110,14 +111,14 @@ public class AudioManager implements Updatable {
         currMusic.setVolume((float) musicVolume / MAX_VOLUME);
     }
 
-    public void playMusic(MusicAsset ass, boolean loop) {
-        setMusic(ass, loop);
+    public void play(MusicAsset ass, boolean loop) {
+        set(ass, loop);
         if (currMusic != null) {
             currMusic.play();
         }
     }
 
-    public void playMusic() {
+    public void play() {
         if (currMusic != null && !currMusic.isPlaying()) {
             currMusic.play();
         }
@@ -144,12 +145,6 @@ public class AudioManager implements Updatable {
     public void pauseSound() {
         for (Sound s : sounds.values()) {
             s.pause();
-        }
-    }
-
-    public void stopSound() {
-        for (Sound s : sounds.values()) {
-            s.stop();
         }
     }
 

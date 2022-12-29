@@ -193,6 +193,7 @@
             </struct>
             <key type="filename">../Frames/Items/HealthBulb.png</key>
             <key type="filename">../Frames/Items/HealthTank.png</key>
+            <key type="filename">../Frames/Items/HeartTank.png</key>
             <key type="filename">../Frames/Items/WeaponBulb.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
