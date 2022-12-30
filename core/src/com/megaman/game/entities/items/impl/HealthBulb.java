@@ -46,6 +46,7 @@ public class HealthBulb extends Entity implements Item {
 
     private static final float GRAV = -.15f;
     private static final float G_GRAV = -.001f;
+    private static final float CLAMP_X = 1.25f;
     private static final float TIME_TO_BLINK = 2f;
     private static final float BLINK_DUR = .01f;
     private static final float CULL_DUR = 3.5f;
@@ -57,6 +58,7 @@ public class HealthBulb extends Entity implements Item {
 
     private Fixture itemFixture;
     private Fixture feetFixture;
+    private Fixture bodyFixture;
 
     private boolean large;
     private boolean blink;
@@ -90,6 +92,7 @@ public class HealthBulb extends Entity implements Item {
         cullTimer.reset();
         body.bounds.setSize((large ? .5f : .25f) * WorldVals.PPM);
         body.bounds.setCenter(spawn);
+        ((Rectangle) bodyFixture.shape).set(body.bounds);
         ((Rectangle) itemFixture.shape).set(body.bounds);
         feetFixture.offset.y = (large ? -.25f : -.125f) * WorldVals.PPM;
     }
@@ -120,19 +123,32 @@ public class HealthBulb extends Entity implements Item {
     }
 
     private BodyComponent bodyComponent() {
+        body.velClamp.x = CLAMP_X * WorldVals.PPM;
         Array<ShapeHandle> h = new Array<>();
-        Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle().setSize(.25f * WorldVals.PPM));
+
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle());
+        body.add(bodyFixture);
+        h.add(new ShapeHandle(() -> bodyFixture.shape, Color.PURPLE));
+        this.bodyFixture = bodyFixture;
+
+        // feet fixture
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle());
         body.add(feetFixture);
         h.add(new ShapeHandle(() -> feetFixture.shape, Color.GREEN));
         this.feetFixture = feetFixture;
+
+        // item fixture
         Fixture itemFixture = new Fixture(this, FixtureType.ITEM, new Rectangle());
         body.add(itemFixture);
         h.add(new ShapeHandle(() -> itemFixture.shape, Color.RED));
         this.itemFixture = itemFixture;
+
+        // pre-process
         body.preProcess = delta -> {
             body.gravityOn = UtilMethods.isInCamBounds(game.getGameCam(), body.bounds);
             body.gravity.y = (body.is(BodySense.FEET_ON_GROUND) ? G_GRAV : GRAV) * WorldVals.PPM;
         };
+
         putComponent(new ShapeComponent(h));
         return new BodyComponent(body);
     }
