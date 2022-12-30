@@ -74,27 +74,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="18" name="Items">
-  <object id="262" name="HealthBulb" x="3296" y="9376" width="32" height="32">
-   <properties>
-    <property name="Large" type="bool" value="true"/>
-    <property name="SpawnEvent" value="PlayerReady"/>
-    <property name="SpawnType" value="SpawnEvent"/>
-   </properties>
-  </object>
-  <object id="263" name="HealthBulb" x="2112" y="9408" width="32" height="32">
-   <properties>
-    <property name="Large" type="bool" value="true"/>
-    <property name="SpawnEvent" value="PlayerReady"/>
-    <property name="SpawnType" value="SpawnEvent"/>
-   </properties>
-  </object>
-  <object id="264" name="HeartTank" x="384" y="9408" width="32" height="32">
-   <properties>
-    <property name="Val" value="A"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup id="18" name="Items"/>
  <objectgroup id="4" name="Special">
   <object id="76" name="Water" x="3328" y="9440" width="320" height="160"/>
   <object id="81" name="Water" x="3936" y="9440" width="352" height="160"/>
