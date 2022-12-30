@@ -260,6 +260,7 @@ public class Body implements Updatable, Resettable {
 
     @Override
     public void reset() {
+        labels.clear();
         velocity.setZero();
         Arrays.fill(senses, false);
         resistance.set(STANDARD_RESISTANCE_X, STANDARD_RESISTANCE_Y);

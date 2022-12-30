@@ -164,6 +164,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
+        body.labels.add(BodyLabel.PLAYER_BODY);
         body.velocity.setZero();
         body.bounds.setPosition(spawn);
         facing = Facing.RIGHT;
@@ -471,7 +472,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     private BodyComponent bodyComponent() {
-        body.labels.add(BodyLabel.PLAYER_BODY);
         body.velClamp.set(CLAMP_X * WorldVals.PPM, CLAMP_Y * WorldVals.PPM);
         body.bounds.width = .8f * WorldVals.PPM;
         body.affectedByResistance = true;

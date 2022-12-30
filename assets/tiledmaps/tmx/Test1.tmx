@@ -286,7 +286,7 @@
   <object id="102" name="Ladder" x="2464" y="1344" width="32" height="192"/>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
-  <object id="84" name="0" x="96" y="1504" width="32" height="32"/>
+  <object id="84" name="0" x="2496" y="1312" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="GameRooms" visible="0">
   <object id="8" name="Room2" x="1440" y="1152" width="2208" height="448"/>
