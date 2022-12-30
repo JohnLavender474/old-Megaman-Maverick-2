@@ -105,15 +105,21 @@ public class SuctionRoller extends Enemy implements Faceable {
         Array<ShapeHandle> h = new Array<>();
         body.gravityOn = true;
         body.bounds.setSize(.75f * WorldVals.PPM, WorldVals.PPM);
+
+        // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
         h.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
         body.add(bodyFixture);
+
+        // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
                 new Rectangle().setSize(WorldVals.PPM / 4f, WorldVals.PPM / 32f));
         feetFixture.offset.y = .6f * -WorldVals.PPM;
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
         body.add(feetFixture);
+
+        // left fixture
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         leftFixture.offset.x = -.375f * WorldVals.PPM;
@@ -121,6 +127,8 @@ public class SuctionRoller extends Enemy implements Faceable {
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         h.add(new ShapeHandle(leftFixture.shape, Color.ORANGE));
         body.add(leftFixture);
+
+        // right fixture
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         rightFixture.offset.x = .375f * WorldVals.PPM;
@@ -128,16 +136,21 @@ public class SuctionRoller extends Enemy implements Faceable {
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         h.add(new ShapeHandle(rightFixture.shape, Color.ORANGE));
         body.add(rightFixture);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.RED));
         body.add(damageableFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
         body.add(damagerFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY * WorldVals.PPM;
-            // body.gravityOn = !is(BodySense.FEET_ON_GROUND);
             if (onWall) {
                 if (!wasOnWall) {
                     body.velocity.x = 0f;
@@ -150,7 +163,10 @@ public class SuctionRoller extends Enemy implements Faceable {
                 body.velocity.x = (is(Facing.RIGHT) ? VEL_X : -VEL_X) * WorldVals.PPM;
             }
         };
-        putComponent(new ShapeComponent(h));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     private SpriteComponent spriteComponent() {

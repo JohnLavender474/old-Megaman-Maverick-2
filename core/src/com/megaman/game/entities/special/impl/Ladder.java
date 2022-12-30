@@ -20,7 +20,10 @@ public class Ladder extends Entity {
         super(game, EntityType.TEST);
         body = new Body(BodyType.ABSTRACT);
         putComponent(bodyComponent());
-        putComponent(shapeComponent());
+
+        if (MegamanGame.DEBUG) {
+            putComponent(shapeComponent());
+        }
     }
 
     @Override

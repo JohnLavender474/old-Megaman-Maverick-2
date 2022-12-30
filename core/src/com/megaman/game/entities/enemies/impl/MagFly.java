@@ -68,7 +68,11 @@ public class MagFly extends Enemy implements Faceable {
         }
         sprite = new Sprite();
         forceFlashTimer = new Timer(FORCE_FLASH_DURATION);
-        putComponent(shapeComponent());
+
+        if (MegamanGame.DEBUG) {
+            putComponent(shapeComponent());
+        }
+
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }

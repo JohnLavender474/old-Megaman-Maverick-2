@@ -133,7 +133,9 @@ public class FlyBoy extends Enemy implements Faceable {
             body.gravity.y = (is(BodySense.FEET_ON_GROUND) ? G_GRAV : GRAV) * WorldVals.PPM;
         };
 
-        putComponent(new ShapeComponent(h));
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     @Override

@@ -563,7 +563,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             }
             body.gravity.y = gravityY * WorldVals.PPM;
         };
-        putComponent(new ShapeComponent(h));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
+
         return new BodyComponent(body);
     }
 

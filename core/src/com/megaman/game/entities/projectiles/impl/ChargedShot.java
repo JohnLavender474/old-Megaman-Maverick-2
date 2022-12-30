@@ -56,7 +56,11 @@ public class ChargedShot extends Projectile implements Faceable {
         }
         this.traj = new Vector2();
         defineBody();
-        putComponent(shapeComponent());
+
+        if (MegamanGame.DEBUG) {
+            putComponent(shapeComponent());
+        }
+
         putComponent(spriteComponent());
         putComponent(animationComponent());
         putComponent(updatableComponent());

@@ -95,19 +95,27 @@ public class SniperJoe extends Enemy implements Faceable {
         Array<ShapeHandle> h = new Array<>();
         body.bounds.setSize(WorldVals.PPM, 1.25f * WorldVals.PPM);
         body.gravity.y = -WorldVals.PPM / 2f;
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM, 1.15f * WorldVals.PPM));
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
         body.add(damagerFixture);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.8f * WorldVals.PPM, 1.35f * WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
         body.add(damageableFixture);
+
+        // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(.4f * WorldVals.PPM, .9f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.STRAIGHT);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shielded ? Color.GREEN : Color.GRAY));
         body.add(shieldFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             shieldFixture.active = shielded;
             if (shielded) {
@@ -117,7 +125,10 @@ public class SniperJoe extends Enemy implements Faceable {
                 damageableFixture.offset.setZero();
             }
         };
-        putComponent(new ShapeComponent(h));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     @Override
@@ -140,7 +151,7 @@ public class SniperJoe extends Enemy implements Faceable {
         }
         Vector2 spawn = new Vector2()
                 .set(body.getCenter())
-                .add(is(Facing.LEFT) ? -.2f : .2f * WorldVals.PPM, -.15f * WorldVals.PPM);
+                .add(is(Facing.LEFT) ? -.2f : .2f * WorldVals.PPM, -.25f * WorldVals.PPM);
         Bullet bullet = (Bullet) game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);

@@ -58,7 +58,10 @@ public class ConveyorBelt extends Block {
         forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
         forceFixture.offset.y = WorldVals.PPM / 8f;
         body.add(forceFixture);
-        putComponent(new ShapeComponent(new ShapeHandle(forceFixture.shape, Color.BLUE)));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(new ShapeHandle(forceFixture.shape, Color.BLUE)));
+        }
     }
 
     @Override

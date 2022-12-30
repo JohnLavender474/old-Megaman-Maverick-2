@@ -92,18 +92,28 @@ public class Dragonfly extends Enemy implements Faceable {
     @Override
     protected void defineBody(Body body) {
         body.bounds.setSize(.75f * WorldVals.PPM);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(WorldVals.PPM));
         body.add(damageableFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         body.add(damagerFixture);
+
+        // megaman scanner fixture
         Fixture megamanScanner = new Fixture(this, FixtureType.CUSTOM,
                 new Rectangle().setSize(32f * WorldVals.PPM, WorldVals.PPM));
         body.add(megamanScanner);
+
+        // out-of-bounds scanner
         Fixture oobScanner = new Fixture(this, FixtureType.CUSTOM,
                 new Rectangle().setSize(WorldVals.PPM / 32f));
         body.add(oobScanner);
+
+        // pre-process
         body.preProcess = delta -> {
             changeBehavTimer.update(delta);
             if (!changeBehavTimer.isFinished()) {
@@ -133,6 +143,8 @@ public class Dragonfly extends Enemy implements Faceable {
                 }
             }
         };
+
+        // post-process
         body.postProcess = delta -> {
             if (!changeBehavTimer.isFinished()) {
                 body.velocity.set(Vector2.Zero);

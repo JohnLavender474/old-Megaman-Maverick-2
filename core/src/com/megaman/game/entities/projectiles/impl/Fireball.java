@@ -3,6 +3,7 @@ package com.megaman.game.entities.projectiles.impl;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
@@ -19,6 +20,7 @@ import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.shapes.ShapeComponent;
+import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
@@ -114,12 +116,14 @@ public class Fireball extends Projectile {
     }
 
     private void defineBody() {
-        ShapeComponent s = new ShapeComponent();
-        putComponent(s);
         body.gravity.y = GRAVITY * WorldVals.PPM;
         body.bounds.setSize(.9f * WorldVals.PPM);
+
+        // projectile fixture
         Fixture projFixture = new Fixture(this, FixtureType.PROJECTILE, new Rectangle().setSize(.9f * WorldVals.PPM));
         body.add(projFixture);
+
+        // damager fixture
         Fixture dmgrFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle().setSize(.9f * WorldVals.PPM));
         body.add(dmgrFixture);
     }

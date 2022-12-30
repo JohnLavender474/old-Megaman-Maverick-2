@@ -40,9 +40,6 @@ public class Bullet extends Projectile {
         this.traj = new Vector2();
         defineBody();
         putComponent(spriteComponent());
-
-        // TODO: testing NOT using updatable comp
-        // putComponent(updatableComponent());
     }
 
     @Override
@@ -53,10 +50,7 @@ public class Bullet extends Projectile {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         traj.set((Vector2) data.get(ConstKeys.TRAJECTORY)).scl(WorldVals.PPM);
-
-        // TODO: testing NOT using updatable comp
         body.velocity.set(traj);
-
         super.init(spawn, data);
     }
 
@@ -73,15 +67,6 @@ public class Bullet extends Projectile {
         disintegrate();
     }
 
-    /*
-    @Override
-    public void hitBody(Fixture body) {
-        if (UtilMethods.mask(owner, body.entity, o -> o instanceof Megaman, o -> o instanceof Enemy)) {
-            disintegrate();
-        }
-    }
-     */
-
     @Override
     public void hitShield(Fixture shieldFixture) {
         owner = shieldFixture.entity;
@@ -94,27 +79,23 @@ public class Bullet extends Projectile {
         } else {
             traj.y = -REFLECT_VEL * WorldVals.PPM;
         }
-
-        // TODO: testing NOT using updatable comp
         body.velocity.set(traj);
-
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
-    // TODO: testing NOT using updatable comp
-    /*
-    private UpdatableComponent updatableComponent() {
-        return new UpdatableComponent(delta -> body.velocity.set(traj));
-    }
-     */
-
     private void defineBody() {
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
+
+        // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle(body.bounds));
         body.add(bodyFixture);
+
+        // projectile fixture
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE,
                 new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
         body.add(projectileFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
         body.add(damagerFixture);

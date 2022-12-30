@@ -149,7 +149,10 @@ public class HealthBulb extends Entity implements Item {
             body.gravity.y = (body.is(BodySense.FEET_ON_GROUND) ? G_GRAV : GRAV) * WorldVals.PPM;
         };
 
-        putComponent(new ShapeComponent(h));
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
+
         return new BodyComponent(body);
     }
 

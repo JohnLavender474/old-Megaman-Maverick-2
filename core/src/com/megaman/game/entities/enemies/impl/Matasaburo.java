@@ -83,6 +83,8 @@ public class Matasaburo extends Enemy implements Faceable {
     protected void defineBody(Body body) {
         body.bounds.setSize(WorldVals.PPM);
         Array<ShapeHandle> h = new Array<>();
+
+        // blow fixture
         Fixture blowFixture = new Fixture(this, FixtureType.FORCE,
                 new Rectangle().setSize(10f * WorldVals.PPM, WorldVals.PPM * 1.15f));
         Function<Fixture, Vector2> blowFunc = f -> {
@@ -101,14 +103,20 @@ public class Matasaburo extends Enemy implements Faceable {
         blowFixture.putUserData(ConstKeys.FUNCTION, blowFunc);
         h.add(new ShapeHandle(blowFixture.shape, Color.BLUE));
         body.add(blowFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.85f * WorldVals.PPM));
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
         body.add(damagerFixture);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
         body.add(damageableFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             float offsetX = 5f * WorldVals.PPM;
             if (is(Facing.LEFT)) {
@@ -116,7 +124,10 @@ public class Matasaburo extends Enemy implements Faceable {
             }
             blowFixture.offset.x = offsetX;
         };
-        putComponent(new ShapeComponent(h));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     @Override

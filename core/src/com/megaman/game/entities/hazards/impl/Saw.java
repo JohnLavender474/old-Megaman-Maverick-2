@@ -1,6 +1,5 @@
 package com.megaman.game.entities.hazards.impl;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -30,7 +29,7 @@ import com.megaman.game.world.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.badlogic.gdx.graphics.Color.DARK_GRAY;
+import static com.badlogic.gdx.graphics.Color.*;
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
 public class Saw extends Entity {
@@ -79,14 +78,6 @@ public class Saw extends Entity {
     private void setToPendulum(Vector2 spawn) {
         Pendulum p = new Pendulum(LENGTH * WorldVals.PPM, PENDULUM_GRAVITY * WorldVals.PPM, spawn);
         putComponent(new PendulumComponent(p, delta -> body.bounds.setCenter(p.getEnd())));
-
-        // TODO: add sprite (animated?) for pendulum
-        /*
-        Animator animator = new Animator(null, null);
-        runOnDeath.add(() -> getComponent(AnimationComponent.class).animators.removeValue(animator, true));
-        */
-
-        // TODO: temp use shape renderer
         LineHandle lineHandle = new LineHandle();
         lineHandle.setLineSupplier(() -> Pair.of(p.getAnchor(), p.getEnd()));
         lineHandle.setColorSupplier(() -> DARK_GRAY);
@@ -115,14 +106,6 @@ public class Saw extends Entity {
     private void setToRotation(Vector2 spawn) {
         RotatingLine r = new RotatingLine(spawn, LENGTH * WorldVals.PPM, ROTATION_SPEED * WorldVals.PPM);
         putComponent(new RotatingLineComponent(r, delta -> body.bounds.setCenter(r.getEndPoint())));
-
-        // TODO: add sprite (animated?) for chain
-        /*
-        Animator animator = new Animator(null, null);
-        runOnDeath.add(() -> getComponent(AnimationComponent.class).animators.removeValue(animator, true));
-        */
-
-        // TODO: temp use shape renderer
         LineHandle lineHandle = new LineHandle();
         lineHandle.setLineSupplier(() -> Pair.of(r.getPos(), r.getEndPoint()));
         lineHandle.setColorSupplier(() -> DARK_GRAY);
@@ -166,29 +149,62 @@ public class Saw extends Entity {
     }
 
     private BodyComponent bodyComponent() {
-        ShapeComponent s = new ShapeComponent();
-        putComponent(s);
         body.bounds.setSize(2f * WorldVals.PPM, 2f * WorldVals.PPM);
+        Array<ShapeHandle> h = new Array<>();
+
+        // death fixture
+        Circle deathCircle = new Circle();
+        deathCircle.radius = .95f * WorldVals.PPM;
+        Fixture deathFixture = new Fixture(this, FixtureType.DEATH, deathCircle);
+        body.add(deathFixture);
+        h.add(new ShapeHandle(deathCircle, RED));
+
+        // TODO: test circle death fixture
+        /*
+        // death fixture 1
         Fixture deathFixture1 = new Fixture(this, FixtureType.DEATH,
                 new Rectangle().setSize(2f * WorldVals.PPM, WorldVals.PPM));
         body.add(deathFixture1);
-        s.shapeHandles.add(new ShapeHandle(deathFixture1.shape, Color.RED));
+        h.add(new ShapeHandle(deathFixture1.shape, Color.RED));
+
+        // death fixture 2
         Fixture deathFixture2 = new Fixture(this, FixtureType.DEATH,
                 new Rectangle().setSize(WorldVals.PPM, 2f * WorldVals.PPM));
         body.add(deathFixture2);
-        s.shapeHandles.add(new ShapeHandle(deathFixture2.shape, Color.RED));
+        h.add(new ShapeHandle(deathFixture2.shape, Color.RED));
+         */
+
+        // shield fixture
+        Circle shieldCircle = new Circle();
+        shieldCircle.radius = WorldVals.PPM;
+        Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD, shieldCircle);
+        shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
+        body.add(shieldFixture);
+        h.add(new ShapeHandle(shieldCircle, PURPLE));
+
+        // TODO: test circle shield fixture
+        /*
+        // shield fixture 1
         Fixture shieldFixture1 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture1.offset.y = WorldVals.PPM / 2f;
         shieldFixture1.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         body.add(shieldFixture1);
-        s.shapeHandles.add(new ShapeHandle(shieldFixture1.shape, Color.PURPLE));
+        h.add(new ShapeHandle(shieldFixture1.shape, Color.PURPLE));
+
+        // shield fixture 2
         Fixture shieldFixture2 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture2.offset.y = -WorldVals.PPM / 2f;
         shieldFixture2.putUserData(ConstKeys.REFLECT, ConstKeys.DOWN);
         body.add(shieldFixture2);
-        s.shapeHandles.add(new ShapeHandle(shieldFixture2.shape, Color.PURPLE));
+        h.add(new ShapeHandle(shieldFixture2.shape, Color.PURPLE));
+         */
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
+
         return new BodyComponent(body);
     }
 

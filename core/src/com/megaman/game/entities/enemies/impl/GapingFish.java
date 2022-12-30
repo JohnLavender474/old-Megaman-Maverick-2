@@ -85,24 +85,38 @@ public class GapingFish extends Enemy implements Faceable {
     @Override
     protected void defineBody(Body body) {
         body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
+
+        // scanner fixture
         Array<Fixture> scanner = new Array<>();
         Fixture scannerFixture = new Fixture(this, FixtureType.CONSUMER,
                 new Rectangle().setSize(WorldVals.PPM, WorldVals.PPM / 2f));
         scannerFixture.putUserData(ConstKeys.CONSUMER, (Consumer<Fixture>) scanner::add);
         scannerFixture.offset.y += WorldVals.PPM / 4f;
         body.add(scannerFixture);
+
         Rectangle m1 = new Rectangle().setSize(.75f * WorldVals.PPM, .2f * WorldVals.PPM);
+
+        // head fixture
         Fixture headFixture = new Fixture(this, FixtureType.HEAD, new Rectangle(m1));
         headFixture.offset.y = .375f * WorldVals.PPM;
         body.add(headFixture);
+
+        // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle(m1));
         feetFixture.offset.y = -.375f * WorldVals.PPM;
         body.add(feetFixture);
+
         Rectangle m2 = new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle(m2));
         body.add(damageableFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle(m2));
         body.add(damagerFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             Body megaBody = game.getMegaman().getComponent(BodyComponent.class).body;
             if (body.bounds.x >= megaBody.bounds.x + megaBody.bounds.width) {

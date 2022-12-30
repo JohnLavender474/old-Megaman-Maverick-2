@@ -38,7 +38,11 @@ public class RocketPlatform extends Block implements EventListener {
                     TextureAsset.CUSTOM_TILES_1, "JeffBezosLittleDickRocket");
         }
         spriteHandle = new SpriteHandle(new Sprite(), 2);
-        putComponent(shapeComponent());
+
+        if (MegamanGame.DEBUG) {
+            putComponent(shapeComponent());
+        }
+
         putComponent(spriteComponent());
         putComponent(animationComponent());
         putComponent(new TrajectoryComponent());

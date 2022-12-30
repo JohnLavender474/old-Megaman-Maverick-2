@@ -145,7 +145,10 @@ public class SpringHead extends Enemy implements Faceable {
         });
         h.add(new ShapeHandle(bounceFixture.shape, Color.GREEN));
         body.add(bounceFixture);
-        putComponent(new ShapeComponent(h));
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     public boolean isBouncing() {

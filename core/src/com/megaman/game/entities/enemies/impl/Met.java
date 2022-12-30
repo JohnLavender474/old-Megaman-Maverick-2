@@ -137,7 +137,9 @@ public class Met extends Enemy implements Faceable {
             damageableFixture.active = !shieldFixture.active;
         };
 
-        putComponent(new ShapeComponent(h));
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
     }
 
     @Override
