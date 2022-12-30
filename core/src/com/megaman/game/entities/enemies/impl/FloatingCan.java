@@ -96,6 +96,7 @@ public class FloatingCan extends Enemy {
         h.updatable = delta -> {
             h.setPosition(body.bounds, Position.CENTER);
             sprite.setFlip(getComponent(PathfindingComponent.class).currentTrajectory.x < 0f, false);
+            h.hidden = dmgBlink;
         };
         return new SpriteComponent(h);
     }

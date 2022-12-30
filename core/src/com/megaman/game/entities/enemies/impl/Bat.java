@@ -181,7 +181,10 @@ public class Bat extends Enemy {
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
         SpriteHandle h = new SpriteHandle(sprite, 4);
-        h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
+        h.updatable = delta -> {
+            h.setPosition(body.bounds, Position.CENTER);
+            h.hidden = dmgBlink;
+        };
         return new SpriteComponent(h);
     }
 

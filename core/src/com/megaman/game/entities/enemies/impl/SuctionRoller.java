@@ -174,6 +174,7 @@ public class SuctionRoller extends Enemy implements Faceable {
         sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);
         SpriteHandle h = new SpriteHandle(sprite, 3);
         h.updatable = delta -> {
+            h.hidden = dmgBlink;
             sprite.setFlip(is(Facing.RIGHT), false);
             sprite.setRotation(onWall ? (is(Facing.LEFT) ? -90f : 90f) : 0f);
             h.setPosition(body.bounds, onWall ?

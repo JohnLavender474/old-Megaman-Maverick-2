@@ -171,6 +171,7 @@ public class SniperJoe extends Enemy implements Faceable {
         h.updatable = delta -> {
             h.setPosition(body.bounds, Position.CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
+            h.hidden = dmgBlink;
         };
         return new SpriteComponent(h);
     }

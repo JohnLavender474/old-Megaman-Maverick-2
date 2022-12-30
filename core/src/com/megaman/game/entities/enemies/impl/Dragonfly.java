@@ -185,6 +185,7 @@ public class Dragonfly extends Enemy implements Faceable {
                 setFacing(isMegamanLeft() ? Facing.LEFT : Facing.RIGHT);
             }
             sprite.setFlip(is(Facing.LEFT), false);
+            h.hidden = dmgBlink;
         };
         return new SpriteComponent(h);
     }

@@ -159,6 +159,7 @@ public class GapingFish extends Enemy implements Faceable {
         h.updatable = delta -> {
             h.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
+            h.hidden = dmgBlink;
         };
         return new SpriteComponent(h);
     }
