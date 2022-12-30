@@ -19,6 +19,8 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -78,7 +80,8 @@ public class SpringHead extends Enemy implements Faceable {
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
-
+            put(ChargedShot.class, new DamageNegotiation(10));
+            put(ChargedShotExplosion.class, new DamageNegotiation(5));
         }};
     }
 
@@ -140,34 +143,49 @@ public class SpringHead extends Enemy implements Faceable {
         return game.getMegaman().body.isRightOf(body);
     }
 
-    private boolean megamanOverlapSpeedUpScanner() {
+    private boolean isMegamanOverlappingSpeedUpScanner() {
         return game.getMegaman().body.overlaps(speedUpScanner);
     }
+
+    private boolean isFacingWrongDir() {
+        return ((isMegamanRight() && is(Facing.LEFT)) || (!isMegamanRight() && is(Facing.RIGHT)));
+    }
+
+    // TODO: glitch, spring head gets stuck due to isAtLedge()
+    /*
+    private boolean isAtLedge() {
+        return (is(Facing.LEFT) && !is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
+                (is(Facing.RIGHT) && !is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT));
+    }
+     */
 
     @Override
     protected void defineUpdateComponent(UpdatableComponent c) {
         super.defineUpdateComponent(c);
         c.add(delta -> {
-            bounceTimer.update(delta);
-            if (isBouncing()) {
-                body.velocity.x = 0f;
-                return;
-            }
             turnTimer.update(delta);
             if (turnTimer.isJustFinished()) {
                 setFacing(isMegamanRight() ? Facing.RIGHT : Facing.LEFT);
             }
-            if (turnTimer.isFinished() &&
-                    ((isMegamanRight() && is(Facing.LEFT)) || (!isMegamanRight() && is(Facing.RIGHT)))) {
+            if (turnTimer.isFinished() && isFacingWrongDir()) {
                 turnTimer.reset();
             }
-            if ((is(Facing.LEFT) && !is(BodySense.SIDE_TOUCHING_BLOCK_LEFT)) ||
-                    (is(Facing.RIGHT) && !is(BodySense.SIDE_TOUCHING_BLOCK_RIGHT))) {
+            bounceTimer.update(delta);
+
+            // TODO: glitch, spring head gets stuck due to isAtLedge()
+            /*
+            if (isBouncing() || isAtLedge()) {
                 body.velocity.x = 0f;
-            } else {
-                float vel = (megamanOverlapSpeedUpScanner() ? SPEED_SUPER : SPEED_NORMAL) * WorldVals.PPM;
-                body.velocity.x = is(Facing.LEFT) ? -vel : vel;
+                return;
             }
+             */
+            if (isBouncing()) {
+                body.velocity.x = 0f;
+                return;
+            }
+
+            float vel = (isMegamanOverlappingSpeedUpScanner() ? SPEED_SUPER : SPEED_NORMAL) * WorldVals.PPM;
+            body.velocity.x = is(Facing.LEFT) ? -vel : vel;
         });
     }
 
