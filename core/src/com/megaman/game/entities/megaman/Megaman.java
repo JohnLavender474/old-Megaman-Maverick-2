@@ -915,6 +915,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
             sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
             sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
+            if (is(BodySense.FEET_ON_GROUND) && Math.abs(body.velocity.x) <= WorldVals.PPM / 8f && isShooting()) {
+                float offsetX = .285f * WorldVals.PPM;
+                if (is(Facing.LEFT)) {
+                    offsetX *= -1f;
+                }
+                sprite.translateX(offsetX);
+            }
         };
         return new SpriteComponent(handle);
     }
