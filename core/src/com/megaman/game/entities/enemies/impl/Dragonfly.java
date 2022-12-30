@@ -94,16 +94,16 @@ public class Dragonfly extends Enemy implements Faceable {
         body.bounds.setSize(.75f * WorldVals.PPM);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         Fixture megamanScanner = new Fixture(this, FixtureType.CUSTOM,
                 new Rectangle().setSize(32f * WorldVals.PPM, WorldVals.PPM));
-        body.fixtures.add(megamanScanner);
+        body.add(megamanScanner);
         Fixture oobScanner = new Fixture(this, FixtureType.CUSTOM,
                 new Rectangle().setSize(WorldVals.PPM / 32f));
-        body.fixtures.add(oobScanner);
+        body.add(oobScanner);
         body.preProcess = delta -> {
             changeBehavTimer.update(delta);
             if (!changeBehavTimer.isFinished()) {

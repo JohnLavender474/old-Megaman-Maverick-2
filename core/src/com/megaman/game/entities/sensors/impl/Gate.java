@@ -107,7 +107,7 @@ public class Gate extends Entity implements EventListener, Resettable {
     private BodyComponent bodyComponent() {
         body.bounds.setSize(2f * WorldVals.PPM, 3f * WorldVals.PPM);
         Fixture gateFixture = new Fixture(this, FixtureType.GATE, new Rectangle(body.bounds));
-        body.fixtures.add(gateFixture);
+        body.add(gateFixture);
         return new BodyComponent(body);
     }
 

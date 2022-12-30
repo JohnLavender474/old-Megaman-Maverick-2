@@ -91,33 +91,46 @@ public class SpringHead extends Enemy implements Faceable {
         Array<ShapeHandle> h = new Array<>();
         Circle c1 = new Circle();
         c1.radius = .35f * WorldVals.PPM;
+
+        // left fixture
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(.1f * WorldVals.PPM));
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         leftFixture.offset.x = -.4f * WorldVals.PPM;
         leftFixture.offset.y = -WorldVals.PPM / 4f;
         h.add(new ShapeHandle(leftFixture.shape, Color.PURPLE));
-        body.fixtures.add(leftFixture);
+        body.add(leftFixture);
+
+        // right fixture
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(.1f * WorldVals.PPM));
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         rightFixture.offset.x = .4f * WorldVals.PPM;
         rightFixture.offset.y = -WorldVals.PPM / 4f;
         h.add(new ShapeHandle(rightFixture.shape, Color.PURPLE));
-        body.fixtures.add(rightFixture);
+        body.add(rightFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Circle(c1));
         h.add(new ShapeHandle(damagerFixture.shape));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Circle(c1));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
+
+        // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(.85f * WorldVals.PPM, .6f * WorldVals.PPM));
         shieldFixture.offset.y = .1f * WorldVals.PPM;
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         h.add(new ShapeHandle(shieldFixture.shape, Color.BLUE));
-        body.fixtures.add(shieldFixture);
+        body.add(shieldFixture);
+
         Circle c2 = new Circle();
         c2.radius = WorldVals.PPM / 4f;
+
+        // bounce fixture
         Fixture bounceFixture = new Fixture(this, FixtureType.BOUNCER, c2);
         bounceFixture.putUserData(ConstKeys.FUNCTION, (Function<Fixture, Vector2>) f -> {
             bounceTimer.reset();
@@ -131,7 +144,7 @@ public class SpringHead extends Enemy implements Faceable {
             return force;
         });
         h.add(new ShapeHandle(bounceFixture.shape, Color.GREEN));
-        body.fixtures.add(bounceFixture);
+        body.add(bounceFixture);
         putComponent(new ShapeComponent(h));
     }
 

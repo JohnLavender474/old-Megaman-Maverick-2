@@ -96,11 +96,11 @@ public class HealthBulb extends Entity implements Item {
     private BodyComponent bodyComponent() {
         Array<ShapeHandle> h = new Array<>();
         Fixture feetFixture = new Fixture(this, FixtureType.FEET, new Rectangle().setSize(.25f * WorldVals.PPM));
-        body.fixtures.add(feetFixture);
+        body.add(feetFixture);
         h.add(new ShapeHandle(() -> feetFixture.shape, Color.GREEN));
         this.feetFixture = feetFixture;
         Fixture itemFixture = new Fixture(this, FixtureType.ITEM, new Rectangle());
-        body.fixtures.add(itemFixture);
+        body.add(itemFixture);
         h.add(new ShapeHandle(() -> itemFixture.shape, Color.RED));
         this.itemFixture = itemFixture;
         body.preProcess = delta -> {

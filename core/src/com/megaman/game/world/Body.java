@@ -80,6 +80,10 @@ public class Body implements Updatable, Resettable {
         userData.remove(key);
     }
 
+    public void add(Fixture fixture) {
+        fixtures.add(fixture);
+    }
+
     public boolean isRightOf(Body body) {
         return getCenter().x > body.getCenter().x;
     }

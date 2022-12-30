@@ -108,33 +108,33 @@ public class SuctionRoller extends Enemy implements Faceable {
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
         h.add(new ShapeHandle(bodyFixture.shape, Color.BLUE));
-        body.fixtures.add(bodyFixture);
+        body.add(bodyFixture);
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
                 new Rectangle().setSize(WorldVals.PPM / 4f, WorldVals.PPM / 32f));
         feetFixture.offset.y = .6f * -WorldVals.PPM;
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
-        body.fixtures.add(feetFixture);
+        body.add(feetFixture);
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         leftFixture.offset.x = -.375f * WorldVals.PPM;
         leftFixture.offset.y = WorldVals.PPM / 5f;
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         h.add(new ShapeHandle(leftFixture.shape, Color.ORANGE));
-        body.fixtures.add(leftFixture);
+        body.add(leftFixture);
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setSize(WorldVals.PPM / 32f, WorldVals.PPM));
         rightFixture.offset.x = .375f * WorldVals.PPM;
         rightFixture.offset.y = WorldVals.PPM / 5f;
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         h.add(new ShapeHandle(rightFixture.shape, Color.ORANGE));
-        body.fixtures.add(rightFixture);
+        body.add(rightFixture);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.RED));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM, WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY * WorldVals.PPM;
             // body.gravityOn = !is(BodySense.FEET_ON_GROUND);

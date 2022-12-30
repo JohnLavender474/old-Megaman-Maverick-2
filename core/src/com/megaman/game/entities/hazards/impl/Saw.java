@@ -171,23 +171,23 @@ public class Saw extends Entity {
         body.bounds.setSize(2f * WorldVals.PPM, 2f * WorldVals.PPM);
         Fixture deathFixture1 = new Fixture(this, FixtureType.DEATH,
                 new Rectangle().setSize(2f * WorldVals.PPM, WorldVals.PPM));
-        body.fixtures.add(deathFixture1);
+        body.add(deathFixture1);
         s.shapeHandles.add(new ShapeHandle(deathFixture1.shape, Color.RED));
         Fixture deathFixture2 = new Fixture(this, FixtureType.DEATH,
                 new Rectangle().setSize(WorldVals.PPM, 2f * WorldVals.PPM));
-        body.fixtures.add(deathFixture2);
+        body.add(deathFixture2);
         s.shapeHandles.add(new ShapeHandle(deathFixture2.shape, Color.RED));
         Fixture shieldFixture1 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture1.offset.y = WorldVals.PPM / 2f;
         shieldFixture1.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
-        body.fixtures.add(shieldFixture1);
+        body.add(shieldFixture1);
         s.shapeHandles.add(new ShapeHandle(shieldFixture1.shape, Color.PURPLE));
         Fixture shieldFixture2 = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM));
         shieldFixture2.offset.y = -WorldVals.PPM / 2f;
         shieldFixture2.putUserData(ConstKeys.REFLECT, ConstKeys.DOWN);
-        body.fixtures.add(shieldFixture2);
+        body.add(shieldFixture2);
         s.shapeHandles.add(new ShapeHandle(shieldFixture2.shape, Color.PURPLE));
         return new BodyComponent(body);
     }

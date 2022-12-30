@@ -30,6 +30,7 @@ public class MegamanDamageNegs {
         put(Bat.class, new DamageNegotiation(5));
         put(Met.class, new DamageNegotiation(5));
         put(MagFly.class, new DamageNegotiation(5));
+        put(FlyBoy.class, new DamageNegotiation(8));
         put(Bullet.class, new DamageNegotiation(10));
         put(ChargedShot.class, new DamageNegotiation(15));
         put(Fireball.class, new DamageNegotiation(5));

@@ -16,7 +16,7 @@ public class Death extends Entity {
         super(game, EntityType.SENSOR);
         body = new Body(BodyType.ABSTRACT);
         deathFixture = new Fixture(this, FixtureType.DEATH, new Rectangle());
-        body.fixtures.add(deathFixture);
+        body.add(deathFixture);
         putComponent(new BodyComponent(body));
     }
 

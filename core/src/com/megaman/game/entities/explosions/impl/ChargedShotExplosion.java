@@ -94,7 +94,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
         body.bounds.setSize(WorldVals.PPM, WorldVals.PPM);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         return new BodyComponent(body);
     }
 

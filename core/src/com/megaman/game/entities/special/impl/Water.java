@@ -48,7 +48,7 @@ public class Water extends Entity {
         }
         this.body = new Body(BodyType.ABSTRACT);
         this.water = new Fixture(this, FixtureType.WATER, new Rectangle());
-        this.body.fixtures.add(water);
+        this.body.add(water);
         putComponent(new BodyComponent(body));
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
     }

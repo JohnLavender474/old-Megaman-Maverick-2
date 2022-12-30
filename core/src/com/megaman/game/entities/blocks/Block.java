@@ -35,7 +35,7 @@ public class Block extends Entity {
         super(game, EntityType.BLOCK);
         body = new Body(bodyType);
         blockFixture = new Fixture(this, FixtureType.BLOCK, new Rectangle());
-        body.fixtures.add(blockFixture);
+        body.add(blockFixture);
         putComponent(new BodyComponent(body));
         putComponent(shapeComponent());
         if (cullOnBodyOOB) {

@@ -481,12 +481,12 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         // player fixture
         Fixture playerFixture = new Fixture(this, FixtureType.PLAYER,
                 new Rectangle().setWidth(.8f * WorldVals.PPM));
-        body.fixtures.add(playerFixture);
+        body.add(playerFixture);
 
         // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setWidth(.8f * WorldVals.PPM));
-        body.fixtures.add(bodyFixture);
+        body.add(bodyFixture);
         h.add(new ShapeHandle(bodyFixture.shape, Color.YELLOW));
 
         Runnable onBounce = () -> {
@@ -499,7 +499,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
                 new Rectangle().setSize(.6f * WorldVals.PPM, .25f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
-        body.fixtures.add(feetFixture);
+        body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
 
         // head fixture
@@ -507,7 +507,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 new Rectangle().setSize(.6f * WorldVals.PPM, .15f * WorldVals.PPM));
         headFixture.offset.y = .45f * WorldVals.PPM;
         headFixture.putUserData(ConstKeys.RUN, onBounce);
-        body.fixtures.add(headFixture);
+        body.add(headFixture);
         h.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
 
         // left fixture
@@ -516,7 +516,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
-        body.fixtures.add(leftFixture);
+        body.add(leftFixture);
         h.add(new ShapeHandle(leftFixture.shape, Color.PINK));
 
         // right fixture
@@ -525,20 +525,20 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         rightFixture.offset.set(.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
-        body.fixtures.add(rightFixture);
+        body.add(rightFixture);
         h.add(new ShapeHandle(rightFixture.shape, Color.PINK));
 
         // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.8f * WorldVals.PPM));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         h.add(new ShapeHandle(damageableFixture.shape, Color.RED));
 
         // water listener fixture
         Fixture waterListenerFixture = new Fixture(this, FixtureType.WATER_LISTENER,
                 new Rectangle().setSize(.8f * WorldVals.PPM, WorldVals.PPM / 4f));
         h.add(new ShapeHandle(waterListenerFixture.shape, Color.BLUE));
-        body.fixtures.add(waterListenerFixture);
+        body.add(waterListenerFixture);
 
         // pre-process
         body.preProcess = delta -> {

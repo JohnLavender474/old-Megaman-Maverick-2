@@ -31,7 +31,7 @@ public class Ladder extends Entity {
 
     private BodyComponent bodyComponent() {
         Fixture ladderFixture = new Fixture(this, FixtureType.LADDER, new Rectangle());
-        body.fixtures.add(ladderFixture);
+        body.add(ladderFixture);
         this.ladderFixture = ladderFixture;
         return new BodyComponent(body);
     }

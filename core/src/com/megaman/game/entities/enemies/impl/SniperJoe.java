@@ -98,16 +98,16 @@ public class SniperJoe extends Enemy implements Faceable {
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM, 1.15f * WorldVals.PPM));
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.8f * WorldVals.PPM, 1.35f * WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(.4f * WorldVals.PPM, .9f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.STRAIGHT);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shielded ? Color.GREEN : Color.GRAY));
-        body.fixtures.add(shieldFixture);
+        body.add(shieldFixture);
         body.preProcess = delta -> {
             shieldFixture.active = shielded;
             if (shielded) {

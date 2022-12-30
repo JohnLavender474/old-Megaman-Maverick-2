@@ -91,7 +91,7 @@ public class SpringBouncer extends Entity {
         Fixture bouncerFixture = new Fixture(this, FixtureType.BOUNCER, new Rectangle());
         bouncerFixture.putUserData(ConstKeys.RUN, (Runnable) this::onBounce);
         this.bounceFixture = bouncerFixture;
-        body.fixtures.add(bouncerFixture);
+        body.add(bouncerFixture);
         return new BodyComponent(body);
     }
 

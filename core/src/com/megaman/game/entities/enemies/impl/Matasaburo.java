@@ -100,15 +100,15 @@ public class Matasaburo extends Enemy implements Faceable {
         };
         blowFixture.putUserData(ConstKeys.FUNCTION, blowFunc);
         h.add(new ShapeHandle(blowFixture.shape, Color.BLUE));
-        body.fixtures.add(blowFixture);
+        body.add(blowFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.85f * WorldVals.PPM));
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         body.preProcess = delta -> {
             float offsetX = 5f * WorldVals.PPM;
             if (is(Facing.LEFT)) {

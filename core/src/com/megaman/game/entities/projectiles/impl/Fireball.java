@@ -119,9 +119,9 @@ public class Fireball extends Projectile {
         body.gravity.y = GRAVITY * WorldVals.PPM;
         body.bounds.setSize(.9f * WorldVals.PPM);
         Fixture projFixture = new Fixture(this, FixtureType.PROJECTILE, new Rectangle().setSize(.9f * WorldVals.PPM));
-        body.fixtures.add(projFixture);
+        body.add(projFixture);
         Fixture dmgrFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle().setSize(.9f * WorldVals.PPM));
-        body.fixtures.add(dmgrFixture);
+        body.add(dmgrFixture);
     }
 
     private UpdatableComponent updatableComponent() {

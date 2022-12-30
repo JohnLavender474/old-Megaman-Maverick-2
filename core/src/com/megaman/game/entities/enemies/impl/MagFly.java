@@ -93,17 +93,17 @@ public class MagFly extends Enemy implements Faceable {
     protected void defineBody(Body body) {
         body.bounds.setSize(WorldVals.PPM);
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(bodyFixture);
+        body.add(bodyFixture);
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE, new Rectangle().setSize(.1f * WorldVals.PPM));
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         leftFixture.offset.x = -.6f * WorldVals.PPM;
         leftFixture.offset.y = -.4f * WorldVals.PPM;
-        body.fixtures.add(leftFixture);
+        body.add(leftFixture);
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE, new Rectangle().setSize(.1f * WorldVals.PPM));
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         rightFixture.offset.x = .6f * WorldVals.PPM;
         rightFixture.offset.y = -.4f * WorldVals.PPM;
-        body.fixtures.add(rightFixture);
+        body.add(rightFixture);
         Fixture forceFixture = new Fixture(this, FixtureType.FORCE,
                 new Rectangle().setSize(WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM));
         forceFixture.offset.y = -ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f;
@@ -122,12 +122,12 @@ public class MagFly extends Enemy implements Faceable {
             return new Vector2(x, y);
         };
         forceFixture.putUserData(ConstKeys.FUNCTION, forceFunc);
-        body.fixtures.add(forceFixture);
+        body.add(forceFixture);
         this.forceFixture = forceFixture;
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle().setSize(.85f * WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class IceBlock extends Block {
     public IceBlock(MegamanGame game) {
         super(game, true);
         Fixture iceFixture = new Fixture(this, FixtureType.ICE, new Rectangle());
-        body.fixtures.add(iceFixture);
+        body.add(iceFixture);
         this.iceFixture = iceFixture;
     }
 

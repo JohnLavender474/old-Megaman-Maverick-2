@@ -111,13 +111,13 @@ public class Bullet extends Projectile {
     private void defineBody() {
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle(body.bounds));
-        body.fixtures.add(bodyFixture);
+        body.add(bodyFixture);
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE,
                 new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
-        body.fixtures.add(projectileFixture);
+        body.add(projectileFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.2f * WorldVals.PPM, .2f * WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
     }
 
     private SpriteComponent spriteComponent() {

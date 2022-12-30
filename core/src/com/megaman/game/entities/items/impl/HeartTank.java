@@ -66,7 +66,7 @@ public class HeartTank extends Entity implements Item {
     private BodyComponent bodyComponent() {
         body.bounds.setSize(WorldVals.PPM);
         Fixture itemFixture = new Fixture(this, FixtureType.ITEM, new Rectangle().setSize(WorldVals.PPM));
-        body.fixtures.add(itemFixture);
+        body.add(itemFixture);
         return new BodyComponent(body);
     }
 

@@ -101,24 +101,24 @@ public class Met extends Enemy implements Faceable {
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         h.add(new ShapeHandle(bodyFixture.shape, Color.ORANGE));
-        body.fixtures.add(bodyFixture);
+        body.add(bodyFixture);
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
                 new Rectangle().setSize(.15f * WorldVals.PPM, .2f * WorldVals.PPM));
         feetFixture.offset.y = -.375f * WorldVals.PPM;
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
-        body.fixtures.add(feetFixture);
+        body.add(feetFixture);
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM, 1.5f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shieldFixture.active ? Color.BLUE : Color.GRAY));
-        body.fixtures.add(shieldFixture);
+        body.add(shieldFixture);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, () -> damageableFixture.active ? Color.RED : Color.GRAY));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY_Y * WorldVals.PPM;
             shieldFixture.active = metBehavior == MetBehavior.SHIELDING;

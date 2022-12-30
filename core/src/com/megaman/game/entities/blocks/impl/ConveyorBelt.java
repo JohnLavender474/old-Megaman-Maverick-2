@@ -57,7 +57,7 @@ public class ConveyorBelt extends Block {
         }
         forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
         forceFixture.offset.y = WorldVals.PPM / 8f;
-        body.fixtures.add(forceFixture);
+        body.add(forceFixture);
         putComponent(new ShapeComponent(new ShapeHandle(forceFixture.shape, Color.BLUE)));
     }
 

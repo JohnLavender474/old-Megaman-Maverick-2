@@ -25,10 +25,14 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     private static final float DEFAULT_CULL_DUR = .75f;
     private static final float DEFAULT_DMG_DUR = .15f;
+    private static final float DEFAULT_DMG_BLINK_DUR = .025f;
 
     protected final Body body;
     protected final Timer dmgTimer;
+    protected final Timer dmgBlinkTimer;
     protected final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs;
+
+    protected boolean dmgBlink;
 
     public Enemy(MegamanGame game, BodyType bodyType) {
         this(game, DEFAULT_DMG_DUR, bodyType);
@@ -39,9 +43,14 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     public Enemy(MegamanGame game, float dmgDur, float cullDur, BodyType bodyType) {
+        this(game, dmgDur, DEFAULT_DMG_BLINK_DUR, cullDur, bodyType);
+    }
+
+    public Enemy(MegamanGame game, float dmgDur, float dmgBlinkDur, float cullDur, BodyType bodyType) {
         super(game, EntityType.ENEMY);
         body = new Body(bodyType);
         dmgTimer = new Timer(dmgDur, true);
+        dmgBlinkTimer = new Timer(dmgBlinkDur, true);
         dmgNegs = defineDamageNegotiations();
         defineBody(body);
         putComponent(new BodyComponent(body));
@@ -55,7 +64,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         putComponent(new HealthComponent());
         putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
         runOnDeath.add(() -> {
-            if (getHealth() == 0) {
+            if (hasHealth(0)) {
                 disintegrate();
             }
         });
@@ -66,7 +75,19 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     protected abstract void defineBody(Body body);
 
     protected void defineUpdateComponent(UpdatableComponent c) {
-        c.add(dmgTimer::update);
+        c.add(delta -> {
+            dmgTimer.update(delta);
+            if (!dmgTimer.isFinished()) {
+                dmgBlinkTimer.update(delta);
+                if (dmgBlinkTimer.isFinished()) {
+                    dmgBlinkTimer.reset();
+                    dmgBlink = !dmgBlink;
+                }
+            }
+            if (dmgTimer.isJustFinished()) {
+                dmgBlink = false;
+            }
+        });
     }
 
     protected void defineCullOnEventComponent(CullOnEventComponent c) {
@@ -80,6 +101,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     @Override
     public Set<Class<? extends Damager>> getDamagerMaskSet() {
         return dmgNegs.keySet();
+    }
+
+    public boolean hasHealth(int health) {
+        return getHealth() == health;
     }
 
     public int getHealth() {

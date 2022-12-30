@@ -104,15 +104,15 @@ public class Bat extends Enemy {
         Fixture headFixture = new Fixture(this, FixtureType.HEAD,
                 new Rectangle().setSize(.5f * WorldVals.PPM, .175f * WorldVals.PPM));
         headFixture.offset.y = .375f * WorldVals.PPM;
-        body.fixtures.add(headFixture);
+        body.add(headFixture);
         Rectangle m = new Rectangle().setSize(.75f * WorldVals.PPM);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle(m));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle(m));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
         this.damageableFixture = damageableFixture;
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD, new Rectangle(m));
-        body.fixtures.add(shieldFixture);
+        body.add(shieldFixture);
         this.shieldFixture = shieldFixture;
         Fixture scannerFixture = new Fixture(this, FixtureType.CONSUMER, new Rectangle(m));
         Consumer<Fixture> scanner = f -> {
@@ -121,7 +121,7 @@ public class Bat extends Enemy {
             }
         };
         scannerFixture.putUserData(ConstKeys.CONSUMER, scanner);
-        body.fixtures.add(scannerFixture);
+        body.add(scannerFixture);
     }
 
     @Override

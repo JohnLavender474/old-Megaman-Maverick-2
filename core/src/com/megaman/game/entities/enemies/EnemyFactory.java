@@ -12,6 +12,7 @@ public class EnemyFactory implements EntityFactory {
     public static final String MET = "Met";
     public static final String BAT = "Bat";
     public static final String MAG_FLY = "MagFly";
+    public static final String FLY_BOY = "FlyBoy";
     public static final String SNIPER_JOE = "SniperJoe";
     public static final String DRAGON_FLY = "Dragonfly";
     public static final String MATASABURO = "Matasaburo";
@@ -27,6 +28,7 @@ public class EnemyFactory implements EntityFactory {
             put(MET, new EntityPool(5, () -> new Met(game)));
             put(BAT, new EntityPool(5, () -> new Bat(game)));
             put(MAG_FLY, new EntityPool(5, () -> new MagFly(game)));
+            put(FLY_BOY, new EntityPool(5, () -> new FlyBoy(game)));
             put(SNIPER_JOE, new EntityPool(5, () -> new SniperJoe(game)));
             put(DRAGON_FLY, new EntityPool(5, () -> new Dragonfly(game)));
             put(MATASABURO, new EntityPool(5, () -> new Matasaburo(game)));

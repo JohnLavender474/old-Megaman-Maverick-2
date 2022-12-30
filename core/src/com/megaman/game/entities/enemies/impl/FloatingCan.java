@@ -69,10 +69,10 @@ public class FloatingCan extends Enemy {
         body.bounds.setSize(.75f * WorldVals.PPM);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
-        body.fixtures.add(damageableFixture);
+        body.add(damageableFixture);
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
-        body.fixtures.add(damagerFixture);
+        body.add(damagerFixture);
     }
 
     @Override
