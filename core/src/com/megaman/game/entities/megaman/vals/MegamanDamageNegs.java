@@ -27,21 +27,21 @@ public class MegamanDamageNegs {
     }
 
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
-        put(Bat.class, new DamageNegotiation(5));
-        put(Met.class, new DamageNegotiation(5));
-        put(MagFly.class, new DamageNegotiation(5));
-        put(FlyBoy.class, new DamageNegotiation(8));
-        put(Bullet.class, new DamageNegotiation(10));
-        put(ChargedShot.class, new DamageNegotiation(15));
-        put(Fireball.class, new DamageNegotiation(5));
-        put(Dragonfly.class, new DamageNegotiation(5));
-        put(Matasaburo.class, new DamageNegotiation(5));
-        put(SniperJoe.class, new DamageNegotiation(10));
-        put(SpringHead.class, new DamageNegotiation(5));
-        put(FloatingCan.class, new DamageNegotiation(10));
-        put(LaserBeamer.class, new DamageNegotiation(10));
-        put(SuctionRoller.class, new DamageNegotiation(10));
-        put(GapingFish.class, new DamageNegotiation(5));
+        put(Bat.class, new DamageNegotiation(2));
+        put(Met.class, new DamageNegotiation(2));
+        put(MagFly.class, new DamageNegotiation(2));
+        put(FlyBoy.class, new DamageNegotiation(4));
+        put(Bullet.class, new DamageNegotiation(2));
+        put(ChargedShot.class, new DamageNegotiation(4));
+        put(Fireball.class, new DamageNegotiation(2));
+        put(Dragonfly.class, new DamageNegotiation(3));
+        put(Matasaburo.class, new DamageNegotiation(2));
+        put(SniperJoe.class, new DamageNegotiation(3));
+        put(SpringHead.class, new DamageNegotiation(2));
+        put(FloatingCan.class, new DamageNegotiation(2));
+        put(LaserBeamer.class, new DamageNegotiation(3));
+        put(SuctionRoller.class, new DamageNegotiation(1));
+        put(GapingFish.class, new DamageNegotiation(2));
     }};
 
 }

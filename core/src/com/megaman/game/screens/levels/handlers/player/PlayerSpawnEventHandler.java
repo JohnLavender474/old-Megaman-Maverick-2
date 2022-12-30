@@ -87,6 +87,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
         beamDownTimer.reset();
         beamTransTimer.reset();
         beamLandAnim.reset();
+        beamSprite.setPosition(-WorldVals.PPM, -WorldVals.PPM);
         audioMan.play();
         megaman.body.gravityOn = false;
         engine.set(false, ControllerSystem.class);
@@ -142,7 +143,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
             batch.setProjectionMatrix(uiCam.combined);
             ready.draw(batch);
         }
-        if (!beamDownTimer.isFinished() || !beamTransTimer.isFinished()) {
+        if (preBeamTimer.isFinished() && (!beamDownTimer.isFinished() || !beamTransTimer.isFinished())) {
             batch.setProjectionMatrix(gameCam.combined);
             SpriteDrawer.draw(beamSprite, batch);
         }

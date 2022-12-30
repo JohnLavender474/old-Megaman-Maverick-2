@@ -98,32 +98,45 @@ public class Met extends Enemy implements Faceable {
         body.gravityOn = true;
         body.bounds.setSize(.75f * WorldVals.PPM);
         body.velClamp.set(VEL_CLAMP_X * WorldVals.PPM, VEL_CLAMP_Y * WorldVals.PPM);
+
+        // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         h.add(new ShapeHandle(bodyFixture.shape, Color.ORANGE));
         body.add(bodyFixture);
+
+        // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
                 new Rectangle().setSize(.15f * WorldVals.PPM, .2f * WorldVals.PPM));
         feetFixture.offset.y = -.375f * WorldVals.PPM;
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
         body.add(feetFixture);
+
+        // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
                 new Rectangle().setSize(WorldVals.PPM, 1.5f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shieldFixture.active ? Color.BLUE : Color.GRAY));
         body.add(shieldFixture);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         h.add(new ShapeHandle(damageableFixture.shape, () -> damageableFixture.active ? Color.RED : Color.GRAY));
         body.add(damageableFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
                 new Rectangle().setSize(.75f * WorldVals.PPM));
         body.add(damagerFixture);
+
+        // pre-process
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY_Y * WorldVals.PPM;
             shieldFixture.active = metBehavior == MetBehavior.SHIELDING;
             damageableFixture.active = !shieldFixture.active;
         };
+
         putComponent(new ShapeComponent(h));
     }
 

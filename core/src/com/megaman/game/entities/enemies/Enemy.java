@@ -1,5 +1,8 @@
 package com.megaman.game.entities.enemies;
 
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.SoundComponent;
@@ -7,10 +10,12 @@ import com.megaman.game.cull.CullOnEventComponent;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.explosions.ExplosionFactory;
+import com.megaman.game.entities.items.ItemFactory;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.updatables.UpdatableComponent;
+import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.BodyComponent;
@@ -66,6 +71,16 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         runOnDeath.add(() -> {
             if (hasHealth(0)) {
                 disintegrate();
+                UtilMethods.doIfRandMatch(0, 10, new Array<>() {{
+                    add(1);
+                    add(3);
+                    add(9);
+                }}, r -> {
+                    Entity e = game.getEntityFactories().fetch(EntityType.ITEM, ItemFactory.HEALTH_BULB);
+                    game.getGameEngine().spawn(e, body.bounds, new ObjectMap<>() {{
+                        put(ConstKeys.LARGE, r == 1);
+                    }});
+                });
             }
         });
     }

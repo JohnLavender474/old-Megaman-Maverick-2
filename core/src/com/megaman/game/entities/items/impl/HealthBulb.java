@@ -13,6 +13,7 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.cull.CullOnEventComponent;
+import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.items.Item;
@@ -24,9 +25,12 @@ import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Position;
+import com.megaman.game.utils.objs.TimeMarkedRunnable;
+import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 
 import java.util.EnumSet;
@@ -42,31 +46,34 @@ public class HealthBulb extends Entity implements Item {
 
     private static final float GRAV = -.15f;
     private static final float G_GRAV = -.001f;
+    private static final float TIME_TO_BLINK = 2f;
+    private static final float BLINK_DUR = .01f;
+    private static final float CULL_DUR = 3.5f;
 
     private final Body body;
     private final Sprite sprite;
+    private final Timer blinkTimer;
+    private final Timer cullTimer;
 
     private Fixture itemFixture;
     private Fixture feetFixture;
-    private boolean large;
 
-    /*
-    TODO:
-    - spawn health bulbs randomly from enemies
-    - add health to megaman, excess health goes to health tanks
-    - game is momentarily "paused" while health is being filled
-    - animation for filling health bar
-        - fixed time for each bit
-        - impl reused for filling weapon bits and boss health bits
-     */
+    private boolean large;
+    private boolean blink;
+    private boolean warning;
+
     public HealthBulb(MegamanGame game) {
         super(game, EntityType.ITEM);
         sprite = new Sprite();
         body = new Body(BodyType.DYNAMIC);
+        blinkTimer = new Timer(BLINK_DUR);
+        cullTimer = new Timer(CULL_DUR, new TimeMarkedRunnable(TIME_TO_BLINK, () -> warning = true));
         putComponent(bodyComponent());
         putComponent(spriteComponent());
         putComponent(animationComponent());
+        putComponent(updatableComponent());
         putComponent(cullOnEventComponent());
+        putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
     }
 
     @Override
@@ -77,11 +84,14 @@ public class HealthBulb extends Entity implements Item {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         large = (boolean) data.get(ConstKeys.LARGE);
+        warning = false;
+        blink = false;
+        blinkTimer.setToEnd();
+        cullTimer.reset();
         body.bounds.setSize((large ? .5f : .25f) * WorldVals.PPM);
         body.bounds.setCenter(spawn);
         ((Rectangle) itemFixture.shape).set(body.bounds);
         feetFixture.offset.y = (large ? -.25f : -.125f) * WorldVals.PPM;
-
     }
 
     @Override
@@ -91,6 +101,22 @@ public class HealthBulb extends Entity implements Item {
         game.getEventMan().submit(new Event(EventType.ADD_PLAYER_HEALTH, new ObjectMap<>() {{
             put(ConstKeys.VAL, large ? LARGE_HEALTH : SMALL_HEALTH);
         }}));
+    }
+
+    private UpdatableComponent updatableComponent() {
+        return new UpdatableComponent(delta -> {
+            if (warning) {
+                blinkTimer.update(delta);
+                if (blinkTimer.isFinished()) {
+                    blinkTimer.reset();
+                    blink = !blink;
+                }
+            }
+            cullTimer.update(delta);
+            if (cullTimer.isFinished()) {
+                dead = true;
+            }
+        });
     }
 
     private BodyComponent bodyComponent() {
@@ -114,7 +140,10 @@ public class HealthBulb extends Entity implements Item {
     private SpriteComponent spriteComponent() {
         sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
         SpriteHandle h = new SpriteHandle(sprite, 4);
-        h.updatable = delta -> h.setPosition(body.bounds, Position.BOTTOM_CENTER);
+        h.updatable = delta -> {
+            h.setPosition(body.bounds, Position.BOTTOM_CENTER);
+            h.hidden = blink;
+        };
         return new SpriteComponent(h);
     }
 

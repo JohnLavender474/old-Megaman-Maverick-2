@@ -10,9 +10,27 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Direction;
 
+import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class UtilMethods {
+
+    private static final Random RAND = new Random(System.currentTimeMillis());
+
+    public static int getRandom(int min, int max) {
+        return RAND.nextInt(max + 1 - min) + min;
+    }
+
+    public static void doIfRandMatch(int min, int max, Iterable<Integer> matches, Consumer<Integer> runOnMatch) {
+        int r = getRandom(min, max);
+        for (Integer i : matches) {
+            if (r == i) {
+                runOnMatch.accept(r);
+                break;
+            }
+        }
+    }
 
     public static String toString(ObjectMap<?, ?> m) {
         StringBuilder sb = new StringBuilder("{");
