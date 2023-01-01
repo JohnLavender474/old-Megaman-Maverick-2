@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 @Getter
 public class MegamanGame implements ApplicationListener {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private static final Logger logger = new Logger(MegamanGame.class, DEBUG);
 
@@ -121,6 +121,7 @@ public class MegamanGame implements ApplicationListener {
         screens.put(ScreenEnum.BOSS_SELECT, new BSelectScreen(this));
         screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
 
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FRIDGE_MAN));
         setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
 
         // setScreen(getScreen(ScreenEnum.MAIN));

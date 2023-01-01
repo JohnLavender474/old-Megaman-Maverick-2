@@ -16,7 +16,7 @@ public enum Level {
     MISTER_MAN("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC),
     BLUNT_MAN("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC),
     NUKE_MAN("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC),
-    FRIDGE_MAN("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC),
+    FRIDGE_MAN("FridgeMan.tmx", MusicAsset.MM8_FROST_MAN_ALT_MUSIC),
     MICROWAVE_MAN("", MusicAsset.MMZ_NEO_ARCADIA_MUSIC);
 
     private final String tmxFile;

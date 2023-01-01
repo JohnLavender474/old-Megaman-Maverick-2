@@ -38,7 +38,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
     private static final float BAR_X = .4f * WorldVals.PPM;
     private static final float BAR_Y = 9f * WorldVals.PPM;
     private static final float SPECIAL_ITEM_DUR = .35f;
-    private static final float DUR_PER_BIT = .1f;
+    private static final float DUR_PER_BIT = .2f;
 
     private final Megaman megaman;
     private final GameEngine engine;

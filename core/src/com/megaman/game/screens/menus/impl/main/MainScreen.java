@@ -140,6 +140,7 @@ public class MainScreen extends MenuScreen {
     @Override
     public void show() {
         super.show();
+        uiCam.position.set(ConstFuncs.getCamInitPos());
         game.getAudioMan().play(MusicAsset.MM11_WILY_STAGE_MUSIC, true);
     }
 

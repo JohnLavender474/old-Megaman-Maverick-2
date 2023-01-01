@@ -54,14 +54,6 @@ public class Bullet extends Projectile {
         super.init(spawn, data);
     }
 
-    public void disintegrate() {
-        dead = true;
-        game.getGameEngine().spawn(
-                game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
-                ShapeUtils.getCenterPoint(body.bounds));
-        game.getAudioMan().play(SoundAsset.THUMP_SOUND);
-    }
-
     @Override
     public void hitBlock(Fixture blockFixture) {
         disintegrate();
@@ -83,7 +75,16 @@ public class Bullet extends Projectile {
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
+    public void disintegrate() {
+        dead = true;
+        game.getGameEngine().spawn(
+                game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
+                ShapeUtils.getCenterPoint(body.bounds));
+        game.getAudioMan().play(SoundAsset.THUMP_SOUND);
+    }
+
     private void defineBody() {
+        body.bounds.setSize(.15f * WorldVals.PPM);
         body.velClamp.set(CLAMP * WorldVals.PPM, CLAMP * WorldVals.PPM);
 
         // body fixture
@@ -103,8 +104,8 @@ public class Bullet extends Projectile {
 
     private SpriteComponent spriteComponent() {
         sprite.setRegion(bulletReg);
-        sprite.setSize(WorldVals.PPM * 1.25f, WorldVals.PPM * 1.25f);
-        SpriteHandle h = new SpriteHandle(sprite, 5);
+        sprite.setSize(1.25f * WorldVals.PPM, 1.25f * WorldVals.PPM);
+        SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);
     }

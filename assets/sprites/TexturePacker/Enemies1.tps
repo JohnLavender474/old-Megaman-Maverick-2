@@ -174,6 +174,8 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../Frames/Enemies1/Bat/Fly.png</key>
+            <key type="filename">../Frames/Enemies1/BlueBat/Fly.png</key>
+            <key type="filename">../Frames/Enemies1/BlueMet/Run.png</key>
             <key type="filename">../Frames/Enemies1/CloudedTorpedo/CloudyTorpedo.png</key>
             <key type="filename">../Frames/Enemies1/CloudedTorpedo/TorpedoFire.png</key>
             <key type="filename">../Frames/Enemies1/CloudedTorpedo/UncloudedTorpedo.png</key>
@@ -203,6 +205,14 @@
             <key type="filename">../Frames/Enemies1/Bat/Hang.png</key>
             <key type="filename">../Frames/Enemies1/Bat/OpenEyes.png</key>
             <key type="filename">../Frames/Enemies1/Bat/OpenWings.png</key>
+            <key type="filename">../Frames/Enemies1/BlueBat/Hang.png</key>
+            <key type="filename">../Frames/Enemies1/BlueBat/OpenEyes.png</key>
+            <key type="filename">../Frames/Enemies1/BlueBat/OpenWings.png</key>
+            <key type="filename">../Frames/Enemies1/BlueMet/GetUp.png</key>
+            <key type="filename">../Frames/Enemies1/BlueMet/LayDown.png</key>
+            <key type="filename">../Frames/Enemies1/BlueMet/PopUp.png</key>
+            <key type="filename">../Frames/Enemies1/BlueSniperJoe/Shielded.png</key>
+            <key type="filename">../Frames/Enemies1/BlueSniperJoe/Shooting.png</key>
             <key type="filename">../Frames/Enemies1/LaserBeamer.png</key>
             <key type="filename">../Frames/Enemies1/Met/GetUp.png</key>
             <key type="filename">../Frames/Enemies1/Met/LayDown.png</key>
@@ -267,6 +277,36 @@
                 <rect>10,10,20,20</rect>
                 <key>scale9Paddings</key>
                 <rect>10,10,20,20</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Enemies1/IceSeal/SlapTail.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9Paddings</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Enemies1/IceSeal/Stand.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,12,48,24</rect>
+                <key>scale9Paddings</key>
+                <rect>24,12,48,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

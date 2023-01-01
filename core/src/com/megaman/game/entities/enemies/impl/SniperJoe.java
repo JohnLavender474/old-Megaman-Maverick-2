@@ -13,7 +13,6 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
@@ -21,6 +20,7 @@ import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.entities.projectiles.impl.Snowball;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -43,6 +43,10 @@ public class SniperJoe extends Enemy implements Faceable {
     private static final float[] TIMES_TO_SHOOT = new float[]{.15f, .75f, 1.35f};
 
     private static final float BULLET_SPEED = 7.5f;
+    private static final float SNOWBALL_X = 10f;
+    private static final float SNOWBALL_Y = 5f;
+    private static final float SNOWBALL_GRAV = -.15f;
+
     private static final float SHIELD_DUR = 1.75f;
     private static final float DAMAGE_DUR = .15f;
     private static final float SHOOT_DUR = 1.5f;
@@ -55,9 +59,11 @@ public class SniperJoe extends Enemy implements Faceable {
     @Getter
     @Setter
     private Facing facing;
+    private String type;
 
     public SniperJoe(MegamanGame game) {
         super(game, DAMAGE_DUR, BodyType.DYNAMIC);
+        type = "";
         sprite = new Sprite();
         shieldTimer = new Timer(SHIELD_DUR);
         shootTimer = new Timer(SHOOT_DUR, new Array<>() {{
@@ -76,6 +82,7 @@ public class SniperJoe extends Enemy implements Faceable {
         shielded = true;
         Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
         ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
+        type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
     }
 
     @Override
@@ -145,19 +152,31 @@ public class SniperJoe extends Enemy implements Faceable {
     }
 
     private void shoot() {
-        Vector2 traj = new Vector2(BULLET_SPEED * WorldVals.PPM, 0f);
-        if (is(Facing.LEFT)) {
-            traj.x *= -1f;
-        }
-        Vector2 spawn = new Vector2()
-                .set(body.getCenter())
-                .add(is(Facing.LEFT) ? -.2f : .2f * WorldVals.PPM, -.25f * WorldVals.PPM);
-        Bullet bullet = (Bullet) game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
+        Vector2 spawn = new Vector2().set(body.getCenter()).add(
+                (is(Facing.LEFT) ? -.2f : .2f) * WorldVals.PPM, -.25f * WorldVals.PPM);
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);
-        data.put(ConstKeys.TRAJECTORY, traj);
-        game.getGameEngine().spawn(bullet, spawn, data);
-        getComponent(SoundComponent.class).requestToPlay(SoundAsset.ENEMY_BULLET_SOUND);
+        if (type.equals("Blue")) {
+            Vector2 traj = new Vector2(SNOWBALL_X, SNOWBALL_Y).scl(WorldVals.PPM);
+            if (is(Facing.LEFT)) {
+                traj.x *= -1f;
+            }
+            data.put(ConstKeys.TRAJECTORY, traj);
+            Snowball s = (Snowball) game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.SNOWBALL);
+            s.body.gravityOn = true;
+            s.body.gravity.y = SNOWBALL_GRAV * WorldVals.PPM;
+            game.getGameEngine().spawn(s, spawn, data);
+            request(SoundAsset.CHILL_SHOOT, true);
+        } else {
+            Vector2 traj = new Vector2(BULLET_SPEED * WorldVals.PPM, 0f);
+            if (is(Facing.LEFT)) {
+                traj.x *= -1f;
+            }
+            data.put(ConstKeys.TRAJECTORY, traj);
+            Bullet b = (Bullet) game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
+            game.getGameEngine().spawn(b, spawn, data);
+            request(SoundAsset.ENEMY_BULLET_SOUND, true);
+        }
     }
 
     private void setShielded(boolean shielded) {
@@ -177,11 +196,13 @@ public class SniperJoe extends Enemy implements Faceable {
     }
 
     private AnimationComponent animationComponent() {
-        Supplier<String> keySupplier = () -> shielded ? "Shielded" : "Shooting";
+        Supplier<String> keySupplier = () -> type + (shielded ? "Shielded" : "Shooting");
         TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
             put("Shooting", new Animation(atlas.findRegion("SniperJoe/Shooting")));
             put("Shielded", new Animation(atlas.findRegion("SniperJoe/Shielded")));
+            put("BlueShooting", new Animation(atlas.findRegion("BlueSniperJoe/Shooting")));
+            put("BlueShielded", new Animation(atlas.findRegion("BlueSniperJoe/Shielded")));
         }});
     }
 

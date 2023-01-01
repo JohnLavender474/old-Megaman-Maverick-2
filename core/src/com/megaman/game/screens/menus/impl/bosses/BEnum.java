@@ -3,7 +3,6 @@ package com.megaman.game.screens.menus.impl.bosses;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.animations.Animation;
-import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.screens.levels.Level;
 import com.megaman.game.screens.menus.impl.MenuConstVals;
@@ -21,8 +20,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor(access = PRIVATE)
 public enum BEnum {
-    TIMBER_WOMAN("Timber Woman", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN) {
+    TIMBER_WOMAN("Timber Woman", Level.TEST5, Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN) {
         @Override
         public String getBio() {
             return "Originally named 'Timbre Woman', she was to be \n" +
@@ -62,8 +60,7 @@ public enum BEnum {
             }};
         }
     },
-    DISTRIBUTOR_MAN("Distributor Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN) {
+    DISTRIBUTOR_MAN("Distributor Man", Level.TEST5, Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN) {
         @Override
         public String getBio() {
             return "Distributor Man designs electrical components \n" +
@@ -105,8 +102,7 @@ public enum BEnum {
             }};
         }
     },
-    ROASTER_MAN("Roaster Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.TOP_RIGHT, TextureAsset.ROASTER_MAN) {
+    ROASTER_MAN("Roaster Man", Level.TEST5, Position.TOP_RIGHT, TextureAsset.ROASTER_MAN) {
         @Override
         public String getBio() {
             return "Roaster Man was designed as a chicken chef \n" +
@@ -150,8 +146,7 @@ public enum BEnum {
             }};
         }
     },
-    MISTER_MAN("Mister Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.CENTER_LEFT, TextureAsset.MISTER_MAN) {
+    MISTER_MAN("Mister Man", Level.TEST5, Position.CENTER_LEFT, TextureAsset.MISTER_MAN) {
         @Override
         public String getBio() {
             return "Pump Man's brother, Mister Man waters delicate \n" +
@@ -191,8 +186,7 @@ public enum BEnum {
             }};
         }
     },
-    BLUNT_MAN("Blunt Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
+    BLUNT_MAN("Blunt Man", Level.TEST5, Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
         @Override
         public String getBio() {
             return "Blunt Man is designed to be an activist for the \n" +
@@ -234,8 +228,7 @@ public enum BEnum {
             }};
         }
     },
-    NUKE_MAN("Nuke Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_LEFT, TextureAsset.NUKE_MAN) {
+    NUKE_MAN("Nuke Man", Level.TEST5, Position.BOTTOM_LEFT, TextureAsset.NUKE_MAN) {
         @Override
         public String getBio() {
             return "Designed as a nuclear arms expert, Nuke Man is \n" +
@@ -276,8 +269,7 @@ public enum BEnum {
             }};
         }
     },
-    FRIDGE_MAN("Fridge Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_CENTER, TextureAsset.FRIDGE_MAN) {
+    FRIDGE_MAN("Fridge Man", Level.FRIDGE_MAN, Position.BOTTOM_CENTER, TextureAsset.FRIDGE_MAN) {
         @Override
         public String getBio() {
             return "Fridge Man really enjoys putting leftovers inside \n" +
@@ -320,8 +312,7 @@ public enum BEnum {
             }};
         }
     },
-    MICROWAVE_MAN("Microwave Man", Level.TEST5, MusicAsset.XENOBLADE_GAUR_PLAINS_MUSIC,
-            Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN) {
+    MICROWAVE_MAN("Microwave Man", Level.TEST5, Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN) {
         @Override
         public String getBio() {
             return "Microwave Man is a microwave. It's a fate that \n" +
@@ -367,7 +358,6 @@ public enum BEnum {
 
     public final String name;
     public final Level level;
-    public final MusicAsset music;
     public final Position position;
     public final TextureAsset ass;
 

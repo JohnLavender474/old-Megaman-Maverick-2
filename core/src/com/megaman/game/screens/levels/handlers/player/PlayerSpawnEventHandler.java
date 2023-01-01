@@ -11,6 +11,7 @@ import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.ViewVals;
 import com.megaman.game.animations.Animation;
+import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.controllers.ControllerSystem;
@@ -134,6 +135,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
             megaman.body.gravityOn = true;
             megaman.setReady(true);
             eventMan.submit(new Event(EventType.PLAYER_READY));
+            audioMan.play(SoundAsset.BEAM_IN_SOUND);
         }
     }
 

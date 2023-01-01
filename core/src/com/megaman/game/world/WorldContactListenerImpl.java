@@ -59,6 +59,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 dmgr.onDamageInflictedTo(dmgbl);
             }
         } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+                return;
+            }
             Body body = contact.mask1stBody();
             String side = contact.mask1stData(ConstKeys.SIDE, String.class);
             if (side.equals(ConstKeys.LEFT)) {
@@ -86,6 +89,8 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 m.aButtonTask = AButtonTask.JUMP;
                 m.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
             }
+        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
+            contact.mask1stBody().set(BodySense.FEET_ON_ICE, true);
         } else if (contact.acceptMask(FixtureType.BOUNCER, w,
                 FixtureType.FEET,
                 FixtureType.HEAD,
@@ -214,6 +219,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
     @Override
     public void endContact(Contact contact, float delta) {
         if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+                return;
+            }
             Body body = contact.mask1stBody();
             String side = contact.mask1stData(ConstKeys.SIDE, String.class);
             if (side.equals(ConstKeys.LEFT)) {
@@ -234,6 +242,8 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = m.is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
             }
+        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
+            contact.mask1stBody().set(BodySense.FEET_ON_ICE, false);
         } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.HEAD_TOUCHING_BLOCK, false);
         } else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {

@@ -62,6 +62,7 @@ public class Met extends Enemy implements Faceable {
     @Getter
     @Setter
     private Facing facing;
+    private String type;
 
     public Met(MegamanGame game) {
         super(game, BodyType.DYNAMIC);
@@ -70,6 +71,7 @@ public class Met extends Enemy implements Faceable {
                 new Timer(RUNNING_DUR),
                 new Timer(POP_UP_DUR)
         };
+        type = "";
         sprite = new Sprite();
         putComponent(spriteComponent());
         putComponent(animationComponent());
@@ -80,6 +82,7 @@ public class Met extends Enemy implements Faceable {
         setMetBehavior(MetBehavior.SHIELDING);
         Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
         ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
+        type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
     }
 
     @Override
@@ -223,16 +226,19 @@ public class Met extends Enemy implements Faceable {
     }
 
     private AnimationComponent animationComponent() {
-        Supplier<String> keySupplier = () -> switch (metBehavior) {
+        Supplier<String> keySupplier = () -> type + switch (metBehavior) {
             case RUNNING -> "Run";
             case POP_UP -> "PopUp";
             case SHIELDING -> "LayDown";
         };
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.MET);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
-            put("Run", new Animation(atlas.findRegion("Run"), 2, .125f));
-            put("PopUp", new Animation(atlas.findRegion("PopUp")));
-            put("LayDown", new Animation(atlas.findRegion("LayDown")));
+            put("Run", new Animation(atlas.findRegion("Met/Run"), 2, .125f));
+            put("PopUp", new Animation(atlas.findRegion("Met/PopUp")));
+            put("LayDown", new Animation(atlas.findRegion("Met/LayDown")));
+            put("BlueRun", new Animation(atlas.findRegion("BlueMet/Run"), 2, .125f));
+            put("BluePopUp", new Animation(atlas.findRegion("BlueMet/PopUp")));
+            put("BlueLayDown", new Animation(atlas.findRegion("BlueMet/LayDown")));
         }});
     }
 

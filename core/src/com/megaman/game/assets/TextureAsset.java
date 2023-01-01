@@ -33,11 +33,10 @@ public enum TextureAsset implements Asset {
     ITEMS("Items.txt"),
 
     // Environment
+    SNOW("Snow.txt"),
     DOORS("Door.txt"),
-
-    // Decorations
-    DECORATIONS("Decorations.txt"),
     WATER("Water.txt"),
+    DECORATIONS("Decorations.txt"),
 
     // Backgrounds
     BACKGROUNDS_1("Backgrounds1.txt"),

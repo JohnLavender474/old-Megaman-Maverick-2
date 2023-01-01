@@ -110,7 +110,7 @@ public class MegamanAnimator {
                     t.findRegion("ClimbCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "FinishClimb" -> new Animation(t.findRegion("FinishClimb"));
             case "FinishClimbCharging" -> new Animation(t.findRegion("FinishClimbCharging"), 2, .15f);
-            case "FinishClimbHalfCharging" -> new Animation(t.findRegion("FinishClimbHalfCharging"), 2, .15f);
+            case "FinishClimbHalfCharging" -> new Animation(t.findRegion("FinishClimbHalfCharging"));
             case "StillClimb" -> new Animation(t.findRegion("StillClimb"));
             case "StillClimbCharging" -> new Animation(t.findRegion("StillClimbCharging"), 2, .15f);
             case "StillClimbHalfCharging" -> new Animation(t.findRegion("StillClimbHalfCharging"), 2, .15f);
@@ -261,7 +261,8 @@ public class MegamanAnimator {
                     key = "Run";
                 }
             } else if (megaman.is(BodySense.FEET_ON_GROUND) &&
-                    Math.abs(megaman.body.velocity.x) > WorldVals.PPM / 8f) {
+                    Math.abs(megaman.body.velocity.x) > WorldVals.PPM / 8f &&
+                    Math.abs(megaman.body.getPosDelta().x) != 0f) {
                 if (megaman.isShooting()) {
                     key = "SlipSlideShoot";
                 } else if (megaman.isChargingFully()) {

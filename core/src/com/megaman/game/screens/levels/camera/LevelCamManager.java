@@ -2,6 +2,7 @@ package com.megaman.game.screens.levels.camera;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -23,7 +24,7 @@ import static java.lang.Math.min;
 public class LevelCamManager implements Updatable, Resettable {
 
     public static final float TRANS_DUR = 1f;
-    public static final float DIST_ON_TRANS = 3f;
+    public static final float DIST_ON_TRANS = 1.5f;
 
     private final Camera cam;
     private final Timer transTimer;
@@ -163,6 +164,7 @@ public class LevelCamManager implements Updatable, Resettable {
                 priorGameRoom = currGameRoom;
                 currGameRoom = nextGameRoom;
             }
+            cam.position.x = UtilMethods.roundedFloat(focusable.getPosition().x, 3);
             return;
         }
         Rectangle currRoomBounds = currGameRoom.getRectangle();
@@ -184,6 +186,7 @@ public class LevelCamManager implements Updatable, Resettable {
         }
         RectangleMapObject nextGameRoom = nextGameRoom();
         if (nextGameRoom == null) {
+            cam.position.x = UtilMethods.roundedFloat(focusable.getPosition().x, 3);
             return;
         }
         Rectangle overlap = new Rectangle();
@@ -246,7 +249,7 @@ public class LevelCamManager implements Updatable, Resettable {
 
     private void setCamToFocusable() {
         Vector2 pos = focusable.getPosition();
-        cam.position.x = pos.x;
+        cam.position.x = UtilMethods.roundedFloat(pos.x, 3);
         cam.position.y = pos.y;
     }
 

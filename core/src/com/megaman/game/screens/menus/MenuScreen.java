@@ -7,9 +7,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.audio.AudioManager;
-import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.controllers.ControllerManager;
-import com.megaman.game.utils.ConstFuncs;
+import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.utils.enums.Direction;
 import lombok.Getter;
 
@@ -57,7 +56,6 @@ public abstract class MenuScreen extends ScreenAdapter {
     public void show() {
         selectionMade = false;
         setMenuButton(firstBtnKey);
-        uiCam.position.set(ConstFuncs.getCamInitPos());
     }
 
     @Override

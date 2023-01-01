@@ -141,9 +141,13 @@ public class GapingFish extends Enemy implements Faceable {
                 }
                 scanner.clear();
                 if (inWater || !megaBody.isAbove(body)) {
-                    vel.y = VERT_SPEED * WorldVals.PPM;
-                    if (!megaBody.isAbove(body)) {
-                        vel.y *= -1f;
+                    if (megaBody.getY() >= body.getY() && megaBody.getY() <= body.getMaxY()) {
+                        vel.y = 0f;
+                    } else {
+                        vel.y = VERT_SPEED * WorldVals.PPM;
+                        if (!megaBody.isAbove(body)) {
+                            vel.y *= -1f;
+                        }
                     }
                 } else {
                     vel.y = 0f;

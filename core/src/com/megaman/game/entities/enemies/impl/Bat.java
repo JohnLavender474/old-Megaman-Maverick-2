@@ -42,9 +42,7 @@ public class Bat extends Enemy {
 
     private static final float HANG_DUR = 1.75f;
     private static final float RELEASE_FROM_PERCH_DUR = .25f;
-
     private static final float DAMAGE_DUR = .05f;
-
     private static final float FLY_TO_ATTACK_SPEED = 3f;
     private static final float FLY_TO_RETREAT_SPEED = 8f;
 
@@ -68,9 +66,11 @@ public class Bat extends Enemy {
     private Fixture damageableFixture;
     private Fixture shieldFixture;
     private BatStatus currStat;
+    private String type;
 
     public Bat(MegamanGame game) {
         super(game, DAMAGE_DUR, BodyType.ABSTRACT);
+        type = "";
         sprite = new Sprite();
         hangTimer = new Timer(HANG_DUR);
         releasePerchTimer = new Timer(RELEASE_FROM_PERCH_DUR);
@@ -86,6 +86,7 @@ public class Bat extends Enemy {
         currStat = BatStatus.HANGING;
         Vector2 spawn = ShapeUtils.getCenterPoint(bounds);
         ShapeUtils.setTopCenterToPoint(body.bounds, spawn);
+        type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
     }
 
     @Override
@@ -190,12 +191,16 @@ public class Bat extends Enemy {
 
     private AnimationComponent animationComponent() {
         TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
-        Supplier<String> keySupplier = () -> currStat.regionName;
+        Supplier<String> keySupplier = () -> type + currStat.regionName;
         return new AnimationComponent(new Animator(sprite, keySupplier, new ObjectMap<>() {{
             put("Hang", new Animation(atlas.findRegion("Bat/Hang")));
             put("Fly", new Animation(atlas.findRegion("Bat/Fly"), 2, .1f));
             put("OpenEyes", new Animation(atlas.findRegion("Bat/OpenEyes")));
             put("OpenWings", new Animation(atlas.findRegion("Bat/OpenWings")));
+            put("BlueHang", new Animation(atlas.findRegion("BlueBat/Hang")));
+            put("BlueFly", new Animation(atlas.findRegion("BlueBat/Fly"), 2, .1f));
+            put("BlueOpenEyes", new Animation(atlas.findRegion("BlueBat/OpenEyes")));
+            put("BlueOpenWings", new Animation(atlas.findRegion("BlueBat/OpenWings")));
         }}));
     }
 

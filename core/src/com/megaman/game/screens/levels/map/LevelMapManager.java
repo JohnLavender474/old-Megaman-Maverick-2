@@ -1,6 +1,7 @@
 package com.megaman.game.screens.levels.map;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
@@ -37,7 +38,10 @@ public class LevelMapManager implements Disposable {
 
     public Map<LevelMapLayer, Array<RectangleMapObject>> set(String tmxFile) {
         dispose();
-        map = new TmxMapLoader().load(tmxFile);
+        TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
+        params.textureMinFilter = Texture.TextureFilter.Nearest;
+        params.textureMagFilter = Texture.TextureFilter.Nearest;
+        map = new TmxMapLoader().load(tmxFile, params);
         renderer = new CustomMapRenderer(map);
         worldWidth = map.getProperties().get("width", Integer.class);
         worldHeight = map.getProperties().get("height", Integer.class);
@@ -90,6 +94,8 @@ public class LevelMapManager implements Disposable {
         protected void beginRender() {
             AnimatedTiledMapTile.updateAnimationBaseTime();
         }
+
+
 
         @Override
         protected void endRender() {

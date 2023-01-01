@@ -89,6 +89,15 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     protected abstract void defineBody(Body body);
 
+    protected void request(SoundAsset ass, boolean play) {
+        SoundComponent c = getComponent(SoundComponent.class);
+        if (play) {
+            c.requestToPlay(ass);
+        } else {
+            c.requestToStop(ass);
+        }
+    }
+
     protected void defineUpdateComponent(UpdatableComponent c) {
         c.add(delta -> {
             dmgTimer.update(delta);
