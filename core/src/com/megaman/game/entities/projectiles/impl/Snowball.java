@@ -83,6 +83,7 @@ public class Snowball extends Projectile {
     public void explode() {
         exploding = true;
         explodeTimer.reset();
+        body.velocity.setZero();
     }
 
     private void defineBody() {

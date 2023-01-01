@@ -26,7 +26,7 @@ Jump
   index: -1
 JustLand
   rotate: false
-  xy: 384, 96
+  xy: 288, 96
   size: 480, 96
   orig: 480, 96
   offset: 0, 0
@@ -48,7 +48,7 @@ Stand
 Swing
   rotate: false
   xy: 0, 96
-  size: 384, 96
-  orig: 384, 96
+  size: 288, 96
+  orig: 288, 96
   offset: 0, 0
   index: -1
