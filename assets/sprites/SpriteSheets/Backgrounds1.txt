@@ -1,7 +1,7 @@
 Backgrounds1.png
 size: 1024, 1856
 format: RGBA8888
-reject: Nearest,Nearest
+filter: Nearest,Nearest
 repeat: none
 BKG01
   rotate: false
@@ -71,5 +71,12 @@ BKG10
   xy: 512, 1344
   size: 256, 512
   orig: 256, 512
+  offset: 0, 0
+  index: -1
+StarFieldBG
+  rotate: false
+  xy: 768, 1344
+  size: 256, 224
+  orig: 256, 224
   offset: 0, 0
   index: -1

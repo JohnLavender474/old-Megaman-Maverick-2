@@ -34,14 +34,14 @@ public enum BEnum {
 
         @Override
         public Vector2 getSpriteSize() {
-            return new Vector2(3f, 2.5f);
+            return new Vector2(4.25f, 3.5f);
         }
 
         @Override
         public Map<String, Animation> getAnims(TextureAtlas textureAtlas) {
             return new HashMap<>() {{
                 put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
-                put("JustLand", new Animation(textureAtlas.findRegion("JustLand"), 6, .1f, false));
+                put("JustLand", new Animation(textureAtlas.findRegion("JustLand"), 5, .1f, false));
                 put("AboutToSwing", new Animation(textureAtlas.findRegion("AboutToSwing"), 3, .15f, false));
                 put("Swing", new Animation(textureAtlas.findRegion("Swing"), 4, .15f, false));
                 put("Jump", new Animation(textureAtlas.findRegion("Jump"), 6, MenuConstVals.BOSS_DROP_DOWN / 12));

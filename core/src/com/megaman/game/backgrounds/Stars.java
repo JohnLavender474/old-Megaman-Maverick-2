@@ -15,8 +15,8 @@ public class Stars extends Background {
 
     private float dist;
 
-    public Stars(MegamanGame game, float x, float y, int index) {
-        super(game.getAssMan().getTextureRegion(TextureAsset.STAGE_SELECT, "Stars" + index),
+    public Stars(MegamanGame game, float x, float y) {
+        super(game.getAssMan().getTextureRegion(TextureAsset.BACKGROUNDS_1, "StarFieldBG"),
                 x, y, WIDTH, HEIGHT, ROWS, COLS);
     }
 

@@ -63,10 +63,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float ICE_RUN_IMPULSE = 10f;
     public static final float WATER_RUN_SPEED = 2.25f;
 
-    public static final float SWIM_VEL_Y = 25f;
+    public static final float SWIM_VEL_Y = 20f;
 
     public static final float JUMP_VEL = 24f;
-    public static final float WATER_JUMP_VEL = 40f;
+    public static final float WATER_JUMP_VEL = 28f;
+    public static final float WATER_WALL_JUMP_VEL = 38f;
     public static final float WALL_JUMP_VEL = 42f;
     public static final float WALL_JUMP_HORIZ = 12.5f;
     public static final float WALL_JUMP_IMPETUS_TIME = .1f;
@@ -593,7 +594,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         c.add(new Behavior() {
             @Override
             protected boolean evaluate(float delta) {
-                if (isDamaged() || is(BehaviorType.JUMPING) || is(BodySense.FEET_ON_GROUND) ||
+                if (isDamaged() || isAny(BehaviorType.JUMPING, BehaviorType.CLIMBING) || is(BodySense.FEET_ON_GROUND) ||
                         !wallJumpTimer.isFinished() || !upgradeHandler.has(MegaAbility.WALL_JUMP)) {
                     return false;
                 }
@@ -687,7 +688,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     v.x = body.velocity.x;
                 }
                 if (is(BodySense.BODY_IN_WATER)) {
-                    v.y = WATER_JUMP_VEL * WorldVals.PPM;
+                    v.y = (is(BehaviorType.WALL_SLIDING) ? WATER_WALL_JUMP_VEL : WATER_JUMP_VEL) * WorldVals.PPM;
                 } else {
                     v.y = (is(BehaviorType.WALL_SLIDING) ? WALL_JUMP_VEL : JUMP_VEL) * WorldVals.PPM;
                 }

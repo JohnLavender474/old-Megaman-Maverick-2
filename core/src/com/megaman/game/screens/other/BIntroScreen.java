@@ -69,11 +69,7 @@ public class BIntroScreen extends ScreenAdapter {
         }};
         stars = new Array<>() {{
             for (int i = 0; i < STARS_N_BARS; i++) {
-                add(new Stars(
-                        game,
-                        0f,
-                        i * WorldVals.PPM * ViewVals.VIEW_HEIGHT / 4f,
-                        i + 1));
+                add(new Stars(game, 0f, i * WorldVals.PPM * ViewVals.VIEW_HEIGHT / 4f));
             }
         }};
         durTimer = new Timer(DUR);
