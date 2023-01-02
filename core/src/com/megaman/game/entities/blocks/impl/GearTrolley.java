@@ -34,7 +34,7 @@ public class GearTrolley extends Block implements EventListener {
     public GearTrolley(MegamanGame game) {
         super(game, false);
         if (gearTrolleyReg == null) {
-            gearTrolleyReg = game.getAssMan().getTextureRegion(TextureAsset.CUSTOM_TILES_1, "GearTrolleyPlatform");
+            gearTrolleyReg = game.getAssMan().getTextureRegion(TextureAsset.PLATFORMS_1, "GearTrolleyPlatform");
         }
         spriteHandle = new SpriteHandle(new Sprite(), 2);
         putComponent(shapeComponent());

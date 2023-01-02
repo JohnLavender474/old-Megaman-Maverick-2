@@ -217,11 +217,11 @@ public class SpringHead extends Enemy implements Faceable {
     }
 
     private AnimationComponent animationComponent() {
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.SPRING_HEAD);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
         Supplier<String> keySupplier = () -> isBouncing() ? "Unleashed" : "Compressed";
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
-            put("Unleashed", new Animation(atlas.findRegion("Unleashed"), 6, .1f));
-            put("Compressed", new Animation(atlas.findRegion("Compressed")));
+            put("Unleashed", new Animation(atlas.findRegion("SpringHead/Unleashed"), 6, .1f));
+            put("Compressed", new Animation(atlas.findRegion("SpringHead/Compressed")));
         }});
     }
 

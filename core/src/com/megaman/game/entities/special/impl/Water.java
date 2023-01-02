@@ -21,9 +21,9 @@ import com.megaman.game.world.*;
 
 public class Water extends Entity {
 
-    private static final String WATER_REG = "Water";
-    private static final String UNDER_REG = "Under";
-    private static final String SURFACE_REG = "Surface";
+    private static final String WATER_REG = "Water/Water";
+    private static final String UNDER_REG = "Water/Under";
+    private static final String SURFACE_REG = "Water/Surface";
 
     private static TextureRegion waterReg;
     private static TextureRegion surfaceReg;
@@ -36,7 +36,7 @@ public class Water extends Entity {
 
     public Water(MegamanGame game) {
         super(game, EntityType.SPECIAL);
-        TextureAtlas atlas = game.getAssMan().getAsset(TextureAsset.WATER.getSrc(), TextureAtlas.class);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENVIRONS_1);
         if (waterReg == null) {
             waterReg = atlas.findRegion(WATER_REG);
         }

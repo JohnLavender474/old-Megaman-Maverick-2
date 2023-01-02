@@ -13,6 +13,7 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.enemies.impl.UpdateFunc;
 import com.megaman.game.entities.items.Item;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegaAbility;
@@ -135,9 +136,26 @@ public class WorldContactListenerImpl implements WorldContactListener {
             feetBody.set(BodySense.FEET_TOUCHING_LADDER, true);
             feetBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
+
+            // TODO: test
+
+            /*
             Vector2 force = ((Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION))
                     .apply(contact.mask.getFirst());
             contact.mask1stBody().velocity.add(force);
+             */
+
+            /*
+            Function<Float, Vector2> forceFunc = (Function<Float, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(delta);
+            contact.mask1stBody().velocity.add(force);
+             */
+
+            UpdateFunc<Fixture, Vector2> forceFunc = (UpdateFunc<Fixture, Vector2>)
+                    contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(contact.mask.getFirst(), delta);
+            contact.mask1stBody().velocity.add(force);
+
         } else if (contact.acceptMask(FixtureType.PROJECTILE, w,
                 FixtureType.BLOCK,
                 FixtureType.BODY,
@@ -198,10 +216,26 @@ public class WorldContactListenerImpl implements WorldContactListener {
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().resistance.x = .925f;
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
-            Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>)
-                    contact.mask2ndData(ConstKeys.FUNCTION);
+
+            // TODO: test
+
+            /*
+            Function<Fixture, Vector2> forceFunc = (Function<Fixture, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
             Vector2 force = forceFunc.apply(contact.mask.getFirst());
             contact.mask1stBody().velocity.add(force);
+             */
+
+            /*
+            Function<Float, Vector2> forceFunc = (Function<Float, Vector2>) contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(delta);
+            contact.mask1stBody().velocity.add(force);
+             */
+
+            UpdateFunc<Fixture, Vector2> forceFunc = (UpdateFunc<Fixture, Vector2>)
+                    contact.mask2ndData(ConstKeys.FUNCTION);
+            Vector2 force = forceFunc.apply(contact.mask.getFirst(), delta);
+            contact.mask1stBody().velocity.add(force);
+
         } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK) &&
                 !contact.mask1stEntity().equals(contact.mask2ndEntity())) {
             Fixture first = contact.mask.getFirst();

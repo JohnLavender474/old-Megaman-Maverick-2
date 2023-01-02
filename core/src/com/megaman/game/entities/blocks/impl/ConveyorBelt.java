@@ -15,6 +15,7 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.blocks.Block;
+import com.megaman.game.entities.enemies.impl.UpdateFunc;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
@@ -27,7 +28,7 @@ import java.util.function.Function;
 
 public class ConveyorBelt extends Block {
 
-    private static final float FORCE_AMOUNT = .75f;
+    private static final float FORCE_AMOUNT = 45f;
 
     private static TextureRegion lLeft;
     private static TextureRegion lRight;
@@ -39,21 +40,21 @@ public class ConveyorBelt extends Block {
 
     public ConveyorBelt(MegamanGame game) {
         super(game, true);
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.CONVEYOR_BELT);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.PLATFORMS_1);
         if (lLeft == null) {
-            lLeft = atlas.findRegion("LeftPart-MoveLeft");
+            lLeft = atlas.findRegion("ConveyorBelt/LeftPart-MoveLeft");
         }
         if (lRight == null) {
-            lRight = atlas.findRegion("LeftPart-MoveRight");
+            lRight = atlas.findRegion("ConveyorBelt/LeftPart-MoveRight");
         }
         if (rLeft == null) {
-            rLeft = atlas.findRegion("RightPart-MoveLeft");
+            rLeft = atlas.findRegion("ConveyorBelt/RightPart-MoveLeft");
         }
         if (rRight == null) {
-            rRight = atlas.findRegion("RightPart-MoveRight");
+            rRight = atlas.findRegion("ConveyorBelt/RightPart-MoveRight");
         }
         if (middle == null) {
-            middle = atlas.findRegion("MiddlePart");
+            middle = atlas.findRegion("ConveyorBelt/MiddlePart");
         }
         forceFixture = new Fixture(this, FixtureType.FORCE, new Rectangle());
         forceFixture.offset.y = WorldVals.PPM / 8f;
@@ -69,12 +70,28 @@ public class ConveyorBelt extends Block {
         super.init(bounds, data);
         boolean left = (boolean) data.get(ConstKeys.LEFT);
         ((Rectangle) forceFixture.shape).setSize(bounds.width - WorldVals.PPM / 4f, bounds.height);
-        Vector2 force = new Vector2(FORCE_AMOUNT * WorldVals.PPM, 0f);
-        if (left) {
-            force.x *= -1f;
-        }
+
+        // TODO: test
+
+        /*
         Function<Fixture, Vector2> forceFunc = f -> force;
+         */
+
+        /*
+        Function<Float, Vector2> forceFunc = delta -> force.cpy().scl(delta);
+        */
+
+        UpdateFunc<Fixture, Vector2> forceFunc = (f, delta) -> {
+            float x = FORCE_AMOUNT * WorldVals.PPM * delta;
+            if (left) {
+                x *= -1f;
+            }
+            return new Vector2(x, 0f);
+        };
+
         forceFixture.putUserData(ConstKeys.FUNCTION, forceFunc);
+
+        // sprite anims
         Array<SpriteHandle> handles = new Array<>();
         Array<Animator> animators = new Array<>();
         int numParts = (int) (bounds.width / WorldVals.PPM);

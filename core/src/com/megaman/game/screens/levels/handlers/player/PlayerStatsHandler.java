@@ -11,7 +11,6 @@ import com.megaman.game.System;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.AudioManager;
-import com.megaman.game.entities.items.impl.HeartTank;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegaArmorPiece;
 import com.megaman.game.entities.megaman.upgrades.MegaHealthTank;
@@ -38,7 +37,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
     private static final float BAR_X = .4f * WorldVals.PPM;
     private static final float BAR_Y = 9f * WorldVals.PPM;
     private static final float SPECIAL_ITEM_DUR = .35f;
-    private static final float DUR_PER_BIT = .2f;
+    private static final float DUR_PER_BIT = .1f;
 
     private final Megaman megaman;
     private final GameEngine engine;

@@ -249,7 +249,8 @@ public class LevelCamManager implements Updatable, Resettable {
 
     private void setCamToFocusable() {
         Vector2 pos = focusable.getPosition();
-        cam.position.x = UtilMethods.roundedFloat(pos.x, 3);
+        // cam.position.x = UtilMethods.roundedFloat(pos.x, 3);
+        cam.position.x = pos.x;
         cam.position.y = pos.y;
     }
 

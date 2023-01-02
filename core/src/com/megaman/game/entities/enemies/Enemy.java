@@ -15,6 +15,7 @@ import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.events.EventType;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.updatables.UpdatableComponent;
+import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;

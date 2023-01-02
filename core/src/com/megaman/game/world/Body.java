@@ -8,10 +8,14 @@ import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 
-public class Body implements Updatable, Resettable {
+@Getter
+@Setter
+public class Body implements Resettable {
 
     public static final float MIN_VEL = .01f;
     public static final float STANDARD_RESISTANCE_X = 1.035f;
@@ -213,8 +217,7 @@ public class Body implements Updatable, Resettable {
         return getPos().sub(prevPos);
     }
 
-    @Override
-    public void update(float delta) {
+    public void updateMovement(float delta) {
         if (Math.abs(velocity.x) <= MIN_VEL * WorldVals.PPM) {
             velocity.x = 0f;
         }

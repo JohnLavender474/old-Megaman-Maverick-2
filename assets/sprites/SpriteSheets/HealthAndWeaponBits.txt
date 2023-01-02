@@ -1,7 +1,7 @@
 HealthAndWeaponBits.png
 size: 388, 272
 format: RGBA8888
-filter: Linear,Linear
+filter: Nearest,Nearest
 repeat: none
 EmptyBit
   rotate: false

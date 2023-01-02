@@ -20,7 +20,7 @@ import com.megaman.game.world.WorldVals;
 
 public class Splash extends Entity {
 
-    private static final String SPLASH_REG = "Splash";
+    private static final String SPLASH_REG = "Water/Splash";
     private static final float ALPHA = .5f;
 
     private static TextureRegion splashReg;
@@ -32,7 +32,7 @@ public class Splash extends Entity {
     public Splash(MegamanGame game) {
         super(game, EntityType.DECORATION);
         if (splashReg == null) {
-            splashReg = game.getAssMan().getTextureRegion(TextureAsset.WATER, SPLASH_REG);
+            splashReg = game.getAssMan().getTextureRegion(TextureAsset.ENVIRONS_1, SPLASH_REG);
         }
         pos = new Vector2();
         sprite = new Sprite();

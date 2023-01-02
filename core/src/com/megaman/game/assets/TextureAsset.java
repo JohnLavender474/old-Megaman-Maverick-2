@@ -11,8 +11,6 @@ public enum TextureAsset implements Asset {
     COLORS("Colors.txt"),
 
     // Enemies
-    MET("Met.txt"),
-    SPRING_HEAD("SpringHead.txt"),
     ENEMIES_1("Enemies1.txt"),
 
     // Objects
@@ -32,10 +30,8 @@ public enum TextureAsset implements Asset {
     // Items
     ITEMS("Items.txt"),
 
-    // Environment
-    SNOW("Snow.txt"),
-    DOORS("Door.txt"),
-    WATER("Water.txt"),
+    // Environs
+    ENVIRONS_1("Environs1.txt"),
     DECORATIONS("Decorations.txt"),
 
     // Backgrounds
@@ -55,9 +51,9 @@ public enum TextureAsset implements Asset {
     MEGAMAN_FIRE("MegamanFire.txt"),
     CHARGE_ORBS("ChargeOrbs.txt"),
 
-    // Tiles
-    CUSTOM_TILES_1("CustomTiles1.txt"),
-    CONVEYOR_BELT("ConveyorBelt.txt"),
+    // Platforms
+    DOORS("Door.txt"),
+    PLATFORMS_1("Platforms1.txt"),
 
     // Bosses
     TIMBER_WOMAN("TimberWoman.txt"),

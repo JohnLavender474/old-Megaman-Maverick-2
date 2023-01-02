@@ -46,8 +46,8 @@ public class MagFly extends Enemy implements Faceable {
     private static final float FORCE_FLASH_DURATION = .1f;
     private static final float X_VEL_NORMAL = 3f;
     private static final float X_VEL_SLOW = 1f;
-    private static final float PULL_FORCE_X = .1f;
-    private static final float PULL_FORCE_Y = 1.15f;
+    private static final float PULL_FORCE_X = 6f;
+    private static final float PULL_FORCE_Y = 68f;
 
     private static TextureRegion magFlyReg;
 
@@ -111,6 +111,10 @@ public class MagFly extends Enemy implements Faceable {
         Fixture forceFixture = new Fixture(this, FixtureType.FORCE,
                 new Rectangle().setSize(WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM));
         forceFixture.offset.y = -ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f;
+
+        // TODO: test
+
+        /*
         Function<Fixture, Vector2> forceFunc = f -> {
             if (f.entity instanceof Enemy || (f.entity instanceof Megaman m && m.isDamaged())) {
                 return Vector2.Zero;
@@ -125,7 +129,36 @@ public class MagFly extends Enemy implements Faceable {
             float y = PULL_FORCE_Y * WorldVals.PPM;
             return new Vector2(x, y);
         };
+         */
+
+        /*
+        Function<Float, Vector2> forceFunc = delta -> {
+            float x = PULL_FORCE_X * WorldVals.PPM;
+            if (is(Facing.LEFT)) {
+                x *= -1f;
+            }
+            float y = PULL_FORCE_Y * WorldVals.PPM;
+            return new Vector2(x, y).scl(delta);
+        };
+         */
+
+        UpdateFunc<Fixture, Vector2> forceFunc = (f, delta) -> {
+            if (f.entity instanceof Enemy || (f.entity instanceof Megaman m && m.isDamaged())) {
+                return Vector2.Zero;
+            }
+            if (f.entity instanceof Projectile p) {
+                p.owner = null;
+            }
+            float x = PULL_FORCE_X * WorldVals.PPM;
+            if (is(Facing.LEFT)) {
+                x *= -1f;
+            }
+            float y = PULL_FORCE_Y * WorldVals.PPM;
+            return new Vector2(x, y).scl(delta);
+        };
+
         forceFixture.putUserData(ConstKeys.FUNCTION, forceFunc);
+
         body.add(forceFixture);
         this.forceFixture = forceFixture;
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle().setSize(WorldVals.PPM));

@@ -41,7 +41,7 @@ import java.util.function.Function;
 public class Matasaburo extends Enemy implements Faceable {
 
     private static final float DAMAGE_DUR = .35f;
-    private static final float BLOW_FORCE = .75f;
+    private static final float BLOW_FORCE = 45f;
 
     private static TextureRegion matasaburoReg;
 
@@ -87,6 +87,10 @@ public class Matasaburo extends Enemy implements Faceable {
         // blow fixture
         Fixture blowFixture = new Fixture(this, FixtureType.FORCE,
                 new Rectangle().setSize(10f * WorldVals.PPM, WorldVals.PPM * 1.15f));
+
+        // TODO: test
+
+        /*
         Function<Fixture, Vector2> blowFunc = f -> {
             if (f.entity instanceof Enemy) {
                 return Vector2.Zero;
@@ -100,7 +104,34 @@ public class Matasaburo extends Enemy implements Faceable {
             }
             return new Vector2(force, 0f);
         };
+         */
+
+        /*
+        Function<Float, Vector2> blowFunc = delta -> {
+            float force = BLOW_FORCE * WorldVals.PPM * delta;
+            if (is(Facing.LEFT)) {
+                force *= -1f;
+            }
+            return new Vector2(force, 0f);
+        };
+         */
+
+        UpdateFunc<Fixture, Vector2> blowFunc = (f, delta) -> {
+            if (f.entity instanceof Enemy) {
+                return Vector2.Zero;
+            }
+            if (f.entity instanceof Projectile p) {
+                p.owner = null;
+            }
+            float force = BLOW_FORCE * WorldVals.PPM;
+            if (is(Facing.LEFT)) {
+                force *= -1f;
+            }
+            return new Vector2(force * delta, 0f);
+        };
+
         blowFixture.putUserData(ConstKeys.FUNCTION, blowFunc);
+
         h.add(new ShapeHandle(blowFixture.shape, Color.BLUE));
         body.add(blowFixture);
 

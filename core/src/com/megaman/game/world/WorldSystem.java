@@ -87,10 +87,10 @@ public class WorldSystem extends System {
             if (e.dead || !qualifiesMembership(e)) {
                 eIter.remove();
             }
-            BodyComponent c = e.getComponent(BodyComponent.class);
-            c.body.setPrevPos(c.body.bounds.x, c.body.bounds.y);
-            if (c.body.preProcess != null) {
-                c.body.preProcess.update(delta);
+            Body body = e.getComponent(BodyComponent.class).body;
+            body.setPrevPos(body.bounds.x, body.bounds.y);
+            if (body.preProcess != null) {
+                body.preProcess.update(delta);
             }
         }
     }
@@ -138,10 +138,10 @@ public class WorldSystem extends System {
 
     @Override
     protected void processEntity(Entity e, float delta) {
-        BodyComponent bc = e.getComponent(BodyComponent.class);
+        Body body = e.getComponent(BodyComponent.class).body;
         switch (currCycle) {
-            case 0, 2 -> resolve(bc.body);
-            case 1 -> updateBody(bc.body, delta);
+            case 0, 2 -> resolve(body);
+            case 1 -> updateBody(body, delta);
         }
     }
 
@@ -153,19 +153,19 @@ public class WorldSystem extends System {
             if (e.dead || !qualifiesMembership(e)) {
                 eIter.remove();
             }
-            BodyComponent c = e.getComponent(BodyComponent.class);
-            worldGraph.addBody(c.body);
-            for (Fixture f : c.body.fixtures) {
+            Body body = e.getComponent(BodyComponent.class).body;
+            worldGraph.addBody(body);
+            for (Fixture f : body.fixtures) {
                 worldGraph.addFixture(f);
             }
-            if (c.body.postProcess != null) {
-                c.body.postProcess.update(delta);
+            if (body.postProcess != null) {
+                body.postProcess.update(delta);
             }
         }
     }
 
     private void updateBody(Body body, float delta) {
-        body.update(delta);
+        body.updateMovement(delta);
         addToGraph(body);
     }
 

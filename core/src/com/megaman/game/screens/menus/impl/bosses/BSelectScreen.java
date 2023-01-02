@@ -126,7 +126,7 @@ public class BSelectScreen extends MenuScreen {
                 (2f + ViewVals.VIEW_WIDTH) * WorldVals.PPM, 2f * WorldVals.PPM);
         bar2.setRegion(black);
         bar2.setBounds(0f, 0f, .25f * WorldVals.PPM, ViewVals.VIEW_HEIGHT * WorldVals.PPM);
-        TextureAtlas tilesAtlas = assMan.getTextureAtlas(TextureAsset.CUSTOM_TILES_1);
+        TextureAtlas tilesAtlas = assMan.getTextureAtlas(TextureAsset.PLATFORMS_1);
         TextureRegion blueBlockRegion = tilesAtlas.findRegion("8bitBlueBlockTransBorder");
         final float halfPPM = WorldVals.PPM / 2f;
         for (int i = 0; i < ViewVals.VIEW_WIDTH; i++) {

@@ -35,7 +35,7 @@ public class RocketPlatform extends Block implements EventListener {
         super(game, false);
         if (rocketPlatformReg == null) {
             rocketPlatformReg = game.getAssMan().getTextureRegion(
-                    TextureAsset.CUSTOM_TILES_1, "JeffBezosLittleDickRocket");
+                    TextureAsset.PLATFORMS_1, "JeffBezosLittleDickRocket");
         }
         spriteHandle = new SpriteHandle(new Sprite(), 2);
 

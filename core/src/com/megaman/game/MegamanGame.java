@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.animations.AnimationSystem;
@@ -33,6 +34,7 @@ import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.menus.impl.bosses.BSelectScreen;
 import com.megaman.game.screens.menus.impl.main.MainScreen;
 import com.megaman.game.screens.other.BIntroScreen;
+import com.megaman.game.screens.utils.TextHandle;
 import com.megaman.game.shapes.LineSystem;
 import com.megaman.game.shapes.ShapeSystem;
 import com.megaman.game.sprites.SpriteSystem;
@@ -74,8 +76,8 @@ public class MegamanGame implements ApplicationListener {
     private GameEngine gameEngine;
     private EntityFactories entityFactories;
 
+    private TextHandle fpsText;
     private boolean paused;
-
     private Screen screen;
 
     @Override
@@ -121,11 +123,13 @@ public class MegamanGame implements ApplicationListener {
         screens.put(ScreenEnum.BOSS_SELECT, new BSelectScreen(this));
         screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
 
-        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FRIDGE_MAN));
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FRIDGE_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
-        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
+        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
         // setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
+        fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),
+                () -> "FPS: " + Gdx.graphics.getFramesPerSecond());
     }
 
     public <S extends Screen> S getScreen(ScreenEnum e, Class<S> sClass) {
@@ -170,6 +174,12 @@ public class MegamanGame implements ApplicationListener {
         audioMan.update(delta);
         if (screen != null) {
             screen.render(delta);
+        }
+        if (DEBUG) {
+            batch.setProjectionMatrix(uiCam.combined);
+            batch.begin();
+            fpsText.draw(batch);
+            batch.end();
         }
         gameViewport.apply();
         uiViewport.apply();

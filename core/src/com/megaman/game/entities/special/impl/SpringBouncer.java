@@ -30,7 +30,7 @@ public class SpringBouncer extends Entity {
 
     private static final float BOUNCE_DURATION = .5f;
     private static final float X_BOUNCE = 25f;
-    private static final float Y_BOUNCE = 15f;
+    private static final float Y_BOUNCE = 18f;
     private static final float SPRITE_DIM = 1.5f;
 
     private final Body body;

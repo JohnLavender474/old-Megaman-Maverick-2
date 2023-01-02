@@ -251,16 +251,16 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 !playerStatsHandler.isFinished())) {
             game.resume();
         }
-        // update only if game is not paused
+        // updateMovement only if game is not paused
         if (!game.isPaused()) {
             backgrounds.forEach(b -> b.update(delta));
             levelCamMan.update(delta);
-            // spawns do not update when player is first spawning or if there is room transition
+            // spawns do not updateMovement when player is first spawning or if there is room transition
             if (playerSpawnEventHandler.isFinished() && !levelCamMan.isTransitioning()) {
                 playerSpawnMan.run();
                 spawnMan.update(delta);
             }
-            // only update one handler at a time
+            // only updateMovement one handler at a time
             if (!playerSpawnEventHandler.isFinished()) {
                 playerSpawnEventHandler.update(delta);
             } else if (!playerDeathEventHandler.isFinished()) {
@@ -269,7 +269,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 playerStatsHandler.update(delta);
             }
         }
-        // update engine
+        // updateMovement engine
         engine.update(delta);
         // render game sprites
         batch.setProjectionMatrix(gameCam.combined);

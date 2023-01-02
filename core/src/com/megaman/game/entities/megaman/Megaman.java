@@ -55,12 +55,12 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public static final int START_MAX_HEALTH = 14;
 
-    public static final float CLAMP_X = 10f;
+    public static final float CLAMP_X = 15f;
     public static final float CLAMP_Y = 25f;
 
     public static final float RUN_SPEED = 5f;
     public static final float RUN_IMPULSE = 50f;
-    public static final float ICE_RUN_IMPULSE = 10f;
+    public static final float ICE_RUN_IMPULSE = 15f;
     public static final float WATER_RUN_SPEED = 2.25f;
 
     public static final float SWIM_VEL_Y = 20f;

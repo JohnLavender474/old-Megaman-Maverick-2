@@ -126,10 +126,10 @@ public class Snowball extends Projectile {
 
     private AnimationComponent animationComponent() {
         Supplier<String> keySupplier = () -> exploding ? "SnowballExplode" : "Snowball";
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.SNOW);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENVIRONS_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
-            put("Snowball", new Animation(atlas.findRegion("Snowball")));
-            put("SnowballExplode", new Animation(atlas.findRegion("SnowballExplode"), 3, .05f, false));
+            put("Snowball", new Animation(atlas.findRegion("Snow/Snowball")));
+            put("SnowballExplode", new Animation(atlas.findRegion("Snow/SnowballExplode"), 3, .05f, false));
         }});
     }
 

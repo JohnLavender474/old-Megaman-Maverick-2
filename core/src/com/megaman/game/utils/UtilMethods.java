@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.MegamanGame;
+import com.megaman.game.entities.megaman.vals.MegamanDamageNegs;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Direction;
 
@@ -16,6 +18,7 @@ import java.util.function.Predicate;
 
 public class UtilMethods {
 
+    private static final Logger logger = new Logger(UtilMethods.class, MegamanGame.DEBUG && true);
     private static final Random RAND = new Random(System.currentTimeMillis());
 
     public static int getRandom(int min, int max) {
@@ -24,8 +27,10 @@ public class UtilMethods {
 
     public static void doIfRandMatch(int min, int max, Iterable<Integer> matches, Consumer<Integer> runOnMatch) {
         int r = getRandom(min, max);
+        logger.log("Random r: " + r);
         for (Integer i : matches) {
             if (r == i) {
+                logger.log("Run on match!");
                 runOnMatch.accept(r);
                 break;
             }
