@@ -165,7 +165,7 @@ public class WorldSystem extends System {
     }
 
     private void updateBody(Body body, float delta) {
-        body.updateMovement(delta);
+        body.update(delta);
         addToGraph(body);
     }
 

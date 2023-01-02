@@ -13,7 +13,7 @@ public class DesktopLauncher {
         2. running speed on ice is inconsistent and broken
     */
 
-    private static final int FPS = 30;
+    private static final int FPS = 60;
     private static final int WIDTH = 1920;
     private static final int HEIGHT = 1080;
     private static final boolean VSYNC = false;

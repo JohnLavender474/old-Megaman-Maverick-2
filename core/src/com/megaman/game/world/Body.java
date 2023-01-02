@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 @Getter
 @Setter
-public class Body implements Resettable {
+public class Body implements Updatable, Resettable {
 
     public static final float MIN_VEL = .01f;
     public static final float STANDARD_RESISTANCE_X = 1.035f;
@@ -217,7 +217,8 @@ public class Body implements Resettable {
         return getPos().sub(prevPos);
     }
 
-    public void updateMovement(float delta) {
+    @Override
+    public void update(float delta) {
         if (Math.abs(velocity.x) <= MIN_VEL * WorldVals.PPM) {
             velocity.x = 0f;
         }

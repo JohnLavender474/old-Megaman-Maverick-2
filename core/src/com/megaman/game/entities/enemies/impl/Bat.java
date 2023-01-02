@@ -102,19 +102,31 @@ public class Bat extends Enemy {
     @Override
     protected void defineBody(Body body) {
         body.bounds.setSize(.5f * WorldVals.PPM, .25f * WorldVals.PPM);
+
+        // head fixture
         Fixture headFixture = new Fixture(this, FixtureType.HEAD,
                 new Rectangle().setSize(.5f * WorldVals.PPM, .175f * WorldVals.PPM));
         headFixture.offset.y = .375f * WorldVals.PPM;
         body.add(headFixture);
+
         Rectangle m = new Rectangle().setSize(.75f * WorldVals.PPM);
+
+        // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle(m));
         body.add(damageableFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle(m));
         body.add(damagerFixture);
         this.damageableFixture = damageableFixture;
+
+        // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD, new Rectangle(m));
+        shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         body.add(shieldFixture);
         this.shieldFixture = shieldFixture;
+
+        // scanner fixture
         Fixture scannerFixture = new Fixture(this, FixtureType.CONSUMER, new Rectangle(m));
         Consumer<Fixture> scanner = f -> {
             if (f.fixtureType == FixtureType.DAMAGEABLE && f.entity.equals(game.getMegaman())) {

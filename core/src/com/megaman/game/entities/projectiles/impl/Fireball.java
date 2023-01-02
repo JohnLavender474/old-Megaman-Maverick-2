@@ -94,7 +94,7 @@ public class Fireball extends Projectile {
     @Override
     public void hitShield(Fixture shieldFixture) {
         logger.log("Hit shield");
-        burst();
+        xVel *= -1f;
         getComponent(SoundComponent.class).requestToPlay(SoundAsset.DINK_SOUND);
     }
 
