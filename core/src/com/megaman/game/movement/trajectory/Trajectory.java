@@ -1,26 +1,47 @@
 package com.megaman.game.movement.trajectory;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.megaman.game.shapes.ShapeUtils;
-import com.megaman.game.utils.UtilMethods;
+import com.megaman.game.entities.special.impl.Water;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
-import com.megaman.game.utils.objs.KeyValuePair;
-import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.WorldVals;
 
+// TODO: test using vel instead of timer
 public class Trajectory implements Updatable, Resettable {
 
-    private final Body body;
-    private final Array<KeyValuePair<Vector2, Timer>> defs = new Array<>();
+    private static class TrajDef {
+        private float xVel;
+        private float yVel;
+        private float time;
+    }
 
+    private final Body body;
+    // private final Array<KeyValuePair<Vector2, Timer>> defs = new Array<>();
+    private final Array<TrajDef> defs = new Array<>();
+
+    /*
     private final Vector2 prevCenter;
     private final Vector2 currCenter;
+     */
 
     private int index;
+    private float dur;
 
+    public Trajectory(Body body, String traj) {
+        this.body = body;
+        String[] tokens = traj.split(";");
+        for (String token : tokens) {
+            String[] vals = token.split(",");
+            TrajDef def = new TrajDef();
+            def.xVel = Float.parseFloat(vals[0]);
+            def.yVel = Float.parseFloat(vals[1]);
+            def.time = Float.parseFloat(vals[2]);
+            defs.add(def);
+        }
+    }
+
+    /*
     public Trajectory(Body body, String trajectory) {
         this(body, trajectory, ShapeUtils.getCenterPoint(body.bounds));
     }
@@ -40,9 +61,23 @@ public class Trajectory implements Updatable, Resettable {
             temp.set(dest);
         }
     }
+     */
 
     @Override
     public void update(float delta) {
+        dur += delta;
+        TrajDef currDef = defs.get(index);
+        if (dur >= currDef.time) {
+            dur = 0f;
+            index++;
+            if (index >= defs.size) {
+                index = 0;
+            }
+            currDef = defs.get(index);
+        }
+        body.velocity.x = currDef.xVel * WorldVals.PPM;
+        body.velocity.y = currDef.yVel * WorldVals.PPM;
+        /*
         Timer timer = getCurrentTimer();
         timer.update(delta);
         Vector2 center = UtilMethods.interpolate(getPrevDest(), getCurrentDest(), timer.getRatio());
@@ -56,20 +91,21 @@ public class Trajectory implements Updatable, Resettable {
         prevCenter.set(ShapeUtils.getCenterPoint(body.bounds));
         currCenter.set(center);
         body.bounds.setCenter(center);
+         */
     }
 
     @Override
     public void reset() {
+        dur = 0;
         index = 0;
+        /*
         for (KeyValuePair<Vector2, Timer> def : defs) {
             def.value().reset();
         }
+         */
     }
 
-    public Vector2 getPosDelta() {
-        return currCenter.cpy().sub(prevCenter);
-    }
-
+    /*
     private Vector2 getPrevDest() {
         int t = (index == 0 ? defs.size : index) - 1;
         return defs.get(t).key();
@@ -82,5 +118,6 @@ public class Trajectory implements Updatable, Resettable {
     private Timer getCurrentTimer() {
         return defs.get(index).value();
     }
+     */
 
 }

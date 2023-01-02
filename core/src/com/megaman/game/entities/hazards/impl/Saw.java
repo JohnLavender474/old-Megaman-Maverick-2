@@ -133,7 +133,8 @@ public class Saw extends Entity {
     }
 
     private void setToTrajectory(String trajStr, Vector2 spawn) {
-        putComponent(new TrajectoryComponent(body, trajStr, spawn));
+        // putComponent(new TrajectoryComponent(body, trajStr, spawn));
+        putComponent(new TrajectoryComponent(body, trajStr));
     }
 
     private AnimationComponent animationComponent() {

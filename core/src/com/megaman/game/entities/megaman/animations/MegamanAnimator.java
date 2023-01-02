@@ -183,7 +183,7 @@ public class MegamanAnimator {
                     } else {
                         key = "FinishClimb";
                     }
-                } else if (megaman.body.getPosDelta().y != 0f) {
+                } else if (megaman.body.velocity.y != 0f) {
                     if (megaman.isShooting()) {
                         key = "ClimbShoot";
                     } else if (megaman.isChargingFully()) {
@@ -261,8 +261,7 @@ public class MegamanAnimator {
                     key = "Run";
                 }
             } else if (megaman.is(BodySense.FEET_ON_GROUND) &&
-                    Math.abs(megaman.body.velocity.x) > WorldVals.PPM / 8f &&
-                    Math.abs(megaman.body.getPosDelta().x) != 0f) {
+                    Math.abs(megaman.body.velocity.x) > WorldVals.PPM / 16f) {
                 if (megaman.isShooting()) {
                     key = "SlipSlideShoot";
                 } else if (megaman.isChargingFully()) {

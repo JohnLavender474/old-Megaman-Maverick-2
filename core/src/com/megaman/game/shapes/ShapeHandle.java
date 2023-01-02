@@ -33,6 +33,10 @@ public class ShapeHandle implements RenderableShape {
         this(shape, () -> color);
     }
 
+    public ShapeHandle(Shape2D shape, Color color, Supplier<Boolean> doRenderSupplier) {
+        this(() -> shape, () -> color, doRenderSupplier);
+    }
+
     public ShapeHandle(Shape2D shape, Supplier<Color> colorSupplier) {
         this(() -> shape, colorSupplier);
     }
@@ -46,8 +50,14 @@ public class ShapeHandle implements RenderableShape {
     }
 
     public ShapeHandle(Supplier<Shape2D> shapeSupplier, Supplier<Color> colorSupplier) {
+        this(shapeSupplier, colorSupplier, () -> true);
+    }
+
+    public ShapeHandle(Supplier<Shape2D> shapeSupplier, Supplier<Color> colorSupplier,
+                       Supplier<Boolean> doRenderSupplier) {
         this.shapeSupplier = shapeSupplier;
         this.colorSupplier = colorSupplier;
+        this.doRenderSupplier = doRenderSupplier;
     }
 
     public Color getColor() {

@@ -43,6 +43,7 @@ public class MegamanDamageNegs {
         put(FloatingCan.class, new DamageNegotiation(2));
         put(LaserBeamer.class, new DamageNegotiation(3));
         put(SuctionRoller.class, new DamageNegotiation(1));
+        put(ShieldAttacker.class, new DamageNegotiation(2));
         put(GapingFish.class, new DamageNegotiation(2));
     }};
 

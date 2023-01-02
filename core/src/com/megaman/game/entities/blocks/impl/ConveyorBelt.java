@@ -28,7 +28,8 @@ import java.util.function.Function;
 
 public class ConveyorBelt extends Block {
 
-    private static final float FORCE_AMOUNT = 45f;
+    // private static final float FORCE_AMOUNT = 45f;
+    private static final float FORCE_AMOUNT = 25f;
 
     private static TextureRegion lLeft;
     private static TextureRegion lRight;

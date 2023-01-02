@@ -125,6 +125,7 @@ public class MegamanGame implements ApplicationListener {
 
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FRIDGE_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
         setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
         // setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));

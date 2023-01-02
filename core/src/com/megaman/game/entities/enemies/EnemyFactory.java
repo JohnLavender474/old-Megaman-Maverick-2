@@ -20,6 +20,7 @@ public class EnemyFactory implements EntityFactory {
     public static final String GAPING_FISH = "GapingFish";
     public static final String FLOATING_CAN = "FloatingCan";
     public static final String SUCTION_ROLLER = "SuctionRoller";
+    public static final String SHIELD_ATTACKER = "ShieldAttacker";
 
     private final ObjectMap<String, EntityPool> pools;
 
@@ -36,6 +37,7 @@ public class EnemyFactory implements EntityFactory {
             put(GAPING_FISH, new EntityPool(5, () -> new GapingFish(game)));
             put(FLOATING_CAN, new EntityPool(10, () -> new FloatingCan(game)));
             put(SUCTION_ROLLER, new EntityPool(5, () -> new SuctionRoller(game)));
+            put(SHIELD_ATTACKER, new EntityPool(5, () -> new ShieldAttacker(game)));
         }};
     }
 

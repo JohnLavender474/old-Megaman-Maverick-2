@@ -11,7 +11,7 @@ import java.util.*;
 
 public class WorldSystem extends System {
 
-    private static final int PROCESS_CYCLES = 3;
+    private static final int PROCESS_CYCLES = 2;
 
     private static final Map<FixtureType, Set<FixtureType>> masks = new EnumMap<>(FixtureType.class) {{
         put(FixtureType.CONSUMER, EnumSet.allOf(FixtureType.class));
@@ -102,11 +102,11 @@ public class WorldSystem extends System {
             return;
         }
         updating = true;
-        preProcess(delta);
         accumulator += delta;
         while (accumulator >= WorldVals.FIXED_STEP) {
             accumulator -= WorldVals.FIXED_STEP;
             currCycle = 0;
+            preProcess(delta);
             while (currCycle < PROCESS_CYCLES) {
                 for (Entity e : entities) {
                     if (e.asleep) {
@@ -116,8 +116,24 @@ public class WorldSystem extends System {
                 }
                 currCycle++;
             }
+            postProcess(delta);
+            for (Contact c : currContacts) {
+                if (priorContacts.contains(c)) {
+                    contactListener.continueContact(c, delta);
+                } else {
+                    contactListener.beginContact(c, delta);
+                }
+            }
+            for (Contact c : priorContacts) {
+                if (!currContacts.contains(c)) {
+                    contactListener.endContact(c, delta);
+                }
+            }
+            priorContacts = currContacts;
+            currContacts = new OrderedSet<>();
             worldGraph.reset();
         }
+        /*
         for (Contact c : currContacts) {
             if (priorContacts.contains(c)) {
                 contactListener.continueContact(c, delta);
@@ -132,7 +148,7 @@ public class WorldSystem extends System {
         }
         priorContacts = currContacts;
         currContacts = new OrderedSet<>();
-        postProcess(delta);
+         */
         updating = false;
     }
 
@@ -140,8 +156,8 @@ public class WorldSystem extends System {
     protected void processEntity(Entity e, float delta) {
         Body body = e.getComponent(BodyComponent.class).body;
         switch (currCycle) {
-            case 0, 2 -> resolve(body);
-            case 1 -> updateBody(body, delta);
+            case 0 -> updateBody(body, delta);
+            case 1 -> resolve(body);
         }
     }
 

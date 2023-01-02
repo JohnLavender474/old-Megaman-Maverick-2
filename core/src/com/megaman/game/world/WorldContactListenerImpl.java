@@ -23,7 +23,6 @@ import com.megaman.game.entities.sensors.impl.Gate;
 import com.megaman.game.entities.special.SpecialFactory;
 import com.megaman.game.entities.special.impl.SpringBouncer;
 import com.megaman.game.health.HealthComponent;
-import com.megaman.game.movement.trajectory.TrajectoryComponent;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.enums.Direction;
@@ -85,11 +84,15 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 body.set(BodySense.SIDE_TOUCHING_ICE_RIGHT, true);
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
-            contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
-            if (contact.mask1stEntity() instanceof Megaman m) {
+            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
+            Body feetBody = contact.mask1stBody();
+            feetBody.bounds.x += posDelta.x;
+            feetBody.bounds.y += posDelta.y;
+            if (!feetBody.is(BodySense.FEET_ON_GROUND) && contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.JUMP;
                 m.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
             }
+            feetBody.set(BodySense.FEET_ON_GROUND, true);
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().set(BodySense.FEET_ON_ICE, true);
         } else if (contact.acceptMask(FixtureType.BOUNCER, w,
@@ -194,15 +197,21 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
+
+            // TODO: test
+            /*
             Vector2 posDelta;
             if (contact.mask2ndEntity().hasComponent(TrajectoryComponent.class)) {
                 posDelta = contact.mask2ndEntity().getComponent(TrajectoryComponent.class).trajectory.getPosDelta();
             } else {
                 posDelta = contact.mask2ndBody().getPosDelta();
             }
-            Body b = contact.mask1stBody();
-            b.bounds.x += posDelta.x;
-            b.bounds.y += posDelta.y;
+             */
+
+            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
+            Body feetBody = contact.mask1stBody();
+            feetBody.bounds.x += posDelta.x;
+            feetBody.bounds.y += posDelta.y;
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.JUMP;
             }
@@ -214,7 +223,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 m.aButtonTask = AButtonTask.SWIM;
             }
         } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
-            contact.mask1stBody().resistance.x = .925f;
+            // TODO: test
+            // contact.mask1stBody().resistance.x = .925f;
+
+            contact.mask1stBody().resistance.x = 1.015f;
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
 
             // TODO: test

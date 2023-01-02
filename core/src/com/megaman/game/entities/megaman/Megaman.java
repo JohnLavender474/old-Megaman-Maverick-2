@@ -74,7 +74,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public static final float GROUNDED_GRAVITY = -.0015f;
     public static final float GRAVITY = -.375f;
-    public static final float ICE_GRAVITY = -1f;
+    public static final float ICE_GRAVITY = -.5f;
     public static final float WATER_GRAVITY = -.25f;
     public static final float WATER_ICE_GRAVITY = -.4f;
 

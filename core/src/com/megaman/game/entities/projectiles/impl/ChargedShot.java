@@ -163,8 +163,12 @@ public class ChargedShot extends Projectile implements Faceable {
             size /= 2f;
         }
         body.bounds.setSize(size);
+
+        // projectile fixture
         Fixture projectileFixture = new Fixture(this, FixtureType.PROJECTILE, new Rectangle());
         body.add(projectileFixture);
+
+        // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle());
         body.add(damagerFixture);
     }

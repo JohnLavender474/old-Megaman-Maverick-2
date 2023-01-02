@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 
 public class UtilMethods {
 
-    private static final Logger logger = new Logger(UtilMethods.class, MegamanGame.DEBUG && true);
+    private static final Logger logger = new Logger(UtilMethods.class, MegamanGame.DEBUG && false);
     private static final Random RAND = new Random(System.currentTimeMillis());
 
     public static int getRandom(int min, int max) {
