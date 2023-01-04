@@ -15,7 +15,7 @@ import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.blocks.Block;
-import com.megaman.game.entities.enemies.impl.UpdateFunc;
+import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
@@ -24,12 +24,9 @@ import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
 import com.megaman.game.world.WorldVals;
 
-import java.util.function.Function;
-
 public class ConveyorBelt extends Block {
 
-    // private static final float FORCE_AMOUNT = 45f;
-    private static final float FORCE_AMOUNT = 25f;
+    private static final float FORCE_AMOUNT = 45f;
 
     private static TextureRegion lLeft;
     private static TextureRegion lRight;

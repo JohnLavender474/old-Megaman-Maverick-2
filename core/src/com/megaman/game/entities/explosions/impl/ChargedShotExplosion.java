@@ -52,7 +52,7 @@ public class ChargedShotExplosion extends Entity implements Damager, Faceable {
             fullyChargedReg = assMan.getTextureRegion(TextureAsset.MEGAMAN_CHARGED_SHOT, "Collide");
         }
         if (halfChargedReg == null) {
-            halfChargedReg = assMan.getTextureRegion(TextureAsset.MEGAMAN_HALF_CHARGED_SHOT, "Collide");
+            halfChargedReg = assMan.getTextureRegion(TextureAsset.EXPLOSIONS_1, "HalfChargedShot");
         }
         this.body = new Body(BodyType.ABSTRACT);
         this.soundTimer = new Timer(SOUND_INTERVAL);

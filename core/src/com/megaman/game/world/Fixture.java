@@ -13,8 +13,9 @@ public class Fixture {
     public final FixtureType fixtureType;
 
     public Shape2D shape;
-    public boolean active;
     public Vector2 offset;
+    public boolean active;
+    public boolean attached;
     public ObjectMap<String, Object> userData;
 
     public Fixture(Entity entity, FixtureType fixtureType) {
@@ -26,6 +27,7 @@ public class Fixture {
         this.entity = entity;
         this.fixtureType = fixtureType;
         active = true;
+        attached = true;
         offset = new Vector2();
         userData = new ObjectMap<>();
     }

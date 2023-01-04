@@ -29,7 +29,7 @@ public class ExplosionOrb extends Entity {
     public ExplosionOrb(MegamanGame game) {
         super(game, EntityType.EXPLOSION);
         if (explosionOrbReg == null) {
-            explosionOrbReg = game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "PlayerExplosionOrbs");
+            explosionOrbReg = game.getAssMan().getTextureRegion(TextureAsset.EXPLOSIONS_1, "ExplosionOrbs");
         }
         putComponent(spriteComponent());
         putComponent(animationComponent());

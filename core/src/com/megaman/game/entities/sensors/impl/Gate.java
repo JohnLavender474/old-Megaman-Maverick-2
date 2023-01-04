@@ -159,7 +159,7 @@ public class Gate extends Entity implements EventListener, Resettable {
     }
 
     private AnimationComponent animationComponent() {
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.DOORS);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.GATES);
         Supplier<String> keySupplier = () -> switch (state) {
             case OPENABLE, CLOSED -> "closed";
             case OPENING -> "opening";

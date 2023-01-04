@@ -17,6 +17,7 @@ public class EnemyFactory implements EntityFactory {
     public static final String DRAGON_FLY = "Dragonfly";
     public static final String MATASABURO = "Matasaburo";
     public static final String SPRING_HEAD = "SpringHead";
+    public static final String SWINGIN_JOE = "SwinginJoe";
     public static final String GAPING_FISH = "GapingFish";
     public static final String FLOATING_CAN = "FloatingCan";
     public static final String SUCTION_ROLLER = "SuctionRoller";
@@ -34,6 +35,7 @@ public class EnemyFactory implements EntityFactory {
             put(DRAGON_FLY, new EntityPool(5, () -> new Dragonfly(game)));
             put(MATASABURO, new EntityPool(5, () -> new Matasaburo(game)));
             put(SPRING_HEAD, new EntityPool(5, () -> new SpringHead(game)));
+            put(SWINGIN_JOE, new EntityPool(5, () -> new SwinginJoe(game)));
             put(GAPING_FISH, new EntityPool(5, () -> new GapingFish(game)));
             put(FLOATING_CAN, new EntityPool(10, () -> new FloatingCan(game)));
             put(SUCTION_ROLLER, new EntityPool(5, () -> new SuctionRoller(game)));

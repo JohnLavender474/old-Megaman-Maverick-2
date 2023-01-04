@@ -35,9 +35,9 @@ public class Bullet extends Projectile {
     public Bullet(MegamanGame game) {
         super(game, CULL_DUR, BodyType.ABSTRACT);
         if (bulletReg == null) {
-            bulletReg = game.getAssMan().getTextureRegion(TextureAsset.OBJECTS, "YellowBullet");
+            bulletReg = game.getAssMan().getTextureRegion(TextureAsset.PROJECTILES_1, "Bullet");
         }
-        this.traj = new Vector2();
+        traj = new Vector2();
         defineBody();
         putComponent(spriteComponent());
     }

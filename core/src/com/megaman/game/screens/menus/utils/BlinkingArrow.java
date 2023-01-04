@@ -2,7 +2,6 @@ package com.megaman.game.screens.menus.utils;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.TextureAsset;
@@ -25,10 +24,9 @@ public class BlinkingArrow implements Updatable, Drawable {
 
     private boolean arrowVisible;
 
-    public BlinkingArrow(AssetsManager assetsManager, Vector2 center) {
+    public BlinkingArrow(AssetsManager assMan, Vector2 center) {
         this.center = center;
-        arrowSprite.setRegion(assetsManager.getAsset(TextureAsset.DECORATIONS.getSrc(), TextureAtlas.class)
-                .findRegion("Arrow"));
+        arrowSprite.setRegion(assMan.getTextureRegion(TextureAsset.UI_1, "Arrow"));
         arrowSprite.setSize(WorldVals.PPM / 2f, WorldVals.PPM / 2f);
         arrowSprite.setCenter(center.x, center.y);
         arrowBlinkTimer.setDuration(ARROW_BLINK_DURATION);

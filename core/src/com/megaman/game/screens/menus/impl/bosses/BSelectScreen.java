@@ -14,6 +14,7 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.entities.bosses.BossEnum;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.menus.MenuButton;
 import com.megaman.game.screens.menus.MenuScreen;
@@ -55,13 +56,13 @@ public class BSelectScreen extends MenuScreen {
 
     private boolean outro;
     private boolean blink;
-    private BEnum bSelect;
+    private BossEnum bSelect;
 
     public BSelectScreen(MegamanGame game) {
         super(game, MEGA_MAN);
         if (bNameSet == null) {
             bNameSet = new ObjectSet<>();
-            for (BEnum b : BEnum.values()) {
+            for (BossEnum b : BossEnum.values()) {
                 bNameSet.add(b.name);
             }
         }
@@ -80,29 +81,28 @@ public class BSelectScreen extends MenuScreen {
         }});
         slide = new ScreenSlide(uiCam, INTRO_BLOCKS_TRANS,
                 ConstFuncs.getCamInitPos().sub(INTRO_BLOCKS_TRANS), ConstFuncs.getCamInitPos(), .5f);
-        TextureAtlas megamanFacesAtlas = assMan.getTextureAtlas(TextureAsset.MEGAMAN_FACES);
+        TextureAtlas megamanFacesAtlas = assMan.getTextureAtlas(TextureAsset.FACES);
         Map<Position, TextureRegion> megamanFaces = new EnumMap<>(Position.class);
         for (Position position : Position.values()) {
-            TextureRegion faceRegion = megamanFacesAtlas.findRegion(position.name());
+            TextureRegion faceRegion = megamanFacesAtlas.findRegion("Megaman/" + position.name());
             megamanFaces.put(position, faceRegion);
         }
         Supplier<TextureRegion> megamanFaceSupplier = () -> {
-            BEnum bEnum = BEnum.findByName(getCurrBtnKey());
-            if (bEnum == null) {
+            BossEnum bossEnum = BossEnum.findByName(getCurrBtnKey());
+            if (bossEnum == null) {
                 return megamanFaces.get(Position.CENTER);
             }
-            return megamanFaces.get(bEnum.position);
+            return megamanFaces.get(bossEnum.position);
         };
         BPane megamanPane = new BPane(game, megamanFaceSupplier, MEGA_MAN, Position.CENTER);
         bp.add(megamanPane);
-        for (BEnum boss : BEnum.values()) {
-            BPane bPane = new BPane(game, boss);
-            bp.add(bPane);
+        for (BossEnum boss : BossEnum.values()) {
+            bp.add(new BPane(game, boss));
         }
         t.add(new TextHandle(new Vector2(5.35f * WorldVals.PPM, 13.85f * WorldVals.PPM), "PRESS START"));
         t.add(new TextHandle(new Vector2(12.35f * WorldVals.PPM, WorldVals.PPM), BACK));
         bArrs.put(BACK, new BlinkingArrow(assMan, new Vector2(12f * WorldVals.PPM, .75f * WorldVals.PPM)));
-        TextureAtlas stageSelectAtlas = assMan.getTextureAtlas(TextureAsset.STAGE_SELECT);
+        TextureAtlas stageSelectAtlas = assMan.getTextureAtlas(TextureAsset.UI_1);
         TextureRegion bar = stageSelectAtlas.findRegion("Bar");
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 3; j++) {
@@ -116,11 +116,11 @@ public class BSelectScreen extends MenuScreen {
                 bars.put(sprite, timedAnimation);
             }
         }
-        TextureAtlas decorationsAtlas = assMan.getTextureAtlas(TextureAsset.DECORATIONS);
-        TextureRegion whiteReg = decorationsAtlas.findRegion("White");
+        TextureAtlas colorsAtlas = assMan.getTextureAtlas(TextureAsset.COLORS);
+        TextureRegion whiteReg = colorsAtlas.findRegion("White");
         white.setRegion(whiteReg);
         white.setBounds(0f, 0f, ViewVals.VIEW_WIDTH * WorldVals.PPM, ViewVals.VIEW_HEIGHT * WorldVals.PPM);
-        TextureRegion black = decorationsAtlas.findRegion("Black");
+        TextureRegion black = colorsAtlas.findRegion("Black");
         bar1.setRegion(black);
         bar1.setBounds(-WorldVals.PPM, -WorldVals.PPM,
                 (2f + ViewVals.VIEW_WIDTH) * WorldVals.PPM, 2f * WorldVals.PPM);
@@ -227,10 +227,10 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP -> setMenuButton(BEnum.findByPos(1, 2).name);
-                    case DOWN -> setMenuButton(BEnum.findByPos(1, 0).name);
-                    case LEFT -> setMenuButton(BEnum.findByPos(0, 1).name);
-                    case RIGHT -> setMenuButton(BEnum.findByPos(2, 1).name);
+                    case UP -> setMenuButton(BossEnum.findByPos(1, 2).name);
+                    case DOWN -> setMenuButton(BossEnum.findByPos(1, 0).name);
+                    case LEFT -> setMenuButton(BossEnum.findByPos(0, 1).name);
+                    case RIGHT -> setMenuButton(BossEnum.findByPos(2, 1).name);
                 }
             }
         });
@@ -244,26 +244,26 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP, LEFT, RIGHT -> setMenuButton(BEnum.findByPos(2, 0).name);
-                    case DOWN -> setMenuButton(BEnum.findByPos(2, 2).name);
+                    case UP, LEFT, RIGHT -> setMenuButton(BossEnum.findByPos(2, 0).name);
+                    case DOWN -> setMenuButton(BossEnum.findByPos(2, 2).name);
                 }
             }
         });
-        for (BEnum bEnum : BEnum.values()) {
-            menuButtons.put(bEnum.name, new MenuButton() {
+        for (BossEnum bossEnum : BossEnum.values()) {
+            menuButtons.put(bossEnum.name, new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
                     audioMan.play(SoundAsset.BEAM_OUT_SOUND);
                     audioMan.stopMusic();
-                    bSelect = bEnum;
+                    bSelect = bossEnum;
                     outro = true;
                     return true;
                 }
 
                 @Override
                 public void onNavigate(Direction direction, float delta) {
-                    int x = bEnum.position.getX();
-                    int y = bEnum.position.getY();
+                    int x = bossEnum.position.getX();
+                    int y = bossEnum.position.getY();
                     switch (direction) {
                         case UP -> y += 1;
                         case DOWN -> y -= 1;
@@ -286,7 +286,7 @@ public class BSelectScreen extends MenuScreen {
                     } else if (position.equals(Position.CENTER)) {
                         setMenuButton(MEGA_MAN);
                     } else {
-                        setMenuButton(BEnum.findByPos(x, y).name);
+                        setMenuButton(BossEnum.findByPos(x, y).name);
                     }
                 }
             });

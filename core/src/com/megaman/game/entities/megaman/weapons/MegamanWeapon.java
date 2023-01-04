@@ -8,8 +8,8 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor(access = PRIVATE)
 public enum MegamanWeapon {
 
-    MEGA_BUSTER(0, 0, 0, "Mega Buster", "StandardBit", "", TextureAsset.MEGAMAN),
-    FLAME_TOSS(3, 5, 8, "Flame Toss", "FlameBit", "", TextureAsset.MEGAMAN_FIRE);
+    MEGA_BUSTER(0, 0, 0, "Mega Buster", "Bit", "", TextureAsset.MEGAMAN),
+    FLAME_TOSS(3, 5, 8, "Flame Toss", "RedBit", "", TextureAsset.MEGAMAN_FIRE);
 
     public final int cost;
     public final int halfChargedCost;

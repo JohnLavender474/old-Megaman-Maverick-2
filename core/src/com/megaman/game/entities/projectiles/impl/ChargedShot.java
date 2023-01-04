@@ -9,6 +9,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.SoundAsset;
+import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.EntityType;
@@ -19,19 +20,16 @@ import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.projectiles.Projectile;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.world.Fixture;
 import com.megaman.game.world.FixtureType;
 import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
-
-import static com.megaman.game.assets.TextureAsset.MEGAMAN_CHARGED_SHOT;
-import static com.megaman.game.assets.TextureAsset.MEGAMAN_HALF_CHARGED_SHOT;
 
 public class ChargedShot extends Projectile implements Faceable {
 
@@ -49,10 +47,10 @@ public class ChargedShot extends Projectile implements Faceable {
     public ChargedShot(MegamanGame game) {
         super(game);
         if (fullyChargedReg == null) {
-            fullyChargedReg = game.getAssMan().getTextureRegion(MEGAMAN_CHARGED_SHOT, "Shoot");
+            fullyChargedReg = game.getAssMan().getTextureRegion(TextureAsset.MEGAMAN_CHARGED_SHOT, "Shoot");
         }
         if (halfChargedReg == null) {
-            halfChargedReg = game.getAssMan().getTextureRegion(MEGAMAN_HALF_CHARGED_SHOT, "Shoot");
+            halfChargedReg = game.getAssMan().getTextureRegion(TextureAsset.PROJECTILES_1, "HalfChargedShot");
         }
         this.traj = new Vector2();
         defineBody();

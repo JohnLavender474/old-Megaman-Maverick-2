@@ -19,7 +19,7 @@ import com.megaman.game.world.WorldVals;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.megaman.game.assets.TextureAsset.DECORATIONS;
+import static com.megaman.game.assets.TextureAsset.EXPLOSIONS_1;
 
 @Getter
 @Setter
@@ -53,7 +53,7 @@ public class Disintegration extends Entity {
     }
 
     private AnimationComponent animationComponent() {
-        Animation anim = new Animation(game.getAssMan().getTextureRegion(DECORATIONS, "Disintegration"), 3, 0.005f);
+        Animation anim = new Animation(game.getAssMan().getTextureRegion(EXPLOSIONS_1, "Disintegration"), 3, 0.005f);
         Animator animator = new Animator(sprite, anim);
         return new AnimationComponent(animator);
     }

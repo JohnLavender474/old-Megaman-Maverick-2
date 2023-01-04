@@ -40,6 +40,8 @@ import java.util.function.Supplier;
 
 public class SniperJoe extends Enemy implements Faceable {
 
+    public static final String SNOW_TYPE = "Snow";
+
     private static final float[] TIMES_TO_SHOOT = new float[]{.15f, .75f, 1.35f};
 
     private static final float BULLET_SPEED = 7.5f;
@@ -101,7 +103,6 @@ public class SniperJoe extends Enemy implements Faceable {
     protected void defineBody(Body body) {
         Array<ShapeHandle> h = new Array<>();
         body.bounds.setSize(WorldVals.PPM, 1.25f * WorldVals.PPM);
-        body.gravity.y = -WorldVals.PPM / 2f;
 
         // damager fixture
         Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER,
@@ -153,10 +154,10 @@ public class SniperJoe extends Enemy implements Faceable {
 
     private void shoot() {
         Vector2 spawn = new Vector2().set(body.getCenter()).add(
-                (is(Facing.LEFT) ? -.2f : .2f) * WorldVals.PPM, -.25f * WorldVals.PPM);
+                (is(Facing.LEFT) ? -.25f : .25f) * WorldVals.PPM, -.25f * WorldVals.PPM);
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);
-        if (type.equals("Blue")) {
+        if (type.equals(SNOW_TYPE)) {
             Vector2 traj = new Vector2(SNOWBALL_X, SNOWBALL_Y).scl(WorldVals.PPM);
             if (is(Facing.LEFT)) {
                 traj.x *= -1f;
@@ -201,8 +202,8 @@ public class SniperJoe extends Enemy implements Faceable {
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
             put("Shooting", new Animation(atlas.findRegion("SniperJoe/Shooting")));
             put("Shielded", new Animation(atlas.findRegion("SniperJoe/Shielded")));
-            put("BlueShooting", new Animation(atlas.findRegion("BlueSniperJoe/Shooting")));
-            put("BlueShielded", new Animation(atlas.findRegion("BlueSniperJoe/Shielded")));
+            put("SnowShooting", new Animation(atlas.findRegion("SnowSniperJoe/Shooting")));
+            put("SnowShielded", new Animation(atlas.findRegion("SnowSniperJoe/Shielded")));
         }});
     }
 

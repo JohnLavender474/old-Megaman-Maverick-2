@@ -14,11 +14,12 @@ import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.backgrounds.Stars;
+import com.megaman.game.entities.bosses.BossEnum;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.LevelScreen;
-import com.megaman.game.screens.menus.impl.bosses.BEnum;
 import com.megaman.game.screens.utils.TextHandle;
 import com.megaman.game.sprites.SpriteDrawer;
+import com.megaman.game.utils.ConstFuncs;
 import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.WorldVals;
@@ -45,7 +46,7 @@ public class BIntroScreen extends ScreenAdapter {
     private final Array<Stars> stars;
     private final TextHandle bText;
 
-    private BEnum b;
+    private BossEnum b;
     private Queue<Runnable> bLettersAnimQ;
     private KeyValuePair<Sprite, Queue<KeyValuePair<Animation, Timer>>> currBAnim;
 
@@ -54,7 +55,7 @@ public class BIntroScreen extends ScreenAdapter {
         this.uiCam = game.getUiCam();
         bLettersDelay = new Timer(B_LET_DELAY);
         bLettersTimer = new Timer(B_LET_DUR);
-        TextureRegion barReg = game.getAssMan().getTextureRegion(TextureAsset.STAGE_SELECT, "Bar");
+        TextureRegion barReg = game.getAssMan().getTextureRegion(TextureAsset.UI_1, "Bar");
         barAnim = new Animation(barReg, new float[]{.3f, .15f, .15f, .15f});
         bars = new Array<>() {{
             for (int i = 0; i < STARS_N_BARS; i++) {
@@ -79,7 +80,7 @@ public class BIntroScreen extends ScreenAdapter {
                 ViewVals.VIEW_HEIGHT * WorldVals.PPM / 3f));
     }
 
-    public void set(BEnum b) {
+    public void set(BossEnum b) {
         this.b = b;
         Sprite s = new Sprite();
         Vector2 size = b.getSpriteSize();
@@ -108,22 +109,20 @@ public class BIntroScreen extends ScreenAdapter {
         for (Stars s : stars) {
             s.resetPositions();
         }
-        currBAnim.key().setPosition(
-                ((ViewVals.VIEW_WIDTH / 2f) - 1.5f) * WorldVals.PPM,
+        currBAnim.key().setPosition(((ViewVals.VIEW_WIDTH / 2f) - 1.5f) * WorldVals.PPM,
                 ViewVals.VIEW_HEIGHT * WorldVals.PPM);
         for (KeyValuePair<Animation, Timer> e : currBAnim.value()) {
             e.key().reset();
             e.value().reset();
         }
+        uiCam.position.set(ConstFuncs.getCamInitPos());
         game.getAudioMan().play(MusicAsset.MM2_BOSS_INTRO_MUSIC, false);
     }
 
     @Override
     public void render(float delta) {
         if (durTimer.isFinished()) {
-            LevelScreen l = game.getScreen(ScreenEnum.LEVEL, LevelScreen.class);
-            l.set(b.level);
-            game.setScreen(l);
+            game.setScreen(ScreenEnum.LEVEL, LevelScreen.class, l -> l.set(b.level));
             return;
         }
         Sprite bSprite = currBAnim.key();

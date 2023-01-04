@@ -86,7 +86,7 @@ public class ShieldAttacker extends Enemy {
 
     @Override
     protected void defineBody(Body body) {
-        body.bounds.setSize(.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
+        body.bounds.setSize(.75f * WorldVals.PPM, 1.5f * WorldVals.PPM);
         Array<ShapeHandle> h = new Array<>();
 
         // damager fixture

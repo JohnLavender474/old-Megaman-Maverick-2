@@ -83,15 +83,15 @@ public class MainScreen extends MenuScreen {
         float row = .175f * WorldVals.PPM;
         for (MainBtn mainBtn : MainBtn.values()) {
             fonts.add(new TextHandle(new Vector2(2f * WorldVals.PPM, row * WorldVals.PPM), mainBtn.prompt));
-            Vector2 arrowCenter = new Vector2(1.5f * WorldVals.PPM, (row - (.0075f * WorldVals.PPM)) * WorldVals.PPM);
-            blinkArrs.put(mainBtn.name(), new BlinkingArrow(assMan, arrowCenter));
+            Vector2 arrCenter = new Vector2(1.5f * WorldVals.PPM, (row - (.0075f * WorldVals.PPM)) * WorldVals.PPM);
+            blinkArrs.put(mainBtn.name(), new BlinkingArrow(assMan, arrCenter));
             row -= WorldVals.PPM * .025f;
         }
         row = .4f * WorldVals.PPM;
-        for (SettingsBtn settingsBtn : SettingsBtn.values()) {
-            fonts.add(new TextHandle(new Vector2(17f * WorldVals.PPM, row * WorldVals.PPM), settingsBtn.prompt));
-            Vector2 arrowCenter = new Vector2(16.5f * WorldVals.PPM, (row - (.0075f * WorldVals.PPM)) * WorldVals.PPM);
-            blinkArrs.put(settingsBtn.name(), new BlinkingArrow(assMan, arrowCenter));
+        for (SettingsBtn sBtn : SettingsBtn.values()) {
+            fonts.add(new TextHandle(new Vector2(17f * WorldVals.PPM, row * WorldVals.PPM), sBtn.prompt));
+            Vector2 arrCenter = new Vector2(16.5f * WorldVals.PPM, (row - (.0075f * WorldVals.PPM)) * WorldVals.PPM);
+            blinkArrs.put(sBtn.name(), new BlinkingArrow(assMan, arrCenter));
             row -= WorldVals.PPM * .025f;
         }
         fonts.add(new TextHandle(new Vector2(3f * WorldVals.PPM, .5f * WorldVals.PPM), "© OLD LAVY GENES, 20XX"));
@@ -99,42 +99,29 @@ public class MainScreen extends MenuScreen {
                 () -> "" + game.getAudioMan().getMusicVolume()));
         fonts.add(new TextHandle(new Vector2(21f * WorldVals.PPM, 11.2f * WorldVals.PPM),
                 () -> "" + game.getAudioMan().getSoundVolume()));
-        TextureRegion arrowRegion = game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "Arrow");
+        TextureRegion arrowReg = game.getAssMan().getTextureRegion(TextureAsset.UI_1, "Arrow");
         float y = 11.55f;
         for (int i = 0; i < 4; i++) {
             if (i != 0 && i % 2 == 0) {
                 y -= .85f;
             }
-            Sprite blinkingArrow = new Sprite(arrowRegion);
-            blinkingArrow.setBounds(
+            Sprite blinkArr = new Sprite(arrowReg);
+            blinkArr.setBounds(
                     (i % 2 == 0 ? 20.25f : 22.5f) * WorldVals.PPM,
                     y * WorldVals.PPM,
                     WorldVals.PPM / 2f,
                     WorldVals.PPM / 2f);
-            blinkingArrow.setFlip(i % 2 == 0, false);
-            settingsArrs.add(blinkingArrow);
+            blinkArr.setFlip(i % 2 == 0, false);
+            settingsArrs.add(blinkArr);
         }
-        TextureAtlas decorations = game.getAssMan().getTextureAtlas(TextureAsset.DECORATIONS);
-        title.setRegion(decorations.findRegion("MegamanTitle"));
-        title.setBounds(
-                WorldVals.PPM,
-                6.5f * WorldVals.PPM,
-                14f * WorldVals.PPM,
-                8f * WorldVals.PPM);
-        TextureAtlas mainMenu = game.getAssMan().getTextureAtlas(TextureAsset.MEGAMAN_MAIN_MENU);
-        subtitle.setRegion(mainMenu.findRegion("Subtitle8bit"));
-        subtitle.setSize(
-                8f * WorldVals.PPM,
-                8f * WorldVals.PPM);
-        subtitle.setCenter(
-                ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f,
-                ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
-        pose.setRegion(mainMenu.findRegion("MegamanPose"));
-        pose.setBounds(
-                5.5f * WorldVals.PPM,
-                0f,
-                10f * WorldVals.PPM,
-                10f * WorldVals.PPM);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.UI_1);
+        title.setRegion(atlas.findRegion("MegamanTitle"));
+        title.setBounds(WorldVals.PPM, 8f * WorldVals.PPM, 14f * WorldVals.PPM, 5f * WorldVals.PPM);
+        subtitle.setRegion(atlas.findRegion("Subtitle8bit"));
+        subtitle.setSize(8f * WorldVals.PPM, 8f * WorldVals.PPM);
+        subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
+        pose.setRegion(atlas.findRegion("MegamanPose"));
+        pose.setBounds(5.5f * WorldVals.PPM, 0f, 10f * WorldVals.PPM, 10f * WorldVals.PPM);
     }
 
     @Override

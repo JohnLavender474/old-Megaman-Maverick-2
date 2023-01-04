@@ -1,0 +1,124 @@
+Faces.png
+size: 128, 172
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Blunt Man
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Distributor Man
+  rotate: false
+  xy: 32, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Freezer Man
+  rotate: false
+  xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Megaman/BOTTOM_CENTER
+  rotate: false
+  xy: 0, 64
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/BOTTOM_LEFT
+  rotate: false
+  xy: 36, 64
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/BOTTOM_RIGHT
+  rotate: false
+  xy: 72, 64
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/CENTER
+  rotate: false
+  xy: 0, 100
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/CENTER_LEFT
+  rotate: false
+  xy: 36, 100
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/CENTER_RIGHT
+  rotate: false
+  xy: 72, 100
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/TOP_CENTER
+  rotate: false
+  xy: 0, 136
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/TOP_LEFT
+  rotate: false
+  xy: 36, 136
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Megaman/TOP_RIGHT
+  rotate: false
+  xy: 72, 136
+  size: 36, 36
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+Microwave Man
+  rotate: false
+  xy: 96, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Mister Man
+  rotate: false
+  xy: 0, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Nuke Man
+  rotate: false
+  xy: 32, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Roaster Man
+  rotate: false
+  xy: 64, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Timber Woman
+  rotate: false
+  xy: 96, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1

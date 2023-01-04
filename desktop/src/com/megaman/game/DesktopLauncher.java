@@ -7,12 +7,6 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
 // Please note that on macOS your application needs to be started with the -XstartOnFirstThread JVM argument
 public class DesktopLauncher {
 
-    /*
-    TODO: Things that break if FPS != 60:
-        1. wall sliding and wall jumping on ice
-        2. running speed on ice is inconsistent and broken
-    */
-
     private static final int FPS = 60;
     private static final int WIDTH = 1920;
     private static final int HEIGHT = 1080;

@@ -13,46 +13,39 @@ public enum TextureAsset implements Asset {
     // Enemies
     ENEMIES_1("Enemies1.txt"),
 
-    // Objects
-    OBJECTS("Objects.txt"),
+    // Specials
+    SPECIALS_1("Specials1.txt"),
 
     // Hazards
-    SAW("SawBeam.txt"),
-    SPIKES("Spikes.txt"),
     HAZARDS_1("Hazards1.txt"),
 
     // Weapons
-    FIRE("Fire.txt"),
-    ELECTRIC("Electric.txt"),
+    PROJECTILES_1("Projectiles1.txt"),
     MEGAMAN_CHARGED_SHOT("MegamanChargedShot.txt"),
-    MEGAMAN_HALF_CHARGED_SHOT("MegamanHalfChargedShot.txt"),
 
     // Items
-    ITEMS("Items.txt"),
+    ITEMS_1("Items1.txt"),
 
     // Environs
     ENVIRONS_1("Environs1.txt"),
-    DECORATIONS("Decorations.txt"),
+
+    // Explosions
+    EXPLOSIONS_1("Explosions1.txt"),
 
     // Backgrounds
     BACKGROUNDS_1("Backgrounds1.txt"),
     BACKGROUNDS_2("Backgrounds2.txt"),
 
     // UI
-    BITS("HealthAndWeaponBits.txt"),
-    STAGE_SELECT("StageSelect.txt"),
-    BOSS_FACES("BossFaces.txt"),
-    MEGAMAN_FACES("MegamanFaces.txt"),
-    PAUSE_MENU("PauseMenu.txt"),
-    MEGAMAN_MAIN_MENU("MegamanMainMenu.txt"),
+    UI_1("Ui1.txt"),
+    FACES("Faces.txt"),
 
     // Megaman
     MEGAMAN("Megaman.txt"),
     MEGAMAN_FIRE("MegamanFire.txt"),
-    CHARGE_ORBS("ChargeOrbs.txt"),
 
     // Platforms
-    DOORS("Door.txt"),
+    GATES("Gates.txt"),
     PLATFORMS_1("Platforms1.txt"),
 
     // Bosses
@@ -62,7 +55,7 @@ public enum TextureAsset implements Asset {
     MISTER_MAN("MisterMan.txt"),
     BLUNT_MAN("BluntMan.txt"),
     NUKE_MAN("NukeMan.txt"),
-    FRIDGE_MAN("FridgeMan.txt"),
+    FREEZER_MAN("FreezerMan.txt"),
     MICROWAVE_MAN("MicrowaveMan.txt");
 
     private static final String prefix = "sprites/SpriteSheets/";

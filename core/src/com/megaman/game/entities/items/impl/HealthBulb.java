@@ -168,7 +168,7 @@ public class HealthBulb extends Entity implements Item {
 
     private AnimationComponent animationComponent() {
         Supplier<String> keySupplier = () -> large ? "Large" : "Small";
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ITEMS);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ITEMS_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
             put("Large", new Animation(atlas.findRegion("HealthBulb"), 2, .15f));
             put("Small", new Animation(atlas.findRegion("SmallHealthBulb")));

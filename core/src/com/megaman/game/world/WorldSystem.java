@@ -107,6 +107,7 @@ public class WorldSystem extends System {
             accumulator -= WorldVals.FIXED_STEP;
             currCycle = 0;
             preProcess(delta);
+            worldGraph.reset();
             while (currCycle < PROCESS_CYCLES) {
                 for (Entity e : entities) {
                     if (e.asleep) {
@@ -119,19 +120,18 @@ public class WorldSystem extends System {
             postProcess(delta);
             for (Contact c : currContacts) {
                 if (priorContacts.contains(c)) {
-                    contactListener.continueContact(c, delta);
+                    contactListener.continueContact(c, WorldVals.FIXED_STEP);
                 } else {
-                    contactListener.beginContact(c, delta);
+                    contactListener.beginContact(c, WorldVals.FIXED_STEP);
                 }
             }
             for (Contact c : priorContacts) {
                 if (!currContacts.contains(c)) {
-                    contactListener.endContact(c, delta);
+                    contactListener.endContact(c, WorldVals.FIXED_STEP);
                 }
             }
             priorContacts = currContacts;
             currContacts = new OrderedSet<>();
-            worldGraph.reset();
         }
         /*
         for (Contact c : currContacts) {

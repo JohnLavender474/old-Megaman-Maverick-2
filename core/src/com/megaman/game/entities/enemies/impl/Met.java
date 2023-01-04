@@ -58,7 +58,7 @@ public class Met extends Enemy implements Faceable {
     private final Timer[] metBehavTimers;
     private final Sprite sprite;
 
-    private MetBehavior metBehavior;
+    private MetBehavior behav;
     @Getter
     @Setter
     private Facing facing;
@@ -79,7 +79,7 @@ public class Met extends Enemy implements Faceable {
 
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
-        setMetBehavior(MetBehavior.SHIELDING);
+        setBehav(MetBehavior.SHIELDING);
         Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
         ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
         type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
@@ -97,10 +97,10 @@ public class Met extends Enemy implements Faceable {
 
     @Override
     protected void defineBody(Body body) {
-        Array<ShapeHandle> h = new Array<>();
         body.gravityOn = true;
         body.bounds.setSize(.75f * WorldVals.PPM);
         body.velClamp.set(VEL_CLAMP_X * WorldVals.PPM, VEL_CLAMP_Y * WorldVals.PPM);
+        Array<ShapeHandle> h = new Array<>();
 
         // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY,
@@ -136,7 +136,7 @@ public class Met extends Enemy implements Faceable {
         // pre-process
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY_Y * WorldVals.PPM;
-            shieldFixture.active = metBehavior == MetBehavior.SHIELDING;
+            shieldFixture.active = behav == MetBehavior.SHIELDING;
             damageableFixture.active = !shieldFixture.active;
         };
 
@@ -152,14 +152,14 @@ public class Met extends Enemy implements Faceable {
             if (game.getMegaman().dead) {
                 return;
             }
-            switch (metBehavior) {
+            switch (behav) {
                 case SHIELDING -> {
                     Timer shieldingTimer = metBehavTimers[MetBehavior.SHIELDING.ordinal()];
                     if (!isPlayerShootingAtMe()) {
                         shieldingTimer.update(delta);
                     }
                     if (shieldingTimer.isFinished()) {
-                        setMetBehavior(MetBehavior.POP_UP);
+                        setBehav(MetBehavior.POP_UP);
                     }
                 }
                 case POP_UP -> {
@@ -170,7 +170,7 @@ public class Met extends Enemy implements Faceable {
                     }
                     popupTimer.update(delta);
                     if (popupTimer.isFinished()) {
-                        setMetBehavior(MetBehavior.RUNNING);
+                        setBehav(MetBehavior.RUNNING);
                     }
                 }
                 case RUNNING -> {
@@ -184,15 +184,15 @@ public class Met extends Enemy implements Faceable {
                         if (is(BodySense.FEET_ON_GROUND)) {
                             body.velocity.x = 0f;
                         }
-                        setMetBehavior(MetBehavior.SHIELDING);
+                        setBehav(MetBehavior.SHIELDING);
                     }
                 }
             }
         });
     }
 
-    private void setMetBehavior(MetBehavior metBehavior) {
-        this.metBehavior = metBehavior;
+    private void setBehav(MetBehavior behav) {
+        this.behav = behav;
         for (int i = 0; i < metBehavTimers.length; i++) {
             metBehavTimers[i].reset();
         }
@@ -204,14 +204,12 @@ public class Met extends Enemy implements Faceable {
             traj.x *= -1f;
         }
         float offset = WorldVals.PPM / 64f;
-        Vector2 spawn = new Vector2()
-                .set(body.getCenter())
-                .add(is(Facing.LEFT) ? -offset : offset, offset);
-        Bullet b = (Bullet) game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
+        Vector2 spawn = new Vector2().set(body.getCenter()).add(is(Facing.LEFT) ? -offset : offset, offset);
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, this);
         data.put(ConstKeys.TRAJECTORY, traj);
-        game.getGameEngine().spawn(b, spawn, data);
+        Entity e = game.getEntityFactories().fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
+        game.getGameEngine().spawn(e, spawn, data);
     }
 
     private SpriteComponent spriteComponent() {
@@ -226,7 +224,7 @@ public class Met extends Enemy implements Faceable {
     }
 
     private AnimationComponent animationComponent() {
-        Supplier<String> keySupplier = () -> type + switch (metBehavior) {
+        Supplier<String> keySupplier = () -> type + switch (behav) {
             case RUNNING -> "Run";
             case POP_UP -> "PopUp";
             case SHIELDING -> "LayDown";
@@ -236,9 +234,9 @@ public class Met extends Enemy implements Faceable {
             put("Run", new Animation(atlas.findRegion("Met/Run"), 2, .125f));
             put("PopUp", new Animation(atlas.findRegion("Met/PopUp")));
             put("LayDown", new Animation(atlas.findRegion("Met/LayDown")));
-            put("BlueRun", new Animation(atlas.findRegion("BlueMet/Run"), 2, .125f));
-            put("BluePopUp", new Animation(atlas.findRegion("BlueMet/PopUp")));
-            put("BlueLayDown", new Animation(atlas.findRegion("BlueMet/LayDown")));
+            put("SnowRun", new Animation(atlas.findRegion("SnowMet/Run"), 2, .125f));
+            put("SnowPopUp", new Animation(atlas.findRegion("SnowMet/PopUp")));
+            put("SnowLayDown", new Animation(atlas.findRegion("SnowMet/LayDown")));
         }});
     }
 

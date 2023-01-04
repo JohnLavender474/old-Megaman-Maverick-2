@@ -13,7 +13,7 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
-import com.megaman.game.entities.enemies.impl.UpdateFunc;
+import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.entities.items.Item;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegaAbility;
@@ -226,7 +226,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             // TODO: test
             // contact.mask1stBody().resistance.x = .925f;
 
-            contact.mask1stBody().resistance.x = 1.015f;
+            contact.mask1stBody().resistance.x = 1.0175f;
         } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
 
             // TODO: test

@@ -209,10 +209,10 @@ public class Bat extends Enemy {
             put("Fly", new Animation(atlas.findRegion("Bat/Fly"), 2, .1f));
             put("OpenEyes", new Animation(atlas.findRegion("Bat/OpenEyes")));
             put("OpenWings", new Animation(atlas.findRegion("Bat/OpenWings")));
-            put("BlueHang", new Animation(atlas.findRegion("BlueBat/Hang")));
-            put("BlueFly", new Animation(atlas.findRegion("BlueBat/Fly"), 2, .1f));
-            put("BlueOpenEyes", new Animation(atlas.findRegion("BlueBat/OpenEyes")));
-            put("BlueOpenWings", new Animation(atlas.findRegion("BlueBat/OpenWings")));
+            put("SnowHang", new Animation(atlas.findRegion("SnowBat/Hang")));
+            put("SnowFly", new Animation(atlas.findRegion("SnowBat/Fly"), 2, .1f));
+            put("SnowOpenEyes", new Animation(atlas.findRegion("SnowBat/OpenEyes")));
+            put("SnowOpenWings", new Animation(atlas.findRegion("SnowBat/OpenWings")));
         }}));
     }
 

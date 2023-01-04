@@ -250,6 +250,9 @@ public class Body implements Updatable, Resettable {
         bounds.x += velocity.x * delta;
         bounds.y += velocity.y * delta;
         for (Fixture f : fixtures) {
+            if (!f.attached) {
+                continue;
+            }
             Vector2 p = ShapeUtils.getCenterPoint(bounds).add(f.offset);
             Shape2D shape = f.shape;
             if (shape instanceof Rectangle r) {

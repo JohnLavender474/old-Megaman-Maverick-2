@@ -1,0 +1,82 @@
+Projectiles1.png
+size: 800, 32
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+Bullet
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Electric/BigElectric
+  rotate: false
+  xy: 32, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+Electric/ElectricBallPulse
+  rotate: false
+  xy: 96, 0
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+Electric/PurpleShockBalls
+  rotate: false
+  xy: 224, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+Electric/SmallElectric
+  rotate: false
+  xy: 288, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+Electric/Zap
+  rotate: false
+  xy: 352, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+Fire/Fireball
+  rotate: false
+  xy: 416, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+HalfChargedShot
+  rotate: false
+  xy: 448, 0
+  size: 64, 32
+  orig: 64, 32
+  offset: 0, 0
+  index: -1
+Joeball
+  rotate: false
+  xy: 512, 0
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+Snowball
+  rotate: false
+  xy: 640, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+SnowJoeball
+  rotate: false
+  xy: 672, 0
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1

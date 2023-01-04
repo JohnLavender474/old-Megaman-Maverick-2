@@ -1,6 +1,5 @@
 package com.megaman.game.screens.menus.impl.bosses;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -8,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.entities.bosses.BossEnum;
 import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
@@ -17,8 +17,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.function.Supplier;
-
-import static com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest;
 
 @Getter
 @Setter
@@ -42,9 +40,9 @@ class BPane implements Updatable, Drawable {
 
     private BPaneStat bPaneStat = BPaneStat.UNHIGHLIGHTED;
 
-    public BPane(MegamanGame game, BEnum bEnum) {
-        this(game, game.getAssMan().getTextureRegion(TextureAsset.BOSS_FACES, bEnum.name),
-                bEnum.name, bEnum.position);
+    public BPane(MegamanGame game, BossEnum bossEnum) {
+        this(game, game.getAssMan().getTextureRegion(TextureAsset.FACES, bossEnum.name),
+                bossEnum.name, bossEnum.position);
     }
 
     public BPane(MegamanGame game, TextureRegion bossRegion, String bossName, Position position) {
@@ -72,7 +70,7 @@ class BPane implements Updatable, Drawable {
         bossSprite.setCenter(centerX, centerY);
         paneSprite.setSize(PANE_WIDTH * WorldVals.PPM, PANE_HEIGHT * WorldVals.PPM);
         paneSprite.setCenter(centerX, centerY);
-        TextureAtlas decorationAtlas = game.getAssMan().getTextureAtlas(TextureAsset.STAGE_SELECT);
+        TextureAtlas decorationAtlas = game.getAssMan().getTextureAtlas(TextureAsset.UI_1);
         TextureRegion paneUnhighlighted = decorationAtlas.findRegion("Pane");
         this.paneUnhighlightedAnim = new Animation(paneUnhighlighted);
         TextureRegion paneBlinking = decorationAtlas.findRegion("PaneBlinking");

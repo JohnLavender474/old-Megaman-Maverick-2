@@ -30,6 +30,7 @@ import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.sprites.SpriteHandle;
 import com.megaman.game.updatables.UpdatableComponent;
 import com.megaman.game.utils.enums.Position;
+import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 import lombok.Getter;
@@ -37,7 +38,6 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import static com.badlogic.gdx.graphics.Color.GRAY;
 

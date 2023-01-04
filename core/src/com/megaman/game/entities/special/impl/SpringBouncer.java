@@ -122,7 +122,7 @@ public class SpringBouncer extends Entity {
 
     private AnimationComponent animationComponent() {
         Supplier<String> keySupplier = () -> bounceTimer.isFinished() ? "Still" : "Bounce";
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.OBJECTS);
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.SPECIALS_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
             put("Still", new Animation(atlas.findRegion("SpringBounceStill")));
             put("Bounce", new Animation(atlas.findRegion("SpringBounce"), 5, .05f));

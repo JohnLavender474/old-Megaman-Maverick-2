@@ -143,10 +143,11 @@ public class Fireball extends Projectile {
     }
 
     private AnimationComponent animationComponent() {
-        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.FIRE);
+        TextureAtlas fireballAtlas = game.getAssMan().getTextureAtlas(TextureAsset.PROJECTILES_1);
+        TextureAtlas flameAtlas = game.getAssMan().getTextureAtlas(TextureAsset.HAZARDS_1);
         return new AnimationComponent(sprite, () -> burst ? "Flame" : "Fireball", new ObjectMap<>() {{
-            put("Flame", new Animation(atlas.findRegion("Flame"), 4, .1f));
-            put("Fireball", new Animation(atlas.findRegion("Fireball")));
+            put("Flame", new Animation(flameAtlas.findRegion("Flame"), 4, .1f));
+            put("Fireball", new Animation(fireballAtlas.findRegion("Fire/Fireball")));
         }});
     }
 

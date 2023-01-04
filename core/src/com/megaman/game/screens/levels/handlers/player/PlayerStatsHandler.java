@@ -57,7 +57,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         audioMan = game.getAudioMan();
         eventMan = game.getEventMan();
         AssetsManager assMan = game.getAssMan();
-        healthBar = new BitsBar(BAR_X, BAR_Y, megaman::getHealth, megaman::getMaxHealth, assMan, "StandardBit");
+        healthBar = new BitsBar(BAR_X, BAR_Y, megaman::getHealth, megaman::getMaxHealth, assMan, "Bit");
         Map<MegamanWeapon, BitsBar> weaponBars = new EnumMap<>(MegamanWeapon.class);
         for (MegamanWeapon weapon : MegamanWeapon.values()) {
             BitsBar weaponBar = new BitsBar(BAR_X + WorldVals.PPM, BAR_Y, megaman::getAmmo,

@@ -28,8 +28,8 @@ public class BitsBar implements Drawable {
     private Supplier<Integer> maxSupplier = () -> BITS;
 
     public BitsBar(float x, float y, Supplier<Integer> countSupplier, AssetsManager assMan, String bitRegion) {
-        this(x, y, countSupplier, assMan.getTextureRegion(TextureAsset.BITS, bitRegion),
-                assMan.getTextureRegion(TextureAsset.DECORATIONS, "Black"));
+        this(x, y, countSupplier, assMan.getTextureRegion(TextureAsset.UI_1, bitRegion),
+                assMan.getTextureRegion(TextureAsset.COLORS, "Black"));
     }
 
     public BitsBar(float x, float y, Supplier<Integer> countSupplier, Supplier<Integer> maxSupplier,

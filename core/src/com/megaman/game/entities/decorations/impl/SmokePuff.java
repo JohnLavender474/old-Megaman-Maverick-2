@@ -27,7 +27,7 @@ public class SmokePuff extends Entity {
     public SmokePuff(MegamanGame game) {
         super(game, EntityType.DECORATION);
         if (smokePuffReg == null) {
-            smokePuffReg = game.getAssMan().getTextureRegion(TextureAsset.DECORATIONS, "SmokePuff");
+            smokePuffReg = game.getAssMan().getTextureRegion(TextureAsset.EXPLOSIONS_1, "SmokePuff");
         }
         pos = new Vector2();
         sprite = new Sprite();

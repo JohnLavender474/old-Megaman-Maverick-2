@@ -35,7 +35,7 @@ public class HeartTank extends Entity implements Item {
     public HeartTank(MegamanGame game) {
         super(game, EntityType.ITEM);
         if (heartTankReg == null) {
-            heartTankReg = game.getAssMan().getTextureRegion(TextureAsset.ITEMS, "HeartTank");
+            heartTankReg = game.getAssMan().getTextureRegion(TextureAsset.ITEMS_1, "HeartTank");
         }
         sprite = new Sprite();
         body = new Body(BodyType.ABSTRACT);

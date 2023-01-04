@@ -5,14 +5,12 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactory;
 import com.megaman.game.entities.EntityPool;
-import com.megaman.game.entities.projectiles.impl.Bullet;
-import com.megaman.game.entities.projectiles.impl.ChargedShot;
-import com.megaman.game.entities.projectiles.impl.Fireball;
-import com.megaman.game.entities.projectiles.impl.Snowball;
+import com.megaman.game.entities.projectiles.impl.*;
 
 public class ProjectileFactory implements EntityFactory {
 
     public static final String BULLET = "Bullet";
+    public static final String JOEBALL = "Joeball";
     public static final String FIREBALL = "Fireball";
     public static final String SNOWBALL = "Snowball";
     public static final String CHARGED_SHOT = "ChargedShot";
@@ -21,10 +19,11 @@ public class ProjectileFactory implements EntityFactory {
 
     public ProjectileFactory(MegamanGame game) {
         this.pools = new ObjectMap<>() {{
-            put(BULLET, new EntityPool(100, () -> new Bullet(game)));
+            put(BULLET, new EntityPool(20, () -> new Bullet(game)));
+            put(JOEBALL, new EntityPool(3, () -> new JoeBall(game)));
             put(FIREBALL, new EntityPool(5, () -> new Fireball(game)));
             put(SNOWBALL, new EntityPool(5, () -> new Snowball(game)));
-            put(CHARGED_SHOT, new EntityPool(5, () -> new ChargedShot(game)));
+            put(CHARGED_SHOT, new EntityPool(3, () -> new ChargedShot(game)));
         }};
     }
 
