@@ -263,7 +263,7 @@
    <properties>
     <property name="SpawnRoom" value="Room2"/>
     <property name="SpawnType" value="SpawnRoom"/>
-    <property name="Trajectory" value="0,-1,1;-12,0,2;0,1,.5;12,0,2"/>
+    <property name="Trajectory" value="0,-1,1;-4,0,3;0,1,1;4,0,3"/>
    </properties>
   </object>
   <object id="85" x="2304" y="448" width="64" height="8">

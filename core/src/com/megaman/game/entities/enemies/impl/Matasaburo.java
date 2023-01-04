@@ -41,7 +41,7 @@ import java.util.Map;
 public class Matasaburo extends Enemy implements Faceable {
 
     private static final float DAMAGE_DUR = .35f;
-    private static final float BLOW_FORCE = 45f;
+    private static final float BLOW_FORCE = 15f;
 
     private static TextureRegion matasaburoReg;
 
