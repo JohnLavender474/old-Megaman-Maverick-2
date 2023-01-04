@@ -169,6 +169,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         engine.getSystem(WorldSystem.class).setWorldGraph(worldGraph);
         engine.getSystem(PathfindingSystem.class).setWorldGraph(worldGraph);
         LevelBuilder builder = new LevelBuilder(game, m);
+        backgrounds.clear();
+        backgrounds.addAll(builder.getBackgrounds());
         levelCamMan.set(builder.getGameRoomObjs(), megaman);
         playerSpawnMan.set(builder.getPlayerSpawns());
         spawnMan.set(builder.getSpawns());
@@ -253,7 +255,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         }
         // update only if game is not paused
         if (!game.isPaused()) {
-            backgrounds.forEach(b -> b.update(delta));
+            for (Background b : backgrounds) {
+                b.update(delta);
+            }
             levelCamMan.update(delta);
             // spawns do not update when player is first spawning or if there is room transition
             if (playerSpawnEventHandler.isFinished() && !levelCamMan.isTransitioning()) {
@@ -274,7 +278,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         // render game sprites
         batch.setProjectionMatrix(gameCam.combined);
         batch.begin();
-        backgrounds.forEach(b -> b.draw(batch));
+        for (Background b : backgrounds) {
+            b.draw(batch);
+        }
         levelMapMan.draw();
         while (!gameSpritesQ.isEmpty()) {
             gameSpritesQ.poll().draw(batch);
@@ -317,7 +323,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         eventMan.remove(this);
         levelMapMan.dispose();
         playerSpawnMan.reset();
-        disposables.forEach(Disposable::dispose);
+        for (Disposable d : disposables) {
+            d.dispose();
+        }
     }
 
 }

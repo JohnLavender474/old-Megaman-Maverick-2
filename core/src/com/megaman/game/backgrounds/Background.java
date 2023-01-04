@@ -4,16 +4,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.Vector2;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.interfaces.Drawable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.world.WorldVals;
 
 public class Background implements Updatable, Drawable {
-
-    public static final String ROWS_KEY = "rows";
-    public static final String COLS_KEY = "cols";
 
     protected final Sprite[][] backgroundSprites;
     protected final Sprite backgroundModel;
@@ -27,8 +24,8 @@ public class Background implements Updatable, Drawable {
     public Background(TextureRegion textureRegion, RectangleMapObject backgroundObj) {
         this(textureRegion, backgroundObj.getRectangle().x, backgroundObj.getRectangle().y,
                 backgroundObj.getRectangle().width, backgroundObj.getRectangle().height,
-                backgroundObj.getProperties().get(ROWS_KEY, Integer.class),
-                backgroundObj.getProperties().get(COLS_KEY, Integer.class));
+                backgroundObj.getProperties().get(ConstKeys.ROWS, Integer.class),
+                backgroundObj.getProperties().get(ConstKeys.COLS, Integer.class));
     }
 
     public Background(TextureRegion textureRegion, float startX, float startY,
@@ -40,10 +37,7 @@ public class Background implements Updatable, Drawable {
         this.startX = startX;
         this.startY = startY;
         this.backgroundModel = new Sprite(textureRegion);
-        this.backgroundModel.setBounds(
-                startX, startY,
-                width * WorldVals.PPM + 1f,
-                height * WorldVals.PPM + 1f);
+        this.backgroundModel.setBounds(startX, startY, width, height);
         this.backgroundSprites = new Sprite[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -53,14 +47,11 @@ public class Background implements Updatable, Drawable {
         resetPositions();
     }
 
-    /**
-     * Resets all sprites to their original positions.
-     */
     public void resetPositions() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                float x = startX + (width * j * WorldVals.PPM);
-                float y = startY + (height * i * WorldVals.PPM);
+                float x = startX + j * width;
+                float y = startY + i * height;
                 backgroundSprites[i][j].setPosition(x, y);
             }
         }
@@ -72,10 +63,6 @@ public class Background implements Updatable, Drawable {
                 sprite.translate(x, y);
             }
         }
-    }
-
-    public void translate(Vector2 trans) {
-        translate(trans.x, trans.y);
     }
 
     @Override

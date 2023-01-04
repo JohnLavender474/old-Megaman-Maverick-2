@@ -1,6 +1,7 @@
 package com.megaman.game.screens.levels;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -8,6 +9,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.assets.TextureAsset;
+import com.megaman.game.backgrounds.Background;
 import com.megaman.game.entities.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.items.ItemFactory;
@@ -21,19 +24,23 @@ import com.megaman.game.screens.levels.spawns.Spawn;
 import com.megaman.game.screens.levels.spawns.SpawnType;
 import com.megaman.game.screens.levels.spawns.impl.SpawnOnEventPredicate;
 import com.megaman.game.screens.levels.spawns.impl.SpawnWhenInBounds;
+import lombok.Getter;
 
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+@Getter
 public class LevelBuilder implements Disposable {
 
     private final Array<Spawn> spawns;
     private final Array<RectangleMapObject> playerSpawns;
     private final Array<RectangleMapObject> gameRoomObjs;
+    private final Array<Background> backgrounds;
     private final Array<Runnable> runOnDispose;
 
     public LevelBuilder(MegamanGame game, Map<LevelMapLayer, Array<RectangleMapObject>> m) {
+        backgrounds = new Array<>();
         runOnDispose = new Array<>();
         gameRoomObjs = m.get(LevelMapLayer.GAME_ROOMS);
         playerSpawns = m.get(LevelMapLayer.PLAYER_SPAWNS);
@@ -44,6 +51,15 @@ public class LevelBuilder implements Disposable {
         spawns = new Array<>();
         for (Map.Entry<LevelMapLayer, Array<RectangleMapObject>> e : m.entrySet()) {
             switch (e.getKey()) {
+                case BACKGROUNDS -> {
+                    for (RectangleMapObject o : e.getValue()) {
+                        ObjectMap<String, Object> data = LevelMapObjParser.parse(o);
+                        TextureRegion bkgReg = game.getAssMan().getTextureRegion(
+                                TextureAsset.PREFIX + data.get(ConstKeys.ATLAS),
+                                (String) data.get(ConstKeys.REGION));
+                        backgrounds.add(new Background(bkgReg, o));
+                    }
+                }
                 case GATES -> {
                     for (RectangleMapObject o : e.getValue()) {
                         engine.spawn(factories.fetch(EntityType.SENSOR, SensorFactory.GATE),
@@ -118,18 +134,6 @@ public class LevelBuilder implements Disposable {
                 }
             }
         }
-    }
-
-    public Array<RectangleMapObject> getGameRoomObjs() {
-        return gameRoomObjs;
-    }
-
-    public Array<RectangleMapObject> getPlayerSpawns() {
-        return playerSpawns;
-    }
-
-    public Array<Spawn> getSpawns() {
-        return spawns;
     }
 
     @Override

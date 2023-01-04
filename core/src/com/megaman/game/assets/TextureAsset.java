@@ -58,13 +58,13 @@ public enum TextureAsset implements Asset {
     FREEZER_MAN("FreezerMan.txt"),
     MICROWAVE_MAN("MicrowaveMan.txt");
 
-    private static final String prefix = "sprites/SpriteSheets/";
+    public static final String PREFIX = "sprites/SpriteSheets/";
 
     private final String src;
 
     @Override
     public String getSrc() {
-        return prefix + src;
+        return PREFIX + src;
     }
 
     @Override

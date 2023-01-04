@@ -17,7 +17,7 @@ public class Stars extends Background {
 
     public Stars(MegamanGame game, float x, float y) {
         super(game.getAssMan().getTextureRegion(TextureAsset.BACKGROUNDS_1, "StarFieldBG"),
-                x, y, WIDTH, HEIGHT, ROWS, COLS);
+                x, y, WIDTH * WorldVals.PPM, HEIGHT * WorldVals.PPM, ROWS, COLS);
     }
 
     @Override

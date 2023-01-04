@@ -30,10 +30,18 @@ public class AssetsManager implements Disposable {
     }
 
     public TextureAtlas getTextureAtlas(TextureAsset t) {
-        return getAsset(t.getSrc(), TextureAtlas.class);
+        return getTextureAtlas(t.getSrc());
+    }
+
+    public TextureAtlas getTextureAtlas(String t) {
+        return getAsset(t, TextureAtlas.class);
     }
 
     public TextureRegion getTextureRegion(TextureAsset t, String region) {
+        return getTextureAtlas(t).findRegion(region);
+    }
+
+    public TextureRegion getTextureRegion(String t, String region) {
         return getTextureAtlas(t).findRegion(region);
     }
 

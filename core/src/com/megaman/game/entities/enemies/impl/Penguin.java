@@ -1,6 +1,8 @@
 package com.megaman.game.entities.enemies.impl;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.AnimationComponent;
@@ -12,10 +14,7 @@ import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.sprites.SpriteComponent;
 import com.megaman.game.utils.objs.Timer;
-import com.megaman.game.world.Body;
-import com.megaman.game.world.BodySense;
-import com.megaman.game.world.BodyType;
-import com.megaman.game.world.WorldVals;
+import com.megaman.game.world.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -78,9 +77,35 @@ public class Penguin extends Enemy implements Faceable {
     protected void defineBody(Body body) {
         body.gravityOn = true;
         body.velClamp.x = VEL_CLAMP_X * WorldVals.PPM;
+        // TODO: body bounds changes depending on behav
         Array<ShapeHandle> h = new Array<>();
 
         // body fixture
+        Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle());
+        body.add(bodyFixture);
+
+        // feet fixture
+        Fixture feetFixture = new Fixture(this, FixtureType.FEET,
+                new Rectangle().setSize(.25f * WorldVals.PPM, .2f * WorldVals.PPM));
+        // TODO: feet fixture offset changes depending on behav
+        h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
+        body.add(feetFixture);
+
+        // damageable fixture
+        Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle());
+        // TODO: damageable fixture offset changes depending on behav
+        h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
+        body.add(damageableFixture);
+
+        // damager fixture
+        Fixture damagerFixture = new Fixture(this, FixtureType.DAMAGER, new Rectangle());
+        h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
+        body.add(damagerFixture);
+
+        // pre-process
+        body.preProcess = delta -> {
+
+        };
     }
 
     private SpriteComponent spriteComponent() {
