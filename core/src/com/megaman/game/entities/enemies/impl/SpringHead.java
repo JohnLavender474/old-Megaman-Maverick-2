@@ -41,8 +41,8 @@ import java.util.function.Supplier;
 public class SpringHead extends Enemy implements Faceable {
 
 
-    private static final float SPEED_NORMAL = 3.5f;
-    private static final float SPEED_SUPER = 8f;
+    private static final float SPEED_NORMAL = 2.5f;
+    private static final float SPEED_SUPER = 7f;
 
     private static final float BOUNCE_DUR = 1.5f;
 
@@ -179,6 +179,7 @@ public class SpringHead extends Enemy implements Faceable {
     protected void defineUpdateComponent(UpdatableComponent c) {
         super.defineUpdateComponent(c);
         c.add(delta -> {
+            speedUpScanner.setCenter(body.getCenter());
             turnTimer.update(delta);
             if (turnTimer.isJustFinished()) {
                 setFacing(isMegamanRight() ? Facing.RIGHT : Facing.LEFT);

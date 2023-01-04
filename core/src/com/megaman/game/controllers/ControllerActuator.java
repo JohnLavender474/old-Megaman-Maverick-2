@@ -1,6 +1,6 @@
 package com.megaman.game.controllers;
 
-public interface ControllerAdapter {
+public interface ControllerActuator {
 
     default void onJustPressed() {
     }

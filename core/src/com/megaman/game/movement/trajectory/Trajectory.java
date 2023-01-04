@@ -1,7 +1,7 @@
 package com.megaman.game.movement.trajectory;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.megaman.game.entities.special.impl.Water;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.world.Body;
@@ -25,11 +25,13 @@ public class Trajectory implements Updatable, Resettable {
     private final Vector2 currCenter;
      */
 
+    private Vector2 startPos;
     private int index;
     private float dur;
 
     public Trajectory(Body body, String traj) {
         this.body = body;
+        startPos = body.getPos();
         String[] tokens = traj.split(";");
         for (String token : tokens) {
             String[] vals = token.split(",");
@@ -98,6 +100,7 @@ public class Trajectory implements Updatable, Resettable {
     public void reset() {
         dur = 0;
         index = 0;
+        body.setPos(startPos);
         /*
         for (KeyValuePair<Vector2, Timer> def : defs) {
             def.value().reset();

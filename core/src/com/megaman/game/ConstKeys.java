@@ -40,5 +40,6 @@ public class ConstKeys {
     public static final String READY = "Ready";
     public static final String ATLAS = "Atlas";
     public static final String REGION = "Region";
+    public static final String TRANS = "Trans";
 
 }

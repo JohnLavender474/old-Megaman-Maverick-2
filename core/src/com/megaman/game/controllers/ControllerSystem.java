@@ -17,7 +17,7 @@ public class ControllerSystem extends System {
     @Override
     protected void processEntity(Entity e, float delta) {
         ControllerComponent c = e.getComponent(ControllerComponent.class);
-        for (Map.Entry<CtrlBtn, ControllerAdapter> entry : c.ctrlAdapters.entrySet()) {
+        for (Map.Entry<CtrlBtn, ControllerActuator> entry : c.ctrlAdapters.entrySet()) {
             if (ctrlMan.isJustPressed(entry.getKey())) {
                 entry.getValue().onJustPressed();
             } else if (ctrlMan.isPressed(entry.getKey())) {

@@ -14,7 +14,7 @@ import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.behaviors.Behavior;
 import com.megaman.game.behaviors.BehaviorComponent;
 import com.megaman.game.behaviors.BehaviorType;
-import com.megaman.game.controllers.ControllerAdapter;
+import com.megaman.game.controllers.ControllerActuator;
 import com.megaman.game.controllers.ControllerComponent;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.CtrlBtn;
@@ -99,6 +99,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public static final float SHOOT_ANIM_TIME = .3f;
     public static final float CHARGING_ANIM_TIME = .125f;
+
+    private static final float DMG_X = 2f;
 
     public final Sprite sprite;
     public final Body body;
@@ -193,7 +195,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public void listenForEvent(Event e) {
         switch (e.type) {
             case BEGIN_ROOM_TRANS, CONTINUE_ROOM_TRANS -> {
-                body.velocity.set(Vector2.Zero);
+                // body.velocity.set(Vector2.Zero);
                 Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
                 body.setPos(pos, Position.BOTTOM_CENTER);
                 request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
@@ -212,6 +214,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public void takeDamageFrom(Damager damager) {
+        float dmgX = DMG_X * WorldVals.PPM;
+        if (is(Facing.RIGHT)) {
+            dmgX *= -1f;
+        }
+        body.velocity.x += dmgX;
         DamageNegotiation dmgNeg = MegamanDamageNegs.get(damager);
         dmgTimer.reset();
         dmgNeg.runOnDamage();
@@ -379,7 +386,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         ControllerComponent c = new ControllerComponent();
         BehaviorComponent bc = getComponent(BehaviorComponent.class);
         ControllerManager ctrlMan = game.getCtrlMan();
-        c.ctrlAdapters.put(CtrlBtn.DPAD_LEFT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.DPAD_LEFT, new ControllerActuator() {
             @Override
             public void onPressContinued(float delta) {
                 if (isDamaged() || ctrlMan.isPressed(CtrlBtn.DPAD_RIGHT)) {
@@ -411,7 +418,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
             }
         });
-        c.ctrlAdapters.put(CtrlBtn.DPAD_RIGHT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.DPAD_RIGHT, new ControllerActuator() {
             @Override
             public void onPressContinued(float delta) {
                 if (isDamaged() || ctrlMan.isPressed(CtrlBtn.DPAD_LEFT)) {
@@ -443,7 +450,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
             }
         });
-        c.ctrlAdapters.put(CtrlBtn.X, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.X, new ControllerActuator() {
             @Override
             public void onPressContinued(float delta) {
                 if (isDamaged()) {
@@ -462,7 +469,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             public void onJustReleased() {
-                if (!canFireCurrWeapon() || !shoot()) {
+                if (isDamaged() || !canFireCurrWeapon() || !shoot()) {
                     getComponent(SoundComponent.class).requestToPlay(SoundAsset.ERROR_SOUND);
                 }
                 stopCharging();
@@ -473,7 +480,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 stopCharging();
             }
         });
-        c.ctrlAdapters.put(CtrlBtn.SELECT, new ControllerAdapter() {
+        c.ctrlAdapters.put(CtrlBtn.SELECT, new ControllerActuator() {
             @Override
             public void onJustPressed() {
                 int x = currWeapon.ordinal() + 1;
@@ -898,11 +905,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             dmgTimer.update(delta);
             if (isDamaged()) {
                 chargingTimer.reset();
-                float dmgX = .15f * WorldVals.PPM;
-                if (is(Facing.LEFT)) {
-                    dmgX *= -1f;
-                }
-                body.velocity.x += dmgX;
             }
             if (dmgTimer.isJustFinished()) {
                 dmgRecovTimer.reset();

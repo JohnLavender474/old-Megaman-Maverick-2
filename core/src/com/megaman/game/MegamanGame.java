@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,6 +19,7 @@ import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.behaviors.BehaviorSystem;
 import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.ControllerSystem;
+import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.cull.CullOnEventSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
 import com.megaman.game.entities.EntityFactories;
@@ -78,7 +80,9 @@ public class MegamanGame implements ApplicationListener {
 
     private TextHandle fpsText;
     private boolean paused;
+
     private Screen screen;
+    private Screen overlayScreen;
 
     @Override
     public void create() {
@@ -131,10 +135,31 @@ public class MegamanGame implements ApplicationListener {
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
         fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),
                 () -> "FPS: " + Gdx.graphics.getFramesPerSecond());
+
+        // TODO: get controller codes
+        if (ControllerManager.isControllerConnected()) {
+            ControllerMapping m = ControllerManager.getController().getMapping();
+            logger.log("X: " + m.buttonX);
+            logger.log("A: " + m.buttonA);
+            logger.log("B: " + m.buttonB);
+            logger.log("Y: " + m.buttonY);
+            logger.log("Start: " + m.buttonStart);
+            logger.log("L1: " + m.buttonL1);
+            logger.log("L2: " + m.buttonL2);
+            logger.log("R1: " + m.buttonR1);
+            logger.log("R2: " + m.buttonR2);
+        }
+        ctrlMan.setCtrlCode(CtrlBtn.X, 3);
+        ctrlMan.setCtrlCode(CtrlBtn.A, 1);
+        ctrlMan.setCtrlCode(CtrlBtn.SELECT, 0);
     }
 
     public Screen getScreen(ScreenEnum e) {
         return screens.get(e);
+    }
+
+    public void setScreen(ScreenEnum e) {
+        setScreen(getScreen(e));
     }
 
     public <S extends Screen> void setScreen(ScreenEnum e, Class<S> sClass, Consumer<S> sCons) {
@@ -157,6 +182,33 @@ public class MegamanGame implements ApplicationListener {
         }
     }
 
+    public void setOverlayScreen(ScreenEnum e) {
+        setOverlayScreen(getScreen(e));
+    }
+
+    public <S extends Screen> void setOverlayScreen(ScreenEnum e, Class<S> sClass, Consumer<S> sCons) {
+        S s = sClass.cast(getScreen(e));
+        sCons.accept(s);
+        setOverlayScreen(s);
+    }
+
+    public void setOverlayScreen(Screen overlayScreen) {
+        if (this.overlayScreen != null) {
+            this.overlayScreen.dispose();
+        }
+        this.overlayScreen = overlayScreen;
+        if (this.overlayScreen != null) {
+            this.overlayScreen.show();
+            this.overlayScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+        if (paused) {
+            this.overlayScreen.pause();
+        }
+    }
+
+    public void removeOverlayScreen() {
+        overlayScreen = null;
+    }
 
     @Override
     public void render() {
@@ -171,6 +223,9 @@ public class MegamanGame implements ApplicationListener {
         audioMan.update(delta);
         if (screen != null) {
             screen.render(delta);
+        }
+        if (overlayScreen != null) {
+            overlayScreen.render(delta);
         }
         if (DEBUG) {
             batch.setProjectionMatrix(uiCam.combined);

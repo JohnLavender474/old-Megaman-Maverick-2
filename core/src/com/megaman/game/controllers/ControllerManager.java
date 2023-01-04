@@ -81,6 +81,14 @@ public class ControllerManager implements Runnable {
         return getController() != null;
     }
 
+    public void setCtrlCode(CtrlBtn btn, int code) {
+        ctrlCodes.put(btn, () -> code);
+    }
+
+    public void setKeyboardCode(CtrlBtn btn, int code) {
+        keyboardCodes.put(btn, code);
+    }
+
     public boolean isPressed(CtrlBtn btn) {
         return ctrlBtnStats.get(btn) == ControllerBtnStat.PRESSED || isJustPressed(btn);
     }
