@@ -213,6 +213,7 @@
             <key type="filename">../Frames/Enemies1/Met/PopUp.png</key>
             <key type="filename">../Frames/Enemies1/Penguin/Jump.png</key>
             <key type="filename">../Frames/Enemies1/Penguin/Slide.png</key>
+            <key type="filename">../Frames/Enemies1/Penguin/Slippin.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shielded.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shooting.png</key>
             <key type="filename">../Frames/Enemies1/SnowBat/Hang.png</key>

@@ -2,17 +2,26 @@ package com.megaman.game.entities.enemies.impl;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
+import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.DamageNegotiation;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
+import com.megaman.game.sprites.SpriteHandle;
+import com.megaman.game.updatables.UpdatableComponent;
+import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.objs.Timer;
 import com.megaman.game.world.*;
 import lombok.Getter;
@@ -20,38 +29,41 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class Penguin extends Enemy implements Faceable {
 
-    private enum PenguinBehavior {
-        STANDING,
-        JUMPING,
-        SLIDING
-    }
-
     private static final float STAND_DUR = 1f;
-    private static final float SLIDING_DUR = 1f;
-    private static final float GRAVITY = -.15f;
-    private static final float JUMP_IMPULSE = 15f;
-    private static final float VEL_X = 10f;
-    private static final float VEL_CLAMP_X = 8f;
+    private static final float SLIDING_DUR = .35f;
+    private static final float G_GRAV = -.0015f;
+    private static final float GRAV = -.375f;
+    private static final float JUMP_IMPULSE_Y = 28f;
+    private static final float JUMP_IMPULSE_X = 8f;
+    private static final float SLIDE_VEL_X = 11f;
 
     private final Sprite sprite;
     private final Timer standTimer;
     private final Timer slideTimer;
 
-    private PenguinBehavior behav;
     @Getter
     @Setter
     private Facing facing;
 
-    public Penguin(MegamanGame game, BodyType bodyType) {
-        super(game, bodyType);
+    public Penguin(MegamanGame game) {
+        super(game, BodyType.DYNAMIC);
         sprite = new Sprite();
         standTimer = new Timer(STAND_DUR);
         slideTimer = new Timer(SLIDING_DUR);
         putComponent(spriteComponent());
         putComponent(animationComponent());
+    }
+
+    @Override
+    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
+        Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
+        ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
+        slideTimer.setToEnd();
+        standTimer.reset();
     }
 
     public boolean isSliding() {
@@ -66,6 +78,33 @@ public class Penguin extends Enemy implements Faceable {
         return slideTimer.isFinished();
     }
 
+    private void jump() {
+        standTimer.setToEnd();
+        slideTimer.reset();
+        Vector2 impulse = new Vector2();
+        impulse.x = JUMP_IMPULSE_X * WorldVals.PPM;
+        if (is(Facing.LEFT)) {
+            impulse.x *= -1f;
+        }
+        impulse.y = JUMP_IMPULSE_Y * WorldVals.PPM;
+        body.velocity.add(impulse);
+    }
+
+    private void stand(float delta) {
+        setFacing(game.getMegaman().body.isRightOf(body) ? Facing.RIGHT : Facing.LEFT);
+        standTimer.update(delta);
+        if (is(BodySense.FEET_ON_GROUND) && standTimer.isFinished()) {
+            jump();
+        }
+    }
+
+    private void slide(float delta) {
+        slideTimer.update(delta);
+        if (slideTimer.isFinished()) {
+            standTimer.reset();
+        }
+    }
+
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
@@ -76,8 +115,7 @@ public class Penguin extends Enemy implements Faceable {
     @Override
     protected void defineBody(Body body) {
         body.gravityOn = true;
-        body.velClamp.x = VEL_CLAMP_X * WorldVals.PPM;
-        // TODO: body bounds changes depending on behav
+        body.affectedByResistance = true;
         Array<ShapeHandle> h = new Array<>();
 
         // body fixture
@@ -86,14 +124,12 @@ public class Penguin extends Enemy implements Faceable {
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.25f * WorldVals.PPM, .2f * WorldVals.PPM));
-        // TODO: feet fixture offset changes depending on behav
+                new Rectangle().setHeight(.1f * WorldVals.PPM));
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
         body.add(feetFixture);
 
         // damageable fixture
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE, new Rectangle());
-        // TODO: damageable fixture offset changes depending on behav
         h.add(new ShapeHandle(damageableFixture.shape, Color.PURPLE));
         body.add(damageableFixture);
 
@@ -102,18 +138,69 @@ public class Penguin extends Enemy implements Faceable {
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
         body.add(damagerFixture);
 
-        // pre-process
         body.preProcess = delta -> {
-
+            Rectangle feetBounds = (Rectangle) feetFixture.shape;
+            if (isStanding() || isJumping()) {
+                body.bounds.setSize(.75f * WorldVals.PPM, WorldVals.PPM);
+                feetBounds.width = .65f * WorldVals.PPM;
+                feetFixture.offset.y = -.5f * WorldVals.PPM;
+            } else {
+                body.bounds.setSize(WorldVals.PPM, .5f * WorldVals.PPM);
+                feetBounds.width = .9f * WorldVals.PPM;
+                feetFixture.offset.y = -.25f * WorldVals.PPM;
+            }
+            ((Rectangle) damageableFixture.shape).set(body.bounds);
+            ((Rectangle) damagerFixture.shape).set(body.bounds);
+            body.gravity.y = (is(BodySense.FEET_ON_GROUND) ? G_GRAV : GRAV) * WorldVals.PPM;
+            if (isSliding()) {
+                body.velocity.x = SLIDE_VEL_X * WorldVals.PPM;
+                if (is(Facing.LEFT)) {
+                    body.velocity.x *= -1f;
+                }
+            }
         };
     }
 
+    @Override
+    protected void defineUpdateComponent(UpdatableComponent c) {
+        super.defineUpdateComponent(c);
+        c.add(delta -> {
+            if (isStanding()) {
+                stand(delta);
+            } else if (isSliding()) {
+                slide(delta);
+            }
+        });
+    }
+
     private SpriteComponent spriteComponent() {
-        return null;
+        sprite.setSize(1.5f * WorldVals.PPM, 1.5f * WorldVals.PPM);
+        SpriteHandle h = new SpriteHandle(sprite, 4);
+        h.updatable = delta -> {
+            h.setPosition(body.bounds, Position.BOTTOM_CENTER);
+            sprite.setFlip(is(Facing.LEFT), false);
+            h.hidden = dmgBlink;
+            if (isSliding()) {
+                sprite.translateY(-.25f * WorldVals.PPM);
+            }
+        };
+        return new SpriteComponent(h);
     }
 
     private AnimationComponent animationComponent() {
-        return null;
+        Supplier<String> keySupplier = () -> {
+            if (isStanding()) {
+                return Math.abs(body.velocity.x) > WorldVals.PPM / 4f ? "Slippin" : "Stand";
+            }
+            return isJumping() ? "Jump" : "Slide";
+        };
+        TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
+        return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
+            put("Stand", new Animation(atlas.findRegion("Penguin/Stand"), 2, .1f));
+            put("Jump", new Animation(atlas.findRegion("Penguin/Jump")));
+            put("Slide", new Animation(atlas.findRegion("Penguin/Slide")));
+            put("Slippin", new Animation(atlas.findRegion("Penguin/Slippin")));
+        }});
     }
 
 }

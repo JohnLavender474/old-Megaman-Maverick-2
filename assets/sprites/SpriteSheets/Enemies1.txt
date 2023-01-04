@@ -1,5 +1,5 @@
 Enemies1.png
-size: 984, 196
+size: 992, 196
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -166,47 +166,54 @@ MagFly
   index: -1
 Matasaburo
   rotate: false
-  xy: 768, 64
+  xy: 736, 64
   size: 216, 36
   orig: 216, 36
   offset: 0, 0
   index: -1
 Met/GetUp
   rotate: false
-  xy: 0, 32
+  xy: 960, 0
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Met/LayDown
   rotate: false
-  xy: 32, 32
+  xy: 0, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Met/PopUp
   rotate: false
-  xy: 64, 32
+  xy: 32, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Met/Run
   rotate: false
-  xy: 96, 32
+  xy: 64, 32
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 Penguin/Jump
   rotate: false
-  xy: 160, 32
+  xy: 128, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 Penguin/Slide
+  rotate: false
+  xy: 160, 32
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Penguin/Slippin
   rotate: false
   xy: 192, 32
   size: 32, 32
@@ -320,42 +327,42 @@ SnowSniperJoe/Shooting
   index: -1
 SpringHead/Compressed
   rotate: false
-  xy: 0, 64
+  xy: 960, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 SpringHead/Unleashed
   rotate: false
-  xy: 32, 64
+  xy: 0, 64
   size: 192, 32
   orig: 192, 32
   offset: 0, 0
   index: -1
 SuctionRoller
   rotate: false
-  xy: 224, 64
+  xy: 192, 64
   size: 160, 32
   orig: 160, 32
   offset: 0, 0
   index: -1
 SuicideBummer
   rotate: false
-  xy: 384, 64
+  xy: 352, 64
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 SwimmingMet/LayDown
   rotate: false
-  xy: 512, 64
+  xy: 480, 64
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 SwimmingMet/Swim
   rotate: false
-  xy: 544, 64
+  xy: 512, 64
   size: 160, 32
   orig: 160, 32
   offset: 0, 0
@@ -404,7 +411,7 @@ SwinginJoe/ThrowBall
   index: -1
 WispyWasp/BabyWasp
   rotate: false
-  xy: 704, 64
+  xy: 672, 64
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
