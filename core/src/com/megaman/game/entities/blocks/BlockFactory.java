@@ -5,10 +5,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityFactory;
 import com.megaman.game.entities.EntityPool;
-import com.megaman.game.entities.blocks.impl.ConveyorBelt;
-import com.megaman.game.entities.blocks.impl.GearTrolley;
-import com.megaman.game.entities.blocks.impl.IceBlock;
-import com.megaman.game.entities.blocks.impl.RocketPlatform;
+import com.megaman.game.entities.blocks.impl.*;
 
 public class BlockFactory implements EntityFactory {
 
@@ -17,6 +14,7 @@ public class BlockFactory implements EntityFactory {
     public static final String GEAR_TROLLEY = "GearTrolley";
     public static final String CONVEYOR_BELT = "ConveyorBelt";
     public static final String ROCKET_PLATFORM = "RocketPlatform";
+    public static final String COLLIDE_DOWN_ONLY = "CollideDownOnly";
 
     private final ObjectMap<String, EntityPool> pools;
 
@@ -27,6 +25,7 @@ public class BlockFactory implements EntityFactory {
             put(GEAR_TROLLEY, new EntityPool(5, () -> new GearTrolley(game)));
             put(CONVEYOR_BELT, new EntityPool(5, () -> new ConveyorBelt(game)));
             put(ROCKET_PLATFORM, new EntityPool(10, () -> new RocketPlatform(game)));
+            put(COLLIDE_DOWN_ONLY, new EntityPool(5, () -> new CollideDownOnlyBlock(game)));
         }};
     }
 

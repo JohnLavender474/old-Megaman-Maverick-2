@@ -195,11 +195,7 @@
   <object id="116" x="5632" y="1440" width="64" height="32"/>
   <object id="117" x="5568" y="1344" width="64" height="32"/>
   <object id="119" x="7040" y="1184" width="64" height="224"/>
-  <object id="129" x="232" y="1464" width="144" height="8">
-   <properties>
-    <property name="BodyLabel" value="PressUpFallThru,CollideDownOnly,NoTouchie"/>
-   </properties>
-  </object>
+  <object id="129" name="CollideDownOnly" x="232" y="1464" width="144" height="8"/>
   <object id="130" x="416" y="1344" width="64" height="224"/>
   <object id="131" x="192" y="1408" width="56" height="64"/>
   <object id="132" x="360" y="1408" width="88" height="64"/>
