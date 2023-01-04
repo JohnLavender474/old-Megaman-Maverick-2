@@ -128,9 +128,9 @@ public class MegamanGame implements ApplicationListener {
         screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
 
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FREEZER_MAN));
-        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
-        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
+        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
         // setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
         fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),

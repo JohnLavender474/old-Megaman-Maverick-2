@@ -1,5 +1,6 @@
 package com.megaman.game.world;
 
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedSet;
@@ -218,13 +219,11 @@ public class WorldSystem extends System {
         if (dynamicBody.bodyType != BodyType.DYNAMIC || staticBody.bodyType != BodyType.STATIC) {
             throw new IllegalStateException("First body must be dynamic, second must be static");
         }
+        if (!dynamicBody.overlaps(staticBody) || specialCollisionHandler.handleSpecial(dynamicBody, staticBody)) {
+            return;
+        }
         Rectangle overlap = new Rectangle();
-        if (!dynamicBody.intersects(staticBody, overlap)) {
-            return;
-        }
-        if (specialCollisionHandler.handleSpecial(dynamicBody, staticBody, overlap)) {
-            return;
-        }
+        Intersector.intersectRectangles(dynamicBody.bounds, staticBody.bounds, overlap);
         if (overlap.width > overlap.height) {
             dynamicBody.resistance.x += staticBody.friction.x;
             if (dynamicBody.bounds.y > staticBody.bounds.y) {

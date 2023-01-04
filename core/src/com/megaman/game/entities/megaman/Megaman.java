@@ -495,7 +495,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     private BodyComponent bodyComponent() {
         body.velClamp.set(CLAMP_X * WorldVals.PPM, CLAMP_Y * WorldVals.PPM);
-        body.bounds.width = .8f * WorldVals.PPM;
+        body.bounds.width = .75f * WorldVals.PPM;
         body.affectedByResistance = true;
 
         Array<ShapeHandle> h = new Array<>();
@@ -519,7 +519,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.6f * WorldVals.PPM, .25f * WorldVals.PPM));
+                new Rectangle().setSize(.5f * WorldVals.PPM, .25f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));

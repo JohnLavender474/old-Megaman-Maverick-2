@@ -42,23 +42,32 @@ public class WorldContactListenerImpl implements WorldContactListener {
     private final MegamanGame game;
 
     @Override
-    @SuppressWarnings("unchecked")
     public void beginContact(Contact contact, float delta) {
         Wrapper<FixtureType> w = Wrapper.empty();
+        // consumer
         if (contact.acceptMask(FixtureType.CONSUMER, false)) {
             Consumer<Fixture> c = (Consumer<Fixture>) contact.mask1stData(ConstKeys.CONSUMER);
             c.accept(contact.mask.getSecond());
-        } else if (contact.acceptMask(FixtureType.DEATH, FixtureType.DAMAGEABLE)) {
+        }
+
+        // death and damageable
+        else if (contact.acceptMask(FixtureType.DEATH, FixtureType.DAMAGEABLE)) {
             logger.log("Death and damageable begin contact");
             contact.mask2ndEntity().getComponent(HealthComponent.class).setDead();
-        } else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
+        }
+
+        // damager and damageable
+        else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
             Damager dmgr = (Damager) contact.mask1stEntity();
             Damageable dmgbl = (Damageable) contact.mask2ndEntity();
             if (dmgr.canDamage(dmgbl) && dmgbl.canBeDamagedBy(dmgr)) {
                 dmgbl.takeDamageFrom(dmgr);
                 dmgr.onDamageInflictedTo(dmgbl);
             }
-        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
+        }
+
+        // side and block
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
             if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
                 return;
             }
@@ -69,13 +78,19 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.SIDE_TOUCHING_BLOCK_RIGHT, true);
             }
-        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.GATE)) {
+        }
+
+        // side and gate
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.GATE)) {
             if (contact.mask1stEntity() instanceof Megaman &&
                     contact.mask2ndEntity() instanceof Gate gate &&
                     gate.isState(Gate.GateState.OPENABLE)) {
                 gate.trigger();
             }
-        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
+        }
+
+        // side and ice
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
             Body body = contact.mask1stBody();
             String side = contact.mask1stData(ConstKeys.SIDE, String.class);
             if (side.equals(ConstKeys.LEFT)) {
@@ -83,7 +98,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.SIDE_TOUCHING_ICE_RIGHT, true);
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
+        }
+
+        // feet and block
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body feetBody = contact.mask1stBody();
             feetBody.bounds.x += posDelta.x;
@@ -93,9 +111,15 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 m.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
             }
             feetBody.set(BodySense.FEET_ON_GROUND, true);
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
+        }
+
+        // feet and ice
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().set(BodySense.FEET_ON_ICE, true);
-        } else if (contact.acceptMask(FixtureType.BOUNCER, w,
+        }
+
+        // bounce and feet, head, or side
+        else if (contact.acceptMask(FixtureType.BOUNCER, w,
                 FixtureType.FEET,
                 FixtureType.HEAD,
                 FixtureType.SIDE)) {
@@ -114,13 +138,19 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (r != null) {
                 r.run();
             }
-        } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
+        }
+
+        // head and block
+        else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
             if (!contact.mask2ndBody().labels.contains(BodyLabel.COLLIDE_DOWN_ONLY)) {
                 Body headBody = contact.mask1stBody();
                 headBody.set(BodySense.HEAD_TOUCHING_BLOCK, true);
                 headBody.velocity.y = 0f;
             }
-        } else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
+        }
+
+        // water listener and water
+        else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
             contact.mask1stBody().set(BodySense.BODY_IN_WATER, true);
             Entity e = contact.mask1stEntity();
             if (e instanceof Megaman m && !m.is(BodySense.FEET_ON_GROUND) && !m.is(BehaviorType.WALL_SLIDING)) {
@@ -130,15 +160,24 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (e instanceof Megaman || e instanceof Enemy) {
                 game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
             }
-        } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.LADDER)) {
+        }
+
+        // head and ladder
+        else if (contact.acceptMask(FixtureType.HEAD, FixtureType.LADDER)) {
             Body headBody = contact.mask1stBody();
             headBody.set(BodySense.HEAD_TOUCHING_LADDER, true);
             headBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.LADDER)) {
+        }
+
+        // feet and ladder
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.LADDER)) {
             Body feetBody = contact.mask1stBody();
             feetBody.set(BodySense.FEET_TOUCHING_LADDER, true);
             feetBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
-        } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
+        }
+
+        // body and force
+        else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
 
             // TODO: test
 
@@ -159,7 +198,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Vector2 force = forceFunc.apply(contact.mask.getFirst(), delta);
             contact.mask1stBody().velocity.add(force);
 
-        } else if (contact.acceptMask(FixtureType.PROJECTILE, w,
+        }
+
+        // projectile and block. body, shield, or water
+        else if (contact.acceptMask(FixtureType.PROJECTILE, w,
                 FixtureType.BLOCK,
                 FixtureType.BODY,
                 FixtureType.SHIELD,
@@ -175,7 +217,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
                 case SHIELD -> p.hitShield(f);
                 case WATER -> p.hitWater(f);
             }
-        } else if (contact.acceptMask(FixtureType.PLAYER, FixtureType.ITEM)) {
+        }
+
+        // player and item
+        else if (contact.acceptMask(FixtureType.PLAYER, FixtureType.ITEM)) {
             if (contact.mask1stEntity() instanceof Megaman m && contact.mask2ndEntity() instanceof Item i) {
                 i.contactWithPlayer(m);
             }
@@ -183,20 +228,26 @@ public class WorldContactListenerImpl implements WorldContactListener {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void continueContact(Contact contact, float delta) {
+
+        // consumer
         if (contact.acceptMask(FixtureType.CONSUMER, false)) {
             Consumer<Fixture> c = (Consumer<Fixture>) contact.mask1stData(ConstKeys.CONSUMER);
             c.accept(contact.mask.getSecond());
-        } else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
+        }
+
+        // damager and damageable
+        else if (contact.acceptMask(FixtureType.DAMAGER, FixtureType.DAMAGEABLE)) {
             Damager dmgr = (Damager) contact.mask1stEntity();
             Damageable dmgbl = (Damageable) contact.mask2ndEntity();
             if (dmgr.canDamage(dmgbl) && dmgbl.canBeDamagedBy(dmgr)) {
                 dmgbl.takeDamageFrom(dmgr);
                 dmgr.onDamageInflictedTo(dmgbl);
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
-            contact.mask1stBody().set(BodySense.FEET_ON_GROUND, true);
+        }
+
+        // feet and block
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
 
             // TODO: test
             /*
@@ -210,24 +261,36 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
             Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body feetBody = contact.mask1stBody();
+            feetBody.set(BodySense.FEET_ON_GROUND, true);
             feetBody.bounds.x += posDelta.x;
             feetBody.bounds.y += posDelta.y;
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.JUMP;
             }
-        } else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
+        }
+
+        // water listener and water
+        else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
             contact.mask1stBody().set(BodySense.BODY_IN_WATER, true);
             if (contact.mask1stEntity() instanceof Megaman m &&
                     !m.is(BodySense.FEET_ON_GROUND) &&
                     !m.is(BehaviorType.WALL_SLIDING)) {
                 m.aButtonTask = AButtonTask.SWIM;
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
+        }
+
+        // feet and ice
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             // TODO: test
             // contact.mask1stBody().resistance.x = .925f;
 
-            contact.mask1stBody().resistance.x = 1.0175f;
-        } else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
+            Body feetBody = contact.mask1stBody();
+            feetBody.set(BodySense.FEET_ON_ICE, true);
+            feetBody.resistance.x = 1.0175f;
+        }
+
+        // body and force
+        else if (contact.acceptMask(FixtureType.BODY, FixtureType.FORCE)) {
 
             // TODO: test
 
@@ -248,22 +311,56 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Vector2 force = forceFunc.apply(contact.mask.getFirst(), delta);
             contact.mask1stBody().velocity.add(force);
 
-        } else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK) &&
+        }
+
+        // laser and block
+        else if (contact.acceptMask(FixtureType.LASER, FixtureType.BLOCK) &&
                 !contact.mask1stEntity().equals(contact.mask2ndEntity())) {
             Fixture first = contact.mask.getFirst();
             Fixture second = contact.mask.getSecond();
             Collection<Vector2> contactPoints = first.getUserData(ConstKeys.COLLECTION, Collection.class);
             Collection<Vector2> temp = new ArrayList<>();
-            if (ShapeUtils.intersectLineRect(
-                    (Polyline) first.shape,
-                    (Rectangle) second.shape, temp)) {
+            if (ShapeUtils.intersectLineRect((Polyline) first.shape, (Rectangle) second.shape, temp)) {
                 contactPoints.addAll(temp);
+            }
+        }
+
+        // head and block
+        else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
+            if (!contact.mask2ndBody().labels.contains(BodyLabel.COLLIDE_DOWN_ONLY)) {
+                contact.mask1stBody().set(BodySense.HEAD_TOUCHING_BLOCK, true);
+            }
+        }
+
+        // side and ice
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
+            Body body = contact.mask1stBody();
+            String side = contact.mask1stData(ConstKeys.SIDE, String.class);
+            if (side.equals(ConstKeys.LEFT)) {
+                body.set(BodySense.SIDE_TOUCHING_ICE_LEFT, true);
+            } else {
+                body.set(BodySense.SIDE_TOUCHING_ICE_RIGHT, true);
+            }
+        }
+
+        // side and block
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+                return;
+            }
+            Body body = contact.mask1stBody();
+            String side = contact.mask1stData(ConstKeys.SIDE, String.class);
+            if (side.equals(ConstKeys.LEFT)) {
+                body.set(BodySense.SIDE_TOUCHING_BLOCK_LEFT, true);
+            } else {
+                body.set(BodySense.SIDE_TOUCHING_BLOCK_RIGHT, true);
             }
         }
     }
 
     @Override
     public void endContact(Contact contact, float delta) {
+        // side and block
         if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
             if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
                 return;
@@ -275,7 +372,10 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.SIDE_TOUCHING_BLOCK_RIGHT, false);
             }
-        } else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
+        }
+
+        // side and ice
+        else if (contact.acceptMask(FixtureType.SIDE, FixtureType.ICE)) {
             Body body = contact.mask1stBody();
             String side = contact.mask1stData(ConstKeys.SIDE, String.class);
             if (side.equals(ConstKeys.LEFT)) {
@@ -283,29 +383,47 @@ public class WorldContactListenerImpl implements WorldContactListener {
             } else {
                 body.set(BodySense.SIDE_TOUCHING_ICE_RIGHT, false);
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
+        }
+
+        // feet and block
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, false);
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = m.is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
+        }
+
+        // feet and ice
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.ICE)) {
             contact.mask1stBody().set(BodySense.FEET_ON_ICE, false);
-        } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
+        }
+
+        // head and block
+        else if (contact.acceptMask(FixtureType.HEAD, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.HEAD_TOUCHING_BLOCK, false);
-        } else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
+        }
+
+        // water listener and water
+        else if (contact.acceptMask(FixtureType.WATER_LISTENER, FixtureType.WATER)) {
             contact.mask1stBody().set(BodySense.BODY_IN_WATER, false);
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.AIR_DASH;
             }
             game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
-        } else if (contact.acceptMask(FixtureType.HEAD, FixtureType.LADDER)) {
+        }
+
+        // head and ladder
+        else if (contact.acceptMask(FixtureType.HEAD, FixtureType.LADDER)) {
             Body headBody = contact.mask1stBody();
             headBody.set(BodySense.HEAD_TOUCHING_LADDER, false);
             if (!headBody.is(BodySense.FEET_TOUCHING_LADDER)) {
                 headBody.removeUserData(SpecialFactory.LADDER);
             }
-        } else if (contact.acceptMask(FixtureType.FEET, FixtureType.LADDER)) {
+        }
+
+        // feet and ladder
+        else if (contact.acceptMask(FixtureType.FEET, FixtureType.LADDER)) {
             Body feetBody = contact.mask1stBody();
             feetBody.set(BodySense.FEET_TOUCHING_LADDER, false);
             if (!feetBody.is(BodySense.HEAD_TOUCHING_LADDER)) {
