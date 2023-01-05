@@ -4,10 +4,7 @@ import com.megaman.game.entities.DamageNegotiation;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.enemies.impl.*;
 import com.megaman.game.entities.hazards.impl.LaserBeamer;
-import com.megaman.game.entities.projectiles.impl.Bullet;
-import com.megaman.game.entities.projectiles.impl.ChargedShot;
-import com.megaman.game.entities.projectiles.impl.Fireball;
-import com.megaman.game.entities.projectiles.impl.Snowball;
+import com.megaman.game.entities.projectiles.impl.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +27,11 @@ public class MegamanDamageNegs {
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
         put(Bat.class, new DamageNegotiation(2));
         put(Met.class, new DamageNegotiation(2));
+        put(Picket.class, new DamageNegotiation(2));
         put(MagFly.class, new DamageNegotiation(2));
         put(FlyBoy.class, new DamageNegotiation(4));
         put(Bullet.class, new DamageNegotiation(2));
+        put(Penguin.class, new DamageNegotiation(3));
         put(Snowball.class, new DamageNegotiation(1));
         put(ChargedShot.class, new DamageNegotiation(4));
         put(Fireball.class, new DamageNegotiation(2));

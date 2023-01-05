@@ -38,7 +38,7 @@ public enum TextureAsset implements Asset {
 
     // UI
     UI_1("Ui1.txt"),
-    FACES("Faces.txt"),
+    FACES_1("Faces1.txt"),
 
     // Megaman
     MEGAMAN("Megaman.txt"),
@@ -50,6 +50,7 @@ public enum TextureAsset implements Asset {
 
     // Bosses
     TIMBER_WOMAN("TimberWoman.txt"),
+    WINTRY_MAN("WintryMan.txt"),
     DISTRIBUTOR_MAN("DistributorMan.txt"),
     ROASTER_MAN("RoasterMan.txt"),
     MISTER_MAN("MisterMan.txt"),

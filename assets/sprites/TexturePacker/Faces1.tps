@@ -50,7 +50,7 @@
         <key>dxtCompressionMode</key>
         <enum type="SettingsBase::DxtCompressionMode">DXT_PERCEPTUAL</enum>
         <key>ditherType</key>
-        <enum type="SettingsBase::DitherType">PngQuantLow</enum>
+        <enum type="SettingsBase::DitherType">NearestNeighbour</enum>
         <key>backgroundColor</key>
         <uint>0</uint>
         <key>libGdx</key>
@@ -124,7 +124,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename></filename>
+                <filename>../SpriteSheets/Faces1.txt</filename>
             </struct>
         </map>
         <key>multiPackMode</key>
@@ -173,7 +173,15 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../Frames/Backgrounds/BKG01.png</key>
+            <key type="filename">../Frames/Faces/Blunt Man.png</key>
+            <key type="filename">../Frames/Faces/Distributor Man.png</key>
+            <key type="filename">../Frames/Faces/Freezer Man.png</key>
+            <key type="filename">../Frames/Faces/Microwave Man.png</key>
+            <key type="filename">../Frames/Faces/Mister Man.png</key>
+            <key type="filename">../Frames/Faces/Nuke Man.png</key>
+            <key type="filename">../Frames/Faces/Roaster Man.png</key>
+            <key type="filename">../Frames/Faces/Timber Woman.png</key>
+            <key type="filename">../Frames/Faces/Wintry Man.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -182,21 +190,21 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>104,208,208,416</rect>
+                <rect>8,8,16,16</rect>
                 <key>scale9Paddings</key>
-                <rect>104,208,208,416</rect>
+                <rect>8,8,16,16</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../Frames/Backgrounds/BKG02.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG03.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG04.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG05.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG06.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG07.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG08.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG09.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG10.png</key>
+            <key type="filename">../Frames/Faces/Megaman/BOTTOM_CENTER.png</key>
+            <key type="filename">../Frames/Faces/Megaman/BOTTOM_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Megaman/BOTTOM_RIGHT.png</key>
+            <key type="filename">../Frames/Faces/Megaman/CENTER.png</key>
+            <key type="filename">../Frames/Faces/Megaman/CENTER_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Megaman/CENTER_RIGHT.png</key>
+            <key type="filename">../Frames/Faces/Megaman/TOP_CENTER.png</key>
+            <key type="filename">../Frames/Faces/Megaman/TOP_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Megaman/TOP_RIGHT.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -205,24 +213,9 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>64,128,128,256</rect>
+                <rect>9,9,18,18</rect>
                 <key>scale9Paddings</key>
-                <rect>64,128,128,256</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Backgrounds/StarFieldBG.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>64,56,128,112</rect>
-                <key>scale9Paddings</key>
-                <rect>64,56,128,112</rect>
+                <rect>9,9,18,18</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -233,17 +226,7 @@
             <struct type="SpriteSheet">
                 <key>files</key>
                 <array>
-                    <filename>../Frames/Backgrounds/BKG01.png</filename>
-                    <filename>../Frames/Backgrounds/BKG02.png</filename>
-                    <filename>../Frames/Backgrounds/BKG03.png</filename>
-                    <filename>../Frames/Backgrounds/BKG04.png</filename>
-                    <filename>../Frames/Backgrounds/BKG05.png</filename>
-                    <filename>../Frames/Backgrounds/BKG06.png</filename>
-                    <filename>../Frames/Backgrounds/BKG07.png</filename>
-                    <filename>../Frames/Backgrounds/BKG08.png</filename>
-                    <filename>../Frames/Backgrounds/BKG09.png</filename>
-                    <filename>../Frames/Backgrounds/BKG10.png</filename>
-                    <filename>../Frames/Backgrounds/StarFieldBG.png</filename>
+                    <filename>../Frames/Faces</filename>
                 </array>
             </struct>
         </map>
@@ -252,9 +235,7 @@
         <key>replaceList</key>
         <array/>
         <key>ignoredWarnings</key>
-        <array>
-            <string>enable-multipack</string>
-        </array>
+        <array/>
         <key>commonDivisorX</key>
         <uint>1</uint>
         <key>commonDivisorY</key>

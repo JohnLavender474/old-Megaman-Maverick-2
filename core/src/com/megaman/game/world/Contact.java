@@ -1,5 +1,6 @@
 package com.megaman.game.world;
 
+import com.badlogic.gdx.math.Shape2D;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.utils.objs.Pair;
 import com.megaman.game.utils.objs.Wrapper;
@@ -45,6 +46,14 @@ public class Contact {
             return true;
         }
         return false;
+    }
+
+    public Shape2D mask1stShape() {
+        return mask.getFirst().shape;
+    }
+
+    public Shape2D mask2ndShape() {
+        return mask.getSecond().shape;
     }
 
     public Entity mask1stEntity() {

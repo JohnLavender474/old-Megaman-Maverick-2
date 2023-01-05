@@ -1,5 +1,5 @@
 Projectiles1.png
-size: 800, 32
+size: 928, 32
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -66,16 +66,23 @@ Joeball
   orig: 128, 32
   offset: 0, 0
   index: -1
-Snowball
+Picket
   rotate: false
   xy: 640, 0
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
+Snowball
+  rotate: false
+  xy: 768, 0
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 SnowJoeball
   rotate: false
-  xy: 672, 0
+  xy: 800, 0
   size: 128, 32
   orig: 128, 32
   offset: 0, 0

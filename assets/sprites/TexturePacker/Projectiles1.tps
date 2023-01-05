@@ -211,6 +211,7 @@
             </struct>
             <key type="filename">../Frames/Projectiles1/Electric/ElectricBallPulse.png</key>
             <key type="filename">../Frames/Projectiles1/Joeball.png</key>
+            <key type="filename">../Frames/Projectiles1/Picket.png</key>
             <key type="filename">../Frames/Projectiles1/SnowJoeball.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>

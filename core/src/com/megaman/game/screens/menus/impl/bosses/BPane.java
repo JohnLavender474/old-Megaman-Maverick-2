@@ -41,7 +41,7 @@ class BPane implements Updatable, Drawable {
     private BPaneStat bPaneStat = BPaneStat.UNHIGHLIGHTED;
 
     public BPane(MegamanGame game, BossEnum bossEnum) {
-        this(game, game.getAssMan().getTextureRegion(TextureAsset.FACES, bossEnum.name),
+        this(game, game.getAssMan().getTextureRegion(TextureAsset.FACES_1, bossEnum.name),
                 bossEnum.name, bossEnum.position);
     }
 

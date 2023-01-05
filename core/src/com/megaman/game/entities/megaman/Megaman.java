@@ -100,7 +100,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float SHOOT_ANIM_TIME = .3f;
     public static final float CHARGING_ANIM_TIME = .125f;
 
-    private static final float DMG_X = 5f;
+    private static final float DMG_X = 8f;
+    private static final float DMG_Y = 5f;
 
     public final Sprite sprite;
     public final Body body;
@@ -214,11 +215,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public void takeDamageFrom(Damager damager) {
-        float dmgX = DMG_X * WorldVals.PPM;
-        if (is(Facing.RIGHT)) {
-            dmgX *= -1f;
-        }
-        body.velocity.x += dmgX;
+        body.velocity.x += (is(Facing.LEFT) ? DMG_X : -DMG_X) * WorldVals.PPM;
+        body.velocity.y += DMG_Y * WorldVals.PPM;
         DamageNegotiation dmgNeg = MegamanDamageNegs.get(damager);
         dmgTimer.reset();
         dmgNeg.runOnDamage();
@@ -519,7 +517,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.65f * WorldVals.PPM, .25f * WorldVals.PPM));
+                new Rectangle().setSize(.6f * WorldVals.PPM, .25f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
@@ -782,10 +780,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 if (is(BehaviorType.CLIMBING)) {
                     if (!is(BodySense.HEAD_TOUCHING_BLOCK) &&
-                            (body.getCenter().y - .25f * WorldVals.PPM) > ladder.body.getMaxY()) {
+                            (body.getCenter().y - .15f * WorldVals.PPM) > ladder.body.getMaxY()) {
                         return false;
                     } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
-                            (body.getCenter().y + .25f * WorldVals.PPM) < ladder.body.getY()) {
+                            (body.getCenter().y + .15f * WorldVals.PPM) < ladder.body.getY()) {
                         return false;
                     } else if (ctrlMan.isJustPressed(CtrlBtn.A)) {
                         return false;

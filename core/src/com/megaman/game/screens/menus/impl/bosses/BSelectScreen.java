@@ -81,7 +81,7 @@ public class BSelectScreen extends MenuScreen {
         }});
         slide = new ScreenSlide(uiCam, INTRO_BLOCKS_TRANS,
                 ConstFuncs.getCamInitPos().sub(INTRO_BLOCKS_TRANS), ConstFuncs.getCamInitPos(), .5f);
-        TextureAtlas megamanFacesAtlas = assMan.getTextureAtlas(TextureAsset.FACES);
+        TextureAtlas megamanFacesAtlas = assMan.getTextureAtlas(TextureAsset.FACES_1);
         Map<Position, TextureRegion> megamanFaces = new EnumMap<>(Position.class);
         for (Position position : Position.values()) {
             TextureRegion faceRegion = megamanFacesAtlas.findRegion("Megaman/" + position.name());

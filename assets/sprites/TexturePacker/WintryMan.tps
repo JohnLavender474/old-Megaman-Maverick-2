@@ -50,7 +50,7 @@
         <key>dxtCompressionMode</key>
         <enum type="SettingsBase::DxtCompressionMode">DXT_PERCEPTUAL</enum>
         <key>ditherType</key>
-        <enum type="SettingsBase::DitherType">PngQuantLow</enum>
+        <enum type="SettingsBase::DitherType">NearestNeighbour</enum>
         <key>backgroundColor</key>
         <uint>0</uint>
         <key>libGdx</key>
@@ -173,7 +173,9 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../Frames/Backgrounds/BKG01.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/AboutToJump.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/Jump.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/StandShoot.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -182,21 +184,14 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>104,208,208,416</rect>
+                <rect>12,12,24,24</rect>
                 <key>scale9Paddings</key>
-                <rect>104,208,208,416</rect>
+                <rect>12,12,24,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../Frames/Backgrounds/BKG02.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG03.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG04.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG05.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG06.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG07.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG08.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG09.png</key>
-            <key type="filename">../Frames/Backgrounds/BKG10.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/AirFreeze.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/Run.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -205,13 +200,13 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>64,128,128,256</rect>
+                <rect>48,12,96,24</rect>
                 <key>scale9Paddings</key>
-                <rect>64,128,128,256</rect>
+                <rect>48,12,96,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../Frames/Backgrounds/StarFieldBG.png</key>
+            <key type="filename">../Frames/Bosses/Wintry Man/Stand.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -220,9 +215,24 @@
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>64,56,128,112</rect>
+                <rect>24,12,48,24</rect>
                 <key>scale9Paddings</key>
-                <rect>64,56,128,112</rect>
+                <rect>24,12,48,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Bosses/Wintry Man/StandFreeze.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9Paddings</key>
+                <rect>36,12,72,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -233,17 +243,7 @@
             <struct type="SpriteSheet">
                 <key>files</key>
                 <array>
-                    <filename>../Frames/Backgrounds/BKG01.png</filename>
-                    <filename>../Frames/Backgrounds/BKG02.png</filename>
-                    <filename>../Frames/Backgrounds/BKG03.png</filename>
-                    <filename>../Frames/Backgrounds/BKG04.png</filename>
-                    <filename>../Frames/Backgrounds/BKG05.png</filename>
-                    <filename>../Frames/Backgrounds/BKG06.png</filename>
-                    <filename>../Frames/Backgrounds/BKG07.png</filename>
-                    <filename>../Frames/Backgrounds/BKG08.png</filename>
-                    <filename>../Frames/Backgrounds/BKG09.png</filename>
-                    <filename>../Frames/Backgrounds/BKG10.png</filename>
-                    <filename>../Frames/Backgrounds/StarFieldBG.png</filename>
+                    <filename>../Frames/Bosses/Wintry Man</filename>
                 </array>
             </struct>
         </map>
@@ -252,9 +252,7 @@
         <key>replaceList</key>
         <array/>
         <key>ignoredWarnings</key>
-        <array>
-            <string>enable-multipack</string>
-        </array>
+        <array/>
         <key>commonDivisorX</key>
         <uint>1</uint>
         <key>commonDivisorY</key>

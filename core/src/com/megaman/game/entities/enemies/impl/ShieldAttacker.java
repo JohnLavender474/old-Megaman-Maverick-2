@@ -79,7 +79,7 @@ public class ShieldAttacker extends Enemy {
         return new HashMap<>() {{
             put(Bullet.class, new DamageNegotiation(5));
             put(Fireball.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
-            put(ChargedShot.class, new DamageNegotiation(10));
+            put(ChargedShot.class, new DamageNegotiation(20));
             put(ChargedShotExplosion.class, new DamageNegotiation(5));
         }};
     }

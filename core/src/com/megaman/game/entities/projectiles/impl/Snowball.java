@@ -107,7 +107,6 @@ public class Snowball extends Projectile {
 
     private SpriteComponent spriteComponent() {
         sprite.setSize(.85f * WorldVals.PPM, .85f * WorldVals.PPM);
-        sprite.setOrigin(sprite.getWidth() / 2f, sprite.getHeight() / 2f);
         SpriteHandle h = new SpriteHandle(sprite, 5);
         h.updatable = delta -> h.setPosition(body.bounds, Position.CENTER);
         return new SpriteComponent(h);

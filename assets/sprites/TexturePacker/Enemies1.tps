@@ -214,6 +214,7 @@
             <key type="filename">../Frames/Enemies1/Penguin/Jump.png</key>
             <key type="filename">../Frames/Enemies1/Penguin/Slide.png</key>
             <key type="filename">../Frames/Enemies1/Penguin/Slippin.png</key>
+            <key type="filename">../Frames/Enemies1/PicketJoe/Stand.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shielded.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shooting.png</key>
             <key type="filename">../Frames/Enemies1/SnowBat/Hang.png</key>
@@ -336,6 +337,7 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../Frames/Enemies1/PicketJoe/Throw.png</key>
             <key type="filename">../Frames/Enemies1/ShieldAttacker/TurnAround.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
