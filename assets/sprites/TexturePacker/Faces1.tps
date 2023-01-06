@@ -179,6 +179,7 @@
             <key type="filename">../Frames/Faces/Microwave Man.png</key>
             <key type="filename">../Frames/Faces/Mister Man.png</key>
             <key type="filename">../Frames/Faces/Nuke Man.png</key>
+            <key type="filename">../Frames/Faces/Precious Man.png</key>
             <key type="filename">../Frames/Faces/Roaster Man.png</key>
             <key type="filename">../Frames/Faces/Timber Woman.png</key>
             <key type="filename">../Frames/Faces/Wintry Man.png</key>

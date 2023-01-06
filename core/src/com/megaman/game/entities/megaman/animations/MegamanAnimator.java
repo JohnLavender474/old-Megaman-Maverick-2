@@ -110,7 +110,7 @@ public class MegamanAnimator {
                     t.findRegion("ClimbCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "FinishClimb" -> new Animation(t.findRegion("FinishClimb"));
             case "FinishClimbCharging" -> new Animation(t.findRegion("FinishClimbCharging"), 2, .15f);
-            case "FinishClimbHalfCharging" -> new Animation(t.findRegion("FinishClimbHalfCharging"));
+            case "FinishClimbHalfCharging" -> new Animation(t.findRegion("FinishClimbHalfCharging"), 2, .15f);
             case "StillClimb" -> new Animation(t.findRegion("StillClimb"));
             case "StillClimbCharging" -> new Animation(t.findRegion("StillClimbCharging"), 2, .15f);
             case "StillClimbHalfCharging" -> new Animation(t.findRegion("StillClimbHalfCharging"), 2, .15f);
@@ -120,7 +120,7 @@ public class MegamanAnimator {
             case "StandHalfCharging" -> new Animation(
                     t.findRegion("StandHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "StandShoot" -> new Animation(t.findRegion("StandShoot"));
-            case "Damaged" -> new Animation(t.findRegion("Damaged"), 3, .05f);
+            case "Damaged" -> new Animation(t.findRegion("Damaged"), 5, .05f);
             case "LayDownDamaged" -> new Animation(t.findRegion("LayDownDamaged"), 3, .05f);
             case "Run" -> new Animation(t.findRegion("Run"), 4, .125f);
             case "RunCharging" -> new Animation(t

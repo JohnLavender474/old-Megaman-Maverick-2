@@ -175,22 +175,16 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
         // head and ladder
         else if (contact.acceptMask(FixtureType.HEAD, FixtureType.LADDER)) {
-            Vector2 headTopCenter = ShapeUtils.getTopCenterPoint((Rectangle) contact.mask1stShape());
-            if (contact.mask2ndShape().contains(headTopCenter)) {
-                Body headBody = contact.mask1stBody();
-                headBody.set(BodySense.HEAD_TOUCHING_LADDER, true);
-                headBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
-            }
+            Body headBody = contact.mask1stBody();
+            headBody.set(BodySense.HEAD_TOUCHING_LADDER, true);
+            headBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
         }
 
         // feet and ladder
         else if (contact.acceptMask(FixtureType.FEET, FixtureType.LADDER)) {
-            Vector2 feetBottomCenter = ShapeUtils.getBottomCenterPoint((Rectangle) contact.mask1stShape());
-            if (contact.mask2ndShape().contains(feetBottomCenter)) {
-                Body feetBody = contact.mask1stBody();
-                feetBody.set(BodySense.FEET_TOUCHING_LADDER, true);
-                feetBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
-            }
+            Body feetBody = contact.mask1stBody();
+            feetBody.set(BodySense.FEET_TOUCHING_LADDER, true);
+            feetBody.putUserData(SpecialFactory.LADDER, contact.mask2ndEntity());
         }
 
         // body and force

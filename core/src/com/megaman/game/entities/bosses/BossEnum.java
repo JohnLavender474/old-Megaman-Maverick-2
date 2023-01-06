@@ -173,10 +173,9 @@ public enum BossEnum {
     BLUNT_MAN("Blunt Man", Level.TEST5, Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
         @Override
         public String getBio() {
-            return "As an endorser of cannabis, Blunt Man is not afraid " +
-                    "of being blunt about his opinions. He is also a savvy " +
-                    "business man, having many joint ventures. He loves " +
-                    "taking many profound trips around the galaxy.";
+            return "A cannabis endorser, Blunt Man is not afraid of being blunt about " +
+                    "his opinions. He is also a savvy business man, having many joint ventures. " +
+                    "He loves traveling on profound trips around the galaxy.";
         }
 
         @Override
@@ -208,16 +207,14 @@ public enum BossEnum {
             }};
         }
     },
-    NUKE_MAN("Nuke Man", Level.TEST5, Position.BOTTOM_LEFT, TextureAsset.NUKE_MAN) {
+
+    // TODO: change to precious man texture asset
+    PRECIOUS_MAN("Precious Man", Level.TEST5, Position.BOTTOM_LEFT, TextureAsset.PRECIOUS_MAN) {
         @Override
         public String getBio() {
-            return "Designed as a nuclear arms expert, Nuke Man is " +
-                    "able to build a nuclear bomb out of common " +
-                    "household items. Deemed too dangerous to be " +
-                    "kept alive, he is now a fugitive on the run. " +
-                    "He has vowed revenge on the world and must be " +
-                    "stopped at once! There's few things he hates " +
-                    "more than hippies, pacifists, and pot smokers.";
+            return "Precious Man is a mineral connoisseur. He owns the world's largest " +
+                    "quartz collection and loves to attend rock and mineral festivals. " +
+                    "He has a strong belief that everyone is precious.";
         }
 
         @Override
@@ -226,13 +223,14 @@ public enum BossEnum {
         }
 
         @Override
-        public Map<String, Animation> getAnims(TextureAtlas textureAtlas) {
+        public Map<String, Animation> getAnims(TextureAtlas atlas) {
             return new HashMap<>() {{
-                put("Attack", new Animation(textureAtlas.findRegion("Attack")));
-                put("BendKnees", new Animation(textureAtlas.findRegion("BendKnees")));
-                put("Charge", new Animation(textureAtlas.findRegion("Charge"), 2, .15f));
-                put("Jump", new Animation(textureAtlas.findRegion("Jump")));
-                put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
+                put("Jump", new Animation(atlas.findRegion("Jump"), 2, .15f, false));
+                put("JumpFreeze", new Animation(atlas.findRegion("JumpFreeze"), 4, .15f, false));
+                put("Run", new Animation(atlas.findRegion("Jump"), 4, .15f));
+                put("Stand", new Animation(atlas.findRegion("Stand"), new float[]{1.25f, .15f}));
+                put("StandFreeze", new Animation(atlas.findRegion("StandFreeze"), 3, .15f));
+                put("StandShoot", new Animation(atlas.findRegion("StandShoot")));
             }};
         }
 
@@ -241,11 +239,10 @@ public enum BossEnum {
             Map<String, Animation> anims = getAnims(textureAtlas);
             return new LinkedList<>() {{
                 add(KeyValuePair.of(anims.get("Jump"), new Timer(MenuConstVals.BOSS_DROP_DOWN)));
-                add(KeyValuePair.of(anims.get("Stand"), new Timer(1f)));
-                add(KeyValuePair.of(anims.get("Charge"), new Timer(1.25f)));
-                add(KeyValuePair.of(anims.get("Attack"), new Timer(.25f)));
-                add(KeyValuePair.of(anims.get("BendKnees"), new Timer(.75f)));
-                add(KeyValuePair.of(anims.get("Stand"), new Timer(3.5f)));
+                add(KeyValuePair.of(anims.get("StandShoot"), new Timer(.15f)));
+                add(KeyValuePair.of(anims.get("Stand"), new Timer(1.6f)));
+                add(KeyValuePair.of(anims.get("StandFreeze"), new Timer(2.7f)));
+                add(KeyValuePair.of(anims.get("Stand"), new Timer(2.5f)));
             }};
         }
     },

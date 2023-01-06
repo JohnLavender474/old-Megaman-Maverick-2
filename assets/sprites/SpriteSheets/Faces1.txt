@@ -1,5 +1,5 @@
 Faces1.png
-size: 216, 104
+size: 224, 104
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -108,23 +108,30 @@ Nuke Man
   orig: 32, 32
   offset: 0, 0
   index: -1
-Roaster Man
+Precious Man
   rotate: false
   xy: 96, 72
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-Timber Woman
+Roaster Man
   rotate: false
   xy: 128, 72
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
-Wintry Man
+Timber Woman
   rotate: false
   xy: 160, 72
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+Wintry Man
+  rotate: false
+  xy: 192, 72
   size: 32, 32
   orig: 32, 32
   offset: 0, 0

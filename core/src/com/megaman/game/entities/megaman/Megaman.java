@@ -533,7 +533,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         // left fixture
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setWidth(.2f * WorldVals.PPM));
-                // new Rectangle().setSize(.1f * WorldVals.PPM, .65f * WorldVals.PPM));
+        // new Rectangle().setSize(.1f * WorldVals.PPM, .65f * WorldVals.PPM));
         leftFixture.offset.x = -.4f * WorldVals.PPM;
         // leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
@@ -776,79 +776,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             }
         });
 
-        // climb
-        c.add(new Behavior() {
-
-            private Ladder ladder;
-
-            @Override
-            protected boolean evaluate(float delta) {
-                if (isDamaged() || isAny(BehaviorType.JUMPING, BehaviorType.AIR_DASHING) ||
-                        (ladder = body.getUserData(SpecialFactory.LADDER, Ladder.class)) == null) {
-                    return false;
-                }
-                if (is(BehaviorType.CLIMBING)) {
-                    if (!is(BodySense.HEAD_TOUCHING_BLOCK) &&
-                            (body.getCenter().y - .15f * WorldVals.PPM) > ladder.body.getMaxY()) {
-                        return false;
-                    } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
-                            (body.getCenter().y + .15f * WorldVals.PPM) < ladder.body.getY()) {
-                        return false;
-                    } else if (ctrlMan.isJustPressed(CtrlBtn.A)) {
-                        return false;
-                    }
-                    return true;
-                } else {
-                    if (is(BodySense.FEET_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
-                        return true;
-                    } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-
-            @Override
-            protected void init() {
-                aButtonTask = null;
-                body.gravityOn = false;
-                body.collisionOn = false;
-                c.set(BehaviorType.CLIMBING, true);
-                body.setCenterX(ladder.body.getCenter().x);
-                if (body.getMaxY() <= ladder.body.getY()) {
-                    body.setY(ladder.body.getY());
-                } else if (body.getY() >= ladder.body.getMaxY()) {
-                    body.setMaxY(ladder.body.getMaxY());
-                }
-                body.velocity.setZero();
-            }
-
-            @Override
-            protected void act(float delta) {
-                if (isShooting()) {
-                    body.velocity.setZero();
-                    return;
-                }
-                if (ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
-                    body.velocity.y = CLIMB_VEL * WorldVals.PPM;
-                } else if (ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
-                    body.velocity.y = -CLIMB_VEL * WorldVals.PPM;
-                } else {
-                    body.velocity.y = 0f;
-                }
-            }
-
-            @Override
-            protected void end() {
-                body.gravityOn = true;
-                body.collisionOn = true;
-                body.velocity.setZero();
-                c.set(BehaviorType.CLIMBING, false);
-                aButtonTask = is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
-            }
-
-        });
-
         // ground slide
         c.add(new Behavior() {
             @Override
@@ -859,14 +786,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 if (is(BehaviorType.GROUND_SLIDING) && is(BodySense.HEAD_TOUCHING_BLOCK)) {
                     return true;
                 }
-                if (isDamaged() || groundSlideTimer.isFinished() || !is(BodySense.FEET_ON_GROUND)) {
+                if (isDamaged() || groundSlideTimer.isFinished() || !is(BodySense.FEET_ON_GROUND) ||
+                        !ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
                     return false;
                 }
-                if (!ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
-                    return false;
-                }
-                return is(BehaviorType.GROUND_SLIDING) ?
-                        ctrlMan.isPressed(CtrlBtn.A) :
+                return is(BehaviorType.GROUND_SLIDING) ? ctrlMan.isPressed(CtrlBtn.A) :
                         ctrlMan.isJustPressed(CtrlBtn.A);
             }
 
@@ -899,6 +823,81 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 }
                 body.velocity.x += endDash;
             }
+        });
+
+        // climb
+        c.add(new Behavior() {
+
+            private Ladder ladder;
+
+            @Override
+            protected boolean evaluate(float delta) {
+                if (isDamaged() || isAny(BehaviorType.JUMPING, BehaviorType.AIR_DASHING, BehaviorType.GROUND_SLIDING) ||
+                        (ladder = body.getUserData(SpecialFactory.LADDER, Ladder.class)) == null) {
+                    return false;
+                }
+                if (is(BehaviorType.CLIMBING)) {
+                    if (!is(BodySense.HEAD_TOUCHING_BLOCK) &&
+                            (body.getCenter().y - .15f * WorldVals.PPM) > ladder.body.getMaxY()) {
+                        return false;
+                    } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
+                            (body.getCenter().y + .15f * WorldVals.PPM) < ladder.body.getY()) {
+                        return false;
+                    } else if (ctrlMan.isJustPressed(CtrlBtn.A)) {
+                        return false;
+                    }
+                    return true;
+                } else {
+                    if (is(BodySense.FEET_TOUCHING_LADDER) && !is(BodySense.FEET_ON_GROUND) &&
+                            ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                        return true;
+                    } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            protected void init() {
+                aButtonTask = null;
+                body.gravityOn = false;
+                body.collisionOn = false;
+                c.set(BehaviorType.CLIMBING, true);
+                body.setCenterX(ladder.body.getCenter().x);
+                if (body.getMaxY() <= ladder.body.getY()) {
+                    body.setY(ladder.body.getY());
+                } else if (body.getY() >= ladder.body.getMaxY()) {
+                    body.setMaxY(ladder.body.getMaxY());
+                }
+                body.velocity.setZero();
+            }
+
+            @Override
+            protected void act(float delta) {
+                body.setCenterX(ladder.body.getCenter().x);
+                if (isShooting()) {
+                    body.velocity.setZero();
+                    return;
+                }
+                if (ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
+                    body.velocity.y = CLIMB_VEL * WorldVals.PPM;
+                } else if (ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                    body.velocity.y = -CLIMB_VEL * WorldVals.PPM;
+                } else {
+                    body.velocity.y = 0f;
+                }
+            }
+
+            @Override
+            protected void end() {
+                body.gravityOn = true;
+                body.collisionOn = true;
+                body.velocity.setZero();
+                c.set(BehaviorType.CLIMBING, false);
+                aButtonTask = is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
+            }
+
         });
         return c;
     }
@@ -933,7 +932,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     private SpriteComponent spriteComponent() {
-        sprite.setSize(1.65f * WorldVals.PPM, 1.25f * WorldVals.PPM);
+        sprite.setSize(2.475f * WorldVals.PPM, 1.875f * WorldVals.PPM);
         SpriteHandle handle = new SpriteHandle(sprite);
         handle.priority = 3;
         handle.updatable = delta -> {
@@ -941,14 +940,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
             sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
-            sprite.setFlip(is(BehaviorType.WALL_SLIDING) ? is(Facing.RIGHT) : is(Facing.LEFT), sprite.isFlipY());
-            if (is(BodySense.FEET_ON_GROUND) && Math.abs(body.velocity.x) <= WorldVals.PPM / 8f && isShooting()) {
-                float offsetX = .285f * WorldVals.PPM;
-                if (is(Facing.LEFT)) {
-                    offsetX *= -1f;
-                }
-                sprite.translateX(offsetX);
-            }
+            sprite.setFlip(is(Facing.LEFT), sprite.isFlipY());
         };
         return new SpriteComponent(handle);
     }

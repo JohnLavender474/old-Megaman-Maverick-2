@@ -57,6 +57,7 @@ public enum TextureAsset implements Asset {
     BLUNT_MAN("BluntMan.txt"),
     NUKE_MAN("NukeMan.txt"),
     FREEZER_MAN("FreezerMan.txt"),
+    PRECIOUS_MAN("PreciousMan.txt"),
     MICROWAVE_MAN("MicrowaveMan.txt");
 
     public static final String PREFIX = "sprites/SpriteSheets/";
