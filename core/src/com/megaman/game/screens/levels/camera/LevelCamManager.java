@@ -2,7 +2,6 @@ package com.megaman.game.screens.levels.camera;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.utils.enums.Direction;
 import com.megaman.game.utils.enums.ProcessState;
-import com.megaman.game.utils.interfaces.Positional;
 import com.megaman.game.utils.interfaces.Resettable;
 import com.megaman.game.utils.interfaces.Updatable;
 import com.megaman.game.utils.objs.Timer;
@@ -35,7 +33,7 @@ public class LevelCamManager implements Updatable, Resettable {
     private final Vector2 focusableStartPos;
     private final Vector2 focusableTargetPos;
 
-    private Positional focusable;
+    private LevelCamFocusable focusable;
     private ObjectMap<String, RectangleMapObject> gameRooms;
 
     @Getter
@@ -88,7 +86,7 @@ public class LevelCamManager implements Updatable, Resettable {
         reset = true;
     }
 
-    public void set(Array<RectangleMapObject> gameRooms, Positional focusable) {
+    public void set(Array<RectangleMapObject> gameRooms, LevelCamFocusable focusable) {
         this.gameRooms = new ObjectMap<>();
         for (RectangleMapObject r : gameRooms) {
             this.gameRooms.put(r.getName(), r);
@@ -96,9 +94,9 @@ public class LevelCamManager implements Updatable, Resettable {
         setFocusable(focusable);
     }
 
-    public void setFocusable(Positional focusable) {
+    public void setFocusable(LevelCamFocusable focusable) {
         this.focusable = focusable;
-        Vector2 pos = focusable.getPosition();
+        Vector2 pos = focusable.getFocus();
         cam.position.x = pos.x;
         cam.position.y = pos.y;
         reset = true;
@@ -146,7 +144,7 @@ public class LevelCamManager implements Updatable, Resettable {
         transState = ProcessState.BEGIN;
         transStartPos.set(UtilMethods.toVec2(cam.position));
         transTargetPos.set(transStartPos);
-        focusableStartPos.set(focusable.getPosition());
+        focusableStartPos.set(focusable.getFocus());
         focusableTargetPos.set(focusableStartPos);
         switch (transDirection) {
             case LEFT -> {
@@ -175,11 +173,11 @@ public class LevelCamManager implements Updatable, Resettable {
                 priorGameRoom = currGameRoom;
                 currGameRoom = nextGameRoom;
             }
-            cam.position.x = UtilMethods.roundedFloat(focusable.getPosition().x, 3);
+            cam.position.x = UtilMethods.roundedFloat(focusable.getFocus().x, 3);
             return;
         }
         Rectangle currRoomBounds = currGameRoom.getRectangle();
-        if (currRoomBounds.contains(focusable.getPosition())) {
+        if (currRoomBounds.contains(focusable.getTransPoint())) {
             setCamToFocusable();
             if (cam.position.y > (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f) {
                 cam.position.y = (currRoomBounds.y + currRoomBounds.height) - cam.viewportHeight / 2.0f;
@@ -197,15 +195,13 @@ public class LevelCamManager implements Updatable, Resettable {
         }
         RectangleMapObject nextGameRoom = nextGameRoom();
         if (nextGameRoom == null) {
-            cam.position.x = UtilMethods.roundedFloat(focusable.getPosition().x, 3);
+            cam.position.x = UtilMethods.roundedFloat(focusable.getFocus().x, 3);
             return;
         }
         Rectangle overlap = new Rectangle();
         float width = 5f * WorldVals.PPM;
         float height = 5f * WorldVals.PPM;
-        Rectangle boundingBox = new Rectangle()
-                .setSize(width, height)
-                .setCenter(focusable.getPosition());
+        Rectangle boundingBox = new Rectangle().setSize(width, height).setCenter(focusable.getFocus());
         transDirection = UtilMethods.getOverlapPushDirection(boundingBox, currGameRoom.getRectangle(), overlap);
         priorGameRoom = currGameRoom;
         currGameRoom = nextGameRoom;
@@ -250,12 +246,12 @@ public class LevelCamManager implements Updatable, Resettable {
     }
 
     private RectangleMapObject nextGameRoom() {
-        if (focusable == null || focusable.getPosition() == null) {
+        if (focusable == null || focusable.getFocus() == null) {
             return null;
         }
         RectangleMapObject nextGameRoom = null;
         for (RectangleMapObject room : gameRooms.values()) {
-            if (room.getRectangle().contains(focusable.getPosition())) {
+            if (room.getRectangle().contains(focusable.getTransPoint())) {
                 nextGameRoom = room;
                 break;
             }
@@ -264,7 +260,7 @@ public class LevelCamManager implements Updatable, Resettable {
     }
 
     private void setCamToFocusable() {
-        Vector2 pos = focusable.getPosition();
+        Vector2 pos = focusable.getFocus();
         // cam.position.x = UtilMethods.roundedFloat(pos.x, 3);
         cam.position.x = pos.x;
         cam.position.y = pos.y;

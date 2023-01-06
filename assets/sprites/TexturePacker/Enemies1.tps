@@ -207,6 +207,7 @@
             <key type="filename">../Frames/Enemies1/Bat/Hang.png</key>
             <key type="filename">../Frames/Enemies1/Bat/OpenEyes.png</key>
             <key type="filename">../Frames/Enemies1/Bat/OpenWings.png</key>
+            <key type="filename">../Frames/Enemies1/BlueScrewie/Down.png</key>
             <key type="filename">../Frames/Enemies1/LaserBeamer.png</key>
             <key type="filename">../Frames/Enemies1/Met/GetUp.png</key>
             <key type="filename">../Frames/Enemies1/Met/LayDown.png</key>
@@ -215,6 +216,7 @@
             <key type="filename">../Frames/Enemies1/Penguin/Slide.png</key>
             <key type="filename">../Frames/Enemies1/Penguin/Slippin.png</key>
             <key type="filename">../Frames/Enemies1/PicketJoe/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/RedScrewie/Down.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shielded.png</key>
             <key type="filename">../Frames/Enemies1/SniperJoe/Shooting.png</key>
             <key type="filename">../Frames/Enemies1/SnowBat/Hang.png</key>
@@ -238,6 +240,28 @@
                 <rect>8,8,16,16</rect>
                 <key>scale9Paddings</key>
                 <rect>8,8,16,16</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Enemies1/BlueScrewie/Drop.png</key>
+            <key type="filename">../Frames/Enemies1/BlueScrewie/Rise.png</key>
+            <key type="filename">../Frames/Enemies1/BlueScrewie/Shoot.png</key>
+            <key type="filename">../Frames/Enemies1/PicketJoe/Throw.png</key>
+            <key type="filename">../Frames/Enemies1/RedScrewie/Drop.png</key>
+            <key type="filename">../Frames/Enemies1/RedScrewie/Rise.png</key>
+            <key type="filename">../Frames/Enemies1/RedScrewie/Shoot.png</key>
+            <key type="filename">../Frames/Enemies1/ShieldAttacker/TurnAround.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>24,8,48,16</rect>
+                <key>scale9Paddings</key>
+                <rect>24,8,48,16</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -334,22 +358,6 @@
                 <rect>96,16,192,32</rect>
                 <key>scale9Paddings</key>
                 <rect>96,16,192,32</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Enemies1/PicketJoe/Throw.png</key>
-            <key type="filename">../Frames/Enemies1/ShieldAttacker/TurnAround.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>24,8,48,16</rect>
-                <key>scale9Paddings</key>
-                <rect>24,8,48,16</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

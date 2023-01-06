@@ -143,11 +143,11 @@ public class MegamanGame implements ApplicationListener {
             logger.log("A: " + m.buttonA);
             logger.log("B: " + m.buttonB);
             logger.log("Y: " + m.buttonY);
-            logger.log("Start: " + m.buttonStart);
             logger.log("L1: " + m.buttonL1);
             logger.log("L2: " + m.buttonL2);
             logger.log("R1: " + m.buttonR1);
             logger.log("R2: " + m.buttonR2);
+            logger.log("Start: " + m.buttonStart);
         }
         ctrlMan.setCtrlCode(CtrlBtn.X, 3);
         ctrlMan.setCtrlCode(CtrlBtn.A, 1);

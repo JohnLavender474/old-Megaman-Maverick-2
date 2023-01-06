@@ -32,6 +32,7 @@ import com.megaman.game.entities.special.impl.Ladder;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.health.HealthComponent;
+import com.megaman.game.screens.levels.camera.LevelCamFocusable;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -49,7 +50,7 @@ import lombok.Setter;
 
 import java.util.Set;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional, EventListener {
+public class Megaman extends Entity implements Damageable, Faceable, Positional, LevelCamFocusable, EventListener {
 
     private static final Logger logger = new Logger(Megaman.class, MegamanGame.DEBUG && true);
 
@@ -193,10 +194,34 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     @Override
+    public Vector2 getPosition() {
+        return ShapeUtils.getBottomCenterPoint(body.bounds);
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        body.bounds.setPosition(x, y);
+    }
+
+    @Override
+    public Vector2 getFocus() {
+        return getPosition();
+    }
+
+    @Override
+    public Vector2 getTransPoint() {
+        Position p = is(Facing.LEFT) ? Position.CENTER_LEFT : Position.CENTER_RIGHT;
+        return ShapeUtils.getPoint(body.bounds, p);
+    }
+
+    @Override
     public void listenForEvent(Event e) {
         switch (e.type) {
             case BEGIN_ROOM_TRANS, CONTINUE_ROOM_TRANS -> {
+
+                // TODO: set vel zero?
                 // body.velocity.set(Vector2.Zero);
+
                 Vector2 pos = e.getInfo(ConstKeys.POS, Vector2.class);
                 body.setPos(pos, Position.BOTTOM_CENTER);
                 request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
@@ -232,16 +257,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     public boolean isDamaged() {
         return !dmgTimer.isFinished();
-    }
-
-    @Override
-    public Vector2 getPosition() {
-        return ShapeUtils.getBottomCenterPoint(body.bounds);
-    }
-
-    @Override
-    public void setPosition(float x, float y) {
-        body.bounds.setPosition(x, y);
     }
 
     public int getHealth() {

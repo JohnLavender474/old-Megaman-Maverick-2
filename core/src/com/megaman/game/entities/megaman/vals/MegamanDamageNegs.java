@@ -27,6 +27,7 @@ public class MegamanDamageNegs {
     private static final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs = new HashMap<>() {{
         put(Bat.class, new DamageNegotiation(2));
         put(Met.class, new DamageNegotiation(2));
+        put(Screwie.class, new DamageNegotiation(1));
         put(Picket.class, new DamageNegotiation(2));
         put(MagFly.class, new DamageNegotiation(2));
         put(FlyBoy.class, new DamageNegotiation(4));
