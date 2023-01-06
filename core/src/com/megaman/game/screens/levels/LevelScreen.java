@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
+import com.megaman.game.animations.Animation;
+import com.megaman.game.animations.AnimationSystem;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
@@ -114,6 +116,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         levelCamMan = new LevelCamManager(gameCam);
         levelCamMan.setRunOnBeginTrans(() -> {
             engine.set(false,
+                    AnimationSystem.class,
                     ControllerSystem.class,
                     TrajectorySystem.class,
                     UpdatableSystem.class,
@@ -128,6 +131,9 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             ShapeUtils.setBottomCenterToPoint(megaman.body.bounds, levelCamMan.getTransInterpolation());
         });
         levelCamMan.setUpdateOnTrans(delta -> {
+            if (levelCamMan.isDelayJustFinished()) {
+                engine.set(true, AnimationSystem.class);
+            }
             eventMan.submit(new Event(EventType.CONTINUE_ROOM_TRANS, new ObjectMap<>() {{
                 put(ConstKeys.POS, levelCamMan.getTransInterpolation());
             }}));

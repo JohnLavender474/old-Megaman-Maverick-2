@@ -4,7 +4,7 @@
  <tileset firstgid="225" source="../tsx/ChillMan.tsx"/>
  <tileset firstgid="873" source="../tsx/Tileset1.tsx"/>
  <objectgroup id="2" name="PlayerSpawns">
-  <object id="55" name="0" x="608" y="448" width="32" height="32"/>
+  <object id="55" name="0" x="96" y="448" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="3" name="EnemySpawns">
   <object id="85" name="SniperJoe" x="1216" y="384" width="32" height="32">
@@ -65,7 +65,7 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="15" name="Backgrounds">
+ <objectgroup id="15" name="Backgrounds" visible="0">
   <object id="185" x="0" y="-32" width="848" height="512">
    <properties>
     <property name="Atlas" value="Backgrounds2.txt"/>

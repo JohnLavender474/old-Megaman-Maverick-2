@@ -59,7 +59,7 @@
   <object id="5" x="0" y="1152" width="7744" height="64"/>
   <object id="9" name="IceBlock" x="1824" y="1344" width="64" height="256"/>
   <object id="10" x="2496" y="1344" width="64" height="256"/>
-  <object id="12" name="ConveyorBelt" x="1184" y="1456" width="96" height="16">
+  <object id="12" name="ConveyorBelt" x="864" y="1456" width="96" height="16">
    <properties>
     <property name="Left" type="bool" value="true"/>
    </properties>
@@ -71,7 +71,7 @@
     <property name="Trajectory" value="0,5,1.5;5,0,1.5;0,-5,3;-5,0,1.5"/>
    </properties>
   </object>
-  <object id="104" name="GearTrolley" x="1376" y="1440" width="32" height="32">
+  <object id="104" name="GearTrolley" x="1056" y="1440" width="32" height="32">
    <properties>
     <property name="SpawnRoom" value="Room1"/>
     <property name="SpawnType" value="SpawnRoom"/>
@@ -201,7 +201,7 @@
   <object id="102" name="Ladder" x="2464" y="1216" width="32" height="224"/>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
-  <object id="84" name="0" x="576" y="1504" width="32" height="32"/>
+  <object id="84" name="0" x="96" y="1504" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="GameRooms" visible="0">
   <object id="8" name="Room2" x="1440" y="1152" width="2208" height="448"/>
@@ -215,19 +215,19 @@
   <object id="24" name="Dragonfly" x="4512" y="1472" width="32" height="32"/>
   <object id="25" name="FloatingCan" x="3232" y="1280" width="32" height="32"/>
   <object id="30" name="MagFly" x="3584" y="1344" width="32" height="32"/>
-  <object id="42" name="Matasaburo" x="1152" y="1504" width="32" height="32"/>
+  <object id="42" name="Matasaburo" x="832" y="1504" width="32" height="32"/>
   <object id="47" name="SpringHead" x="6688" y="1504" width="32" height="32"/>
   <object id="49" name="SniperJoe" x="3488" y="1504" width="32" height="32"/>
   <object id="50" name="Met" x="3008" y="1504" width="32" height="32"/>
   <object id="57" name="SuctionRoller" x="6368" y="1504" width="32" height="32"/>
   <object id="120" name="SpringHead" x="5696" y="1504" width="32" height="32"/>
   <object id="121" name="FlyBoy" x="3552" y="1504" width="32" height="32"/>
-  <object id="126" name="ShieldAttacker" x="1216" y="1376" width="32" height="32">
+  <object id="126" name="ShieldAttacker" x="896" y="1376" width="32" height="32">
    <properties>
     <property name="X" type="float" value="3"/>
    </properties>
   </object>
-  <object id="133" name="Penguin" x="1312" y="1504" width="32" height="32"/>
+  <object id="133" name="Penguin" x="992" y="1504" width="32" height="32"/>
   <object id="135" name="PicketJoe" x="736" y="1504" width="32" height="32"/>
  </objectgroup>
  <layer id="13" name="BG" width="250" height="75">

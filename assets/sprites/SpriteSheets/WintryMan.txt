@@ -1,7 +1,7 @@
 WintryMan.png
 size: 768, 48
 format: RGBA8888
-filter: Linear,Linear
+filter: Nearest,Nearest
 repeat: none
 AboutToJump
   rotate: false

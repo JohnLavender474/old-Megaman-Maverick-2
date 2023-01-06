@@ -13,7 +13,6 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
-import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.entities.items.Item;
 import com.megaman.game.entities.megaman.Megaman;
 import com.megaman.game.entities.megaman.upgrades.MegaAbility;
@@ -26,6 +25,7 @@ import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.utils.enums.Direction;
+import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.utils.objs.Wrapper;
 import lombok.RequiredArgsConstructor;
 
@@ -102,15 +102,26 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
         // feet and block
         else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
-            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body feetBody = contact.mask1stBody();
+            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             feetBody.bounds.x += posDelta.x;
             feetBody.bounds.y += posDelta.y;
-            if (!feetBody.is(BodySense.FEET_ON_GROUND) && contact.mask1stEntity() instanceof Megaman m) {
+            // TODO: test
+            if (contact.mask1stEntity() instanceof Megaman m) {
+                m.aButtonTask = AButtonTask.JUMP;
+                if (contact.mask1stShape() instanceof Rectangle feet &&
+                        contact.mask2ndShape().contains(ShapeUtils.getBottomCenterPoint(feet))) {
+                    m.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
+                }
+            }
+            feetBody.set(BodySense.FEET_ON_GROUND, true);
+            /*
+            if (!feetBody.is(BodySense.FEET_ON_GROUND) &&
+                    contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.JUMP;
                 m.request(SoundAsset.MEGAMAN_LAND_SOUND, true);
             }
-            feetBody.set(BodySense.FEET_ON_GROUND, true);
+             */
         }
 
         // feet and ice
@@ -265,9 +276,9 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
              */
 
-            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             Body feetBody = contact.mask1stBody();
             feetBody.set(BodySense.FEET_ON_GROUND, true);
+            Vector2 posDelta = contact.mask2ndBody().getPosDelta();
             feetBody.bounds.x += posDelta.x;
             feetBody.bounds.y += posDelta.y;
             if (contact.mask1stEntity() instanceof Megaman m) {

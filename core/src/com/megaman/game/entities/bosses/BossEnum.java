@@ -39,9 +39,8 @@ public enum BossEnum {
             return new HashMap<>() {{
                 put("Stand", new Animation(textureAtlas.findRegion("Stand"), new float[]{1.5f, .15f}));
                 put("JustLand", new Animation(textureAtlas.findRegion("JustLand"), 5, .1f, false));
-                put("AboutToSwing", new Animation(textureAtlas.findRegion("AboutToSwing"), 3, .15f, false));
-                put("Swing", new Animation(textureAtlas.findRegion("Swing"), 3, .15f, false));
-                put("Jump", new Animation(textureAtlas.findRegion("Jump"), 6, MenuConstVals.BOSS_DROP_DOWN / 12));
+                put("Swing", new Animation(textureAtlas.findRegion("Swing"), 6, .1f, false));
+                put("Jump", new Animation(textureAtlas.findRegion("Jump"), 4, .1f));
             }};
         }
 
@@ -50,9 +49,8 @@ public enum BossEnum {
             Map<String, Animation> anims = getAnims(textureAtlas);
             return new LinkedList<>() {{
                 add(KeyValuePair.of(anims.get("Jump"), new Timer(MenuConstVals.BOSS_DROP_DOWN)));
-                add(KeyValuePair.of(anims.get("JustLand"), new Timer(.6f)));
+                add(KeyValuePair.of(anims.get("JustLand"), new Timer(.5f)));
                 add(KeyValuePair.of(anims.get("Stand"), new Timer(1.75f)));
-                add(KeyValuePair.of(anims.get("AboutToSwing"), new Timer(.375f)));
                 add(KeyValuePair.of(anims.get("Swing"), new Timer(4f)));
             }};
         }

@@ -23,10 +23,12 @@ import static java.lang.Math.min;
 
 public class LevelCamManager implements Updatable, Resettable {
 
+    public static final float DELAY_DUR = .35f;
     public static final float TRANS_DUR = 1f;
     public static final float DIST_ON_TRANS = 1.5f;
 
     private final Camera cam;
+    private final Timer delayTimer;
     private final Timer transTimer;
     private final Vector2 transStartPos;
     private final Vector2 transTargetPos;
@@ -58,6 +60,7 @@ public class LevelCamManager implements Updatable, Resettable {
     public LevelCamManager(Camera cam) {
         this.cam = cam;
         transTimer = new Timer(TRANS_DUR);
+        delayTimer = new Timer(DELAY_DUR);
         transStartPos = new Vector2();
         transTargetPos = new Vector2();
         focusableStartPos = new Vector2();
@@ -99,6 +102,14 @@ public class LevelCamManager implements Updatable, Resettable {
         cam.position.x = pos.x;
         cam.position.y = pos.y;
         reset = true;
+    }
+
+    public boolean isDelayFinished() {
+        return delayTimer.isFinished();
+    }
+
+    public boolean isDelayJustFinished() {
+        return delayTimer.isJustFinished();
     }
 
     public boolean isTransitioning() {
@@ -209,6 +220,7 @@ public class LevelCamManager implements Updatable, Resettable {
             case END:
                 transDirection = null;
                 transState = null;
+                delayTimer.reset();
                 transTimer.reset();
                 transStartPos.setZero();
                 transTargetPos.setZero();
@@ -222,14 +234,18 @@ public class LevelCamManager implements Updatable, Resettable {
                     runOnBeginTrans.run();
                 }
             case CONTINUE:
+                if (updateOnTrans != null) {
+                    updateOnTrans.update(delta);
+                }
+                delayTimer.update(delta);
+                if (!delayTimer.isFinished()) {
+                    break;
+                }
                 transTimer.update(delta);
                 Vector2 pos = interpolate(transStartPos, transTargetPos, getTransTimerRatio());
                 cam.position.x = pos.x;
                 cam.position.y = pos.y;
                 transState = transTimer.isFinished() ? ProcessState.END : ProcessState.CONTINUE;
-                if (updateOnTrans != null) {
-                    updateOnTrans.update(delta);
-                }
         }
     }
 

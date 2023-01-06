@@ -1,7 +1,7 @@
 Faces1.png
 size: 216, 104
 format: RGBA8888
-filter: Linear,Linear
+filter: Nearest,Nearest
 repeat: none
 Blunt Man
   rotate: false

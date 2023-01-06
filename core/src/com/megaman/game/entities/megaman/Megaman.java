@@ -517,7 +517,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.6f * WorldVals.PPM, .25f * WorldVals.PPM));
+                new Rectangle().setSize(.55f * WorldVals.PPM, .25f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
@@ -532,8 +532,10 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // left fixture
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
-                new Rectangle().setSize(.15f * WorldVals.PPM, .35f * WorldVals.PPM));
-        leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
+                new Rectangle().setWidth(.2f * WorldVals.PPM));
+                // new Rectangle().setSize(.1f * WorldVals.PPM, .65f * WorldVals.PPM));
+        leftFixture.offset.x = -.4f * WorldVals.PPM;
+        // leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.add(leftFixture);
@@ -541,7 +543,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // right fixture
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
-                new Rectangle().setSize(.15f * WorldVals.PPM, .35f * WorldVals.PPM));
+                new Rectangle().setSize(.1f * WorldVals.PPM, .35f * WorldVals.PPM));
         rightFixture.offset.set(.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
@@ -565,9 +567,16 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             if (is(BehaviorType.GROUND_SLIDING)) {
                 body.bounds.height = .45f * WorldVals.PPM;
                 feetFixture.offset.y = -.25f * WorldVals.PPM;
+
+                // TODO: test
+                ((Rectangle) leftFixture.shape).setHeight(.25f * WorldVals.PPM);
+
             } else {
                 body.bounds.height = .95f * WorldVals.PPM;
                 feetFixture.offset.y = -.45f * WorldVals.PPM;
+
+                // TODO: test
+                ((Rectangle) leftFixture.shape).setHeight(.65f * WorldVals.PPM);
             }
             ((Rectangle) bodyFixture.shape).set(body.bounds);
             ((Rectangle) playerFixture.shape).set(body.bounds);

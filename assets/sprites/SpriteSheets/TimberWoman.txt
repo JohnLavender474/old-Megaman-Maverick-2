@@ -1,15 +1,8 @@
 TimberWoman.png
-size: 864, 288
+size: 2016, 96
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-AboutToSwing
-  rotate: false
-  xy: 576, 0
-  size: 288, 96
-  orig: 288, 96
-  offset: 0, 0
-  index: -1
 Damaged
   rotate: false
   xy: 0, 0
@@ -19,36 +12,36 @@ Damaged
   index: -1
 Jump
   rotate: false
-  xy: 0, 192
-  size: 576, 96
-  orig: 576, 96
+  xy: 192, 0
+  size: 384, 96
+  orig: 384, 96
   offset: 0, 0
   index: -1
 JustLand
   rotate: false
-  xy: 288, 96
+  xy: 576, 0
   size: 480, 96
   orig: 480, 96
   offset: 0, 0
   index: -1
 OnFire
   rotate: false
-  xy: 192, 0
+  xy: 1056, 0
   size: 192, 96
   orig: 192, 96
   offset: 0, 0
   index: -1
 Stand
   rotate: false
-  xy: 384, 0
+  xy: 1248, 0
   size: 192, 96
   orig: 192, 96
   offset: 0, 0
   index: -1
 Swing
   rotate: false
-  xy: 0, 96
-  size: 288, 96
-  orig: 288, 96
+  xy: 1440, 0
+  size: 576, 96
+  orig: 576, 96
   offset: 0, 0
   index: -1
