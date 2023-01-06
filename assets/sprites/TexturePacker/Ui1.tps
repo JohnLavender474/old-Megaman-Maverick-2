@@ -193,6 +193,8 @@
             </struct>
             <key type="filename">../Frames/Ui1/Background.png</key>
             <key type="filename">../Frames/Ui1/BlackBar.png</key>
+            <key type="filename">../Frames/Ui1/MegamanMaverick-alt.png</key>
+            <key type="filename">../Frames/Ui1/MegamanMaverick.png</key>
             <key type="filename">../Frames/Ui1/Pane.png</key>
             <key type="filename">../Frames/Ui1/PaneHighlighted.png</key>
             <key type="filename">../Frames/Ui1/PaneShattered.png</key>

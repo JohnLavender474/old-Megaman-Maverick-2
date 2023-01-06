@@ -1,5 +1,5 @@
 Ui1.png
-size: 1982, 1807
+size: 1990, 1790
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -19,14 +19,14 @@ Background
   index: -1
 Bar
   rotate: false
-  xy: 648, 0
+  xy: 776, 0
   size: 256, 64
   orig: 256, 64
   offset: 0, 0
   index: -1
 Bit
   rotate: false
-  xy: 145, 145
+  xy: 290, 128
   size: 292, 76
   orig: 292, 76
   offset: 0, 0
@@ -54,175 +54,189 @@ BorderBlock
   index: -1
 Canvas
   rotate: false
-  xy: 0, 737
+  xy: 400, 720
   size: 512, 480
   orig: 512, 480
   offset: 0, 0
   index: -1
 EmptyBit
   rotate: false
-  xy: 437, 145
+  xy: 582, 128
   size: 388, 102
   orig: 388, 102
   offset: 0, 0
   index: -1
 FlameBit
   rotate: false
-  xy: 1544, 0
+  xy: 1672, 0
   size: 258, 66
   orig: 258, 66
   offset: 0, 0
   index: -1
 MegamanHelmet
   rotate: false
-  xy: 716, 337
+  xy: 972, 320
   size: 300, 284
   orig: 300, 284
   offset: 0, 0
   index: -1
-MegamanPose
-  rotate: false
-  xy: 904, 0
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-MegamanSubtitle
-  rotate: false
-  xy: 512, 737
-  size: 1078, 270
-  orig: 1078, 270
-  offset: 0, 0
-  index: -1
-MegamanTitle
-  rotate: false
-  xy: 0, 1217
-  size: 1982, 590
-  orig: 1982, 590
-  offset: 0, 0
-  index: -1
-Pane
+MegamanMaverick-alt
   rotate: false
   xy: 200, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-PaneBlinking
-  rotate: false
-  xy: 392, 0
-  size: 128, 64
-  orig: 128, 64
-  offset: 0, 0
-  index: -1
-PaneHighlighted
+MegamanMaverick
   rotate: false
   xy: 264, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-PaneShattered
+MegamanPose
+  rotate: false
+  xy: 1032, 0
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+MegamanSubtitle
+  rotate: false
+  xy: 912, 720
+  size: 1078, 270
+  orig: 1078, 270
+  offset: 0, 0
+  index: -1
+MegamanTitle
+  rotate: false
+  xy: 0, 1200
+  size: 1982, 590
+  orig: 1982, 590
+  offset: 0, 0
+  index: -1
+Pane
   rotate: false
   xy: 328, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-RedBit
-  rotate: false
-  xy: 256, 337
-  size: 460, 118
-  orig: 460, 118
-  offset: 0, 0
-  index: -1
-StageSelectBox_Blinking
+PaneBlinking
   rotate: false
   xy: 520, 0
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
+PaneHighlighted
+  rotate: false
+  xy: 392, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+PaneShattered
+  rotate: false
+  xy: 456, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+RedBit
+  rotate: false
+  xy: 512, 320
+  size: 460, 118
+  orig: 460, 118
+  offset: 0, 0
+  index: -1
+StageSelectBox_Blinking
+  rotate: false
+  xy: 648, 0
+  size: 128, 64
+  orig: 128, 64
+  offset: 0, 0
+  index: -1
 StageSelectBox_Highlighted
   rotate: false
-  xy: 1016, 337
+  xy: 1272, 320
   size: 400, 400
   orig: 400, 400
   offset: 0, 0
   index: -1
 StageSelectBox_Unhighlighted
   rotate: false
-  xy: 1416, 337
+  xy: 0, 720
   size: 400, 400
   orig: 400, 400
   offset: 0, 0
   index: -1
 StandardBit
   rotate: false
-  xy: 825, 145
+  xy: 970, 128
   size: 386, 104
   orig: 386, 104
   offset: 0, 0
   index: -1
 Stars
   rotate: false
-  xy: 1032, 0
+  xy: 1160, 0
   size: 256, 64
   orig: 256, 64
   offset: 0, 0
   index: -1
 Stars1
   rotate: false
-  xy: 1211, 145
+  xy: 1356, 128
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars2
   rotate: false
-  xy: 1467, 145
+  xy: 1612, 128
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars3
   rotate: false
-  xy: 1723, 145
+  xy: 0, 320
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars4
   rotate: false
-  xy: 0, 337
+  xy: 256, 320
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Subtitle8bit
   rotate: false
-  xy: 1802, 0
+  xy: 0, 128
   size: 145, 145
   orig: 145, 145
   offset: 0, 0
   index: -1
 Z
   rotate: false
-  xy: 1288, 0
+  xy: 1416, 0
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 Z8bit
   rotate: false
-  xy: 0, 145
+  xy: 145, 128
   size: 145, 145
   orig: 145, 145
   offset: 0, 0
   index: -1
 ZeroSilhouette
   rotate: false
-  xy: 1416, 0
+  xy: 1544, 0
   size: 128, 128
   orig: 128, 128
   offset: 0, 0

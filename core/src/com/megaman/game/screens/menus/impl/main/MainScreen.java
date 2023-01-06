@@ -94,7 +94,7 @@ public class MainScreen extends MenuScreen {
             blinkArrs.put(sBtn.name(), new BlinkingArrow(assMan, arrCenter));
             row -= WorldVals.PPM * .025f;
         }
-        fonts.add(new TextHandle(new Vector2(3f * WorldVals.PPM, .5f * WorldVals.PPM), "© OLD LAVY GENES, 20XX"));
+        fonts.add(new TextHandle(new Vector2(.25f * WorldVals.PPM, .5f * WorldVals.PPM), "© OLD LAVY GENES, 20XX"));
         fonts.add(new TextHandle(new Vector2(21f * WorldVals.PPM, 12f * WorldVals.PPM),
                 () -> "" + game.getAudioMan().getMusicVolume()));
         fonts.add(new TextHandle(new Vector2(21f * WorldVals.PPM, 11.2f * WorldVals.PPM),
@@ -120,8 +120,8 @@ public class MainScreen extends MenuScreen {
         subtitle.setRegion(atlas.findRegion("Subtitle8bit"));
         subtitle.setSize(8f * WorldVals.PPM, 8f * WorldVals.PPM);
         subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
-        pose.setRegion(atlas.findRegion("MegamanPose"));
-        pose.setBounds(5.5f * WorldVals.PPM, 0f, 10f * WorldVals.PPM, 10f * WorldVals.PPM);
+        pose.setRegion(atlas.findRegion("MegamanMaverick"));
+        pose.setBounds(8.5f * WorldVals.PPM, 0f, 6f * WorldVals.PPM, 6f * WorldVals.PPM);
     }
 
     @Override
