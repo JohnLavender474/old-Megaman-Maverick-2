@@ -62,15 +62,15 @@ public class ScreenSlide implements Initializable, Updatable {
     @Override
     public void update(float delta) {
         timer.update(delta);
+        if (timer.isJustFinished()) {
+            camera.position.x = endPoint.x;
+            camera.position.y = endPoint.y;
+        }
         if (timer.isFinished()) {
             return;
         }
         camera.position.x += trajectory.x * delta * (1f / timer.getDuration());
         camera.position.y += trajectory.y * delta * (1f / timer.getDuration());
-        if (timer.isFinished()) {
-            camera.position.x = endPoint.x;
-            camera.position.y = endPoint.y;
-        }
     }
 
 }

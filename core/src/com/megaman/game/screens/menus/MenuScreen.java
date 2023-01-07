@@ -45,7 +45,8 @@ public abstract class MenuScreen extends ScreenAdapter {
     protected void onAnyMovement() {
     }
 
-    protected void onAnySelection() {
+    protected boolean onAnySelection() {
+        return true;
     }
 
     public void setMenuButton(String menuButtonKey) {
@@ -80,8 +81,9 @@ public abstract class MenuScreen extends ScreenAdapter {
                 menuButton.onNavigate(dir, delta);
             }
             if (ctrlMan.isJustPressed(CtrlBtn.START) || ctrlMan.isJustPressed(CtrlBtn.X)) {
-                onAnySelection();
-                selectionMade = menuButton.onSelect(delta);
+                if (onAnySelection()) {
+                    selectionMade = menuButton.onSelect(delta);
+                }
             }
         }
     }

@@ -121,7 +121,7 @@ public class MainScreen extends MenuScreen {
         subtitle.setSize(8f * WorldVals.PPM, 8f * WorldVals.PPM);
         subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
         pose.setRegion(atlas.findRegion("MegamanMaverick"));
-        pose.setBounds(8.5f * WorldVals.PPM, 0f, 7f * WorldVals.PPM, 7f * WorldVals.PPM);
+        pose.setBounds(7.5f * WorldVals.PPM, 0f, 7f * WorldVals.PPM, 7f * WorldVals.PPM);
     }
 
     @Override
@@ -150,8 +150,8 @@ public class MainScreen extends MenuScreen {
         batch.begin();
         blinkArrs.get(getCurrBtnKey()).draw(batch);
         SpriteDrawer.draw(title, batch);
-        SpriteDrawer.draw(subtitle, batch);
         SpriteDrawer.draw(pose, batch);
+        SpriteDrawer.draw(subtitle, batch);
         for (TextHandle font : fonts) {
             font.draw(batch);
         }
@@ -169,8 +169,12 @@ public class MainScreen extends MenuScreen {
     }
 
     @Override
-    protected void onAnySelection() {
-        audioMan.play(SoundAsset.SELECT_PING_SOUND);
+    protected boolean onAnySelection() {
+        boolean allow = screenSlide.isFinished();
+        if (allow) {
+            audioMan.play(SoundAsset.SELECT_PING_SOUND);
+        }
+        return allow;
     }
 
     @Override

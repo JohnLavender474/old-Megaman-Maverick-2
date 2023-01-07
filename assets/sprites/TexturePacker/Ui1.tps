@@ -193,7 +193,6 @@
             </struct>
             <key type="filename">../Frames/Ui1/Background.png</key>
             <key type="filename">../Frames/Ui1/BlackBar.png</key>
-            <key type="filename">../Frames/Ui1/MegamanMaverick-alt.png</key>
             <key type="filename">../Frames/Ui1/MegamanMaverick.png</key>
             <key type="filename">../Frames/Ui1/Pane.png</key>
             <key type="filename">../Frames/Ui1/PaneHighlighted.png</key>
@@ -300,21 +299,6 @@
                 <rect>75,71,150,142</rect>
                 <key>scale9Paddings</key>
                 <rect>75,71,150,142</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Ui1/MegamanMaverick-alt2.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>18,18,36,36</rect>
-                <key>scale9Paddings</key>
-                <rect>18,18,36,36</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

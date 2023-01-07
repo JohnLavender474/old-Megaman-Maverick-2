@@ -1,5 +1,5 @@
 Ui1.png
-size: 1990, 1790
+size: 1982, 1807
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -19,14 +19,14 @@ Background
   index: -1
 Bar
   rotate: false
-  xy: 848, 0
+  xy: 1386, 0
   size: 256, 64
   orig: 256, 64
   offset: 0, 0
   index: -1
 Bit
   rotate: false
-  xy: 548, 128
+  xy: 258, 145
   size: 292, 76
   orig: 292, 76
   offset: 0, 0
@@ -54,196 +54,182 @@ BorderBlock
   index: -1
 Canvas
   rotate: false
-  xy: 400, 720
+  xy: 0, 737
   size: 512, 480
   orig: 512, 480
   offset: 0, 0
   index: -1
 EmptyBit
   rotate: false
-  xy: 840, 128
+  xy: 1574, 145
   size: 388, 102
   orig: 388, 102
   offset: 0, 0
   index: -1
 FlameBit
   rotate: false
-  xy: 0, 128
+  xy: 0, 145
   size: 258, 66
   orig: 258, 66
   offset: 0, 0
   index: -1
 MegamanHelmet
   rotate: false
-  xy: 1228, 320
+  xy: 846, 337
   size: 300, 284
   orig: 300, 284
   offset: 0, 0
   index: -1
-MegamanMaverick-alt
+MegamanMaverick
   rotate: false
   xy: 200, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-MegamanMaverick-alt2
-  rotate: false
-  xy: 520, 0
-  size: 72, 72
-  orig: 72, 72
-  offset: 0, 0
-  index: -1
-MegamanMaverick
-  rotate: false
-  xy: 264, 0
-  size: 64, 64
-  orig: 64, 64
-  offset: 0, 0
-  index: -1
 MegamanPose
   rotate: false
-  xy: 1104, 0
+  xy: 712, 0
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 MegamanSubtitle
   rotate: false
-  xy: 912, 720
+  xy: 512, 737
   size: 1078, 270
   orig: 1078, 270
   offset: 0, 0
   index: -1
 MegamanTitle
   rotate: false
-  xy: 0, 1200
+  xy: 0, 1217
   size: 1982, 590
   orig: 1982, 590
   offset: 0, 0
   index: -1
 Pane
   rotate: false
-  xy: 328, 0
+  xy: 264, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 PaneBlinking
   rotate: false
-  xy: 592, 0
+  xy: 456, 0
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 PaneHighlighted
   rotate: false
-  xy: 392, 0
+  xy: 328, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 PaneShattered
   rotate: false
-  xy: 456, 0
+  xy: 392, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 RedBit
   rotate: false
-  xy: 768, 320
+  xy: 386, 337
   size: 460, 118
   orig: 460, 118
   offset: 0, 0
   index: -1
 StageSelectBox_Blinking
   rotate: false
-  xy: 720, 0
+  xy: 584, 0
   size: 128, 64
   orig: 128, 64
   offset: 0, 0
   index: -1
 StageSelectBox_Highlighted
   rotate: false
-  xy: 1528, 320
+  xy: 1146, 337
   size: 400, 400
   orig: 400, 400
   offset: 0, 0
   index: -1
 StageSelectBox_Unhighlighted
   rotate: false
-  xy: 0, 720
+  xy: 1546, 337
   size: 400, 400
   orig: 400, 400
   offset: 0, 0
   index: -1
 StandardBit
   rotate: false
-  xy: 1228, 128
+  xy: 0, 337
   size: 386, 104
   orig: 386, 104
   offset: 0, 0
   index: -1
 Stars
   rotate: false
-  xy: 1232, 0
+  xy: 1642, 0
   size: 256, 64
   orig: 256, 64
   offset: 0, 0
   index: -1
 Stars1
   rotate: false
-  xy: 1614, 128
+  xy: 550, 145
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars2
   rotate: false
-  xy: 0, 320
+  xy: 806, 145
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars3
   rotate: false
-  xy: 256, 320
+  xy: 1062, 145
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Stars4
   rotate: false
-  xy: 512, 320
+  xy: 1318, 145
   size: 256, 192
   orig: 256, 192
   offset: 0, 0
   index: -1
 Subtitle8bit
   rotate: false
-  xy: 258, 128
+  xy: 1096, 0
   size: 145, 145
   orig: 145, 145
   offset: 0, 0
   index: -1
 Z
   rotate: false
-  xy: 1488, 0
+  xy: 840, 0
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 Z8bit
   rotate: false
-  xy: 403, 128
+  xy: 1241, 0
   size: 145, 145
   orig: 145, 145
   offset: 0, 0
   index: -1
 ZeroSilhouette
   rotate: false
-  xy: 1616, 0
+  xy: 968, 0
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
