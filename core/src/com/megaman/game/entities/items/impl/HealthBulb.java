@@ -124,8 +124,10 @@ public class HealthBulb extends Entity implements Item {
 
     private BodyComponent bodyComponent() {
         body.velClamp.x = CLAMP_X * WorldVals.PPM;
+        body.affectedByResistance = true;
         Array<ShapeHandle> h = new Array<>();
 
+        // body fixture
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle());
         body.add(bodyFixture);
         h.add(new ShapeHandle(() -> bodyFixture.shape, Color.PURPLE));

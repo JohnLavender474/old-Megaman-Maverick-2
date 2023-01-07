@@ -46,6 +46,7 @@ import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -113,7 +114,11 @@ public class MegamanGame implements ApplicationListener {
                 new LineSystem(),
                 new ShapeSystem(),
                 new SoundSystem(audioMan));
+
+        // TODO: set Megaman maverick only after intro stage
         megaman = new Megaman(this);
+        setMegamanMaverick(true);
+
         float screenWidth = ViewVals.VIEW_WIDTH * WorldVals.PPM;
         float screenHeight = ViewVals.VIEW_HEIGHT * WorldVals.PPM;
         gameCam = new OrthographicCamera();
@@ -151,6 +156,14 @@ public class MegamanGame implements ApplicationListener {
         ctrlMan.setCtrlCode(CtrlBtn.X, 3);
         ctrlMan.setCtrlCode(CtrlBtn.A, 1);
         ctrlMan.setCtrlCode(CtrlBtn.SELECT, 0);
+    }
+
+    public boolean isMegamanMaverick() {
+        return megaman.isMaverick();
+    }
+
+    public void setMegamanMaverick(boolean maverick) {
+        megaman.setMaverick(maverick);
     }
 
     public Screen getScreen(ScreenEnum e) {

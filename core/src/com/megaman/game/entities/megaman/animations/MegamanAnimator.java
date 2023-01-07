@@ -1,47 +1,61 @@
 package com.megaman.game.entities.megaman.animations;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedSet;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.Animator;
+import com.megaman.game.assets.AssetsManager;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.entities.megaman.weapons.MegamanWeapon;
+import com.megaman.game.utils.UtilMethods;
 import com.megaman.game.world.BodySense;
 import com.megaman.game.world.WorldVals;
 
 import java.util.function.Supplier;
 
-public class MegamanAnimator {
+public class MegamanAnimator extends Animator {
 
-    public static Animator getAnimator(Megaman megaman) {
+    private static final String MEGA_BUSTER = "MegaBuster";
+    private static final String MAVERICK_BUSTER = "MaverickBuster";
+    private static final String FLAME_TOSS = "FlameToss";
+
+    public MegamanAnimator(Megaman megaman) {
+        super(megaman.sprite, getKeySupplier(megaman), getAnims(megaman));
+    }
+
+    private static ObjectMap<String, Animation> getAnims(Megaman megaman) {
+        AssetsManager assMan = megaman.game.getAssMan();
+        Array<String> keySet = getAnimKeySet();
         ObjectMap<String, Animation> anims = new ObjectMap<>();
-        for (MegamanWeapon weapon : MegamanWeapon.values()) {
-            putAnims(megaman, weapon, weapon.megamanAss, anims);
-        }
-        return new Animator(megaman.sprite, getKeySupplier(megaman), anims);
-    }
 
-    private static void putAnims(Megaman megaman, MegamanWeapon weapon, TextureAsset asset,
-                                 ObjectMap<String, Animation> anims) {
-        OrderedSet<String> animKeySet = getAnimKeySet();
-        OrderedSet<String> animKeysToRemove = getAnimsKeysToExclude(weapon);
-        if (animKeysToRemove != null) {
-            for (String key : animKeysToRemove) {
-                animKeySet.remove(key);
+        // Mega Buster
+        TextureAtlas megaBusterAtlas = assMan.getTextureAtlas(TextureAsset.MEGAMAN);
+        for (String key : keySet) {
+            anims.put(MEGA_BUSTER + key, getAnimation(key, megaBusterAtlas));
+        }
+
+        // Maverick Buster
+        TextureAtlas maverickBusterAtlas = assMan.getTextureAtlas(TextureAsset.MEGAMAN_MAVERICK);
+        for (String key : keySet) {
+            anims.put(MAVERICK_BUSTER + key, getAnimation(key, maverickBusterAtlas));
+        }
+
+        // Flame Toss
+        TextureAtlas flameTossAtlas = assMan.getTextureAtlas(TextureAsset.MEGAMAN_FIRE);
+        for (String key : keySet) {
+            if (UtilMethods.equalsAny(key, "SwimAttack", "SwimCharging", "SwimHalfCharging", "SwimShoot")) {
+                continue;
             }
+            anims.put(FLAME_TOSS + key, getAnimation(key, flameTossAtlas));
         }
-        TextureAtlas atlas = megaman.game.getAssMan().getTextureAtlas(asset);
-        for (String key : animKeySet) {
-            Animation anim = getAnimation(key, atlas);
-            anims.put(weapon.name() + key, anim);
-        }
+
+        return anims;
     }
 
-    private static OrderedSet<String> getAnimKeySet() {
-        return new OrderedSet<>() {{
+    private static Array<String> getAnimKeySet() {
+        return new Array<>() {{
             add("Climb");
             add("ClimbShoot");
             add("ClimbHalfCharging");
@@ -57,7 +71,6 @@ public class MegamanAnimator {
             add("StandHalfCharging");
             add("StandShoot");
             add("Damaged");
-            add("LayDownDamaged");
             add("Run");
             add("RunCharging");
             add("RunHalfCharging");
@@ -88,18 +101,6 @@ public class MegamanAnimator {
         }};
     }
 
-    private static OrderedSet<String> getAnimsKeysToExclude(MegamanWeapon weapon) {
-        return switch (weapon) {
-            case FLAME_TOSS -> new OrderedSet<>() {{
-                add("SwimAttack");
-                add("SwimCharging");
-                add("SwimHalfCharging");
-                add("SwimShoot");
-            }};
-            default -> null;
-        };
-    }
-
     private static Animation getAnimation(String key, TextureAtlas t) {
         return switch (key) {
             case "Climb" -> new Animation(t.findRegion("Climb"), 2, .125f);
@@ -121,7 +122,6 @@ public class MegamanAnimator {
                     t.findRegion("StandHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "StandShoot" -> new Animation(t.findRegion("StandShoot"));
             case "Damaged" -> new Animation(t.findRegion("Damaged"), 5, .05f);
-            case "LayDownDamaged" -> new Animation(t.findRegion("LayDownDamaged"), 3, .05f);
             case "Run" -> new Animation(t.findRegion("Run"), 4, .125f);
             case "RunCharging" -> new Animation(t
                     .findRegion("RunCharging"), 4, Megaman.CHARGING_ANIM_TIME);
@@ -171,7 +171,7 @@ public class MegamanAnimator {
         return () -> {
             String key;
             if (megaman.isDamaged()) {
-                key = megaman.is(BehaviorType.GROUND_SLIDING) ? "LayDownDamaged" : "Damaged";
+                key = "Damaged";
             } else if (megaman.is(BehaviorType.CLIMBING)) {
                 if (!megaman.is(BodySense.HEAD_TOUCHING_LADDER)) {
                     if (megaman.isShooting()) {
@@ -282,7 +282,14 @@ public class MegamanAnimator {
                     key = "Stand";
                 }
             }
-            return megaman.currWeapon.name() + key;
+            return getKeyHeader(megaman) + key;
+        };
+    }
+
+    private static String getKeyHeader(Megaman megaman) {
+        return switch (megaman.currWeapon) {
+            case MEGA_BUSTER -> megaman.isMaverick() ? MAVERICK_BUSTER : MEGA_BUSTER;
+            case FLAME_TOSS -> FLAME_TOSS;
         };
     }
 

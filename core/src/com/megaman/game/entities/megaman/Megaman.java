@@ -128,10 +128,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     @Getter
     @Setter
     public Facing facing;
-
+    @Getter
+    @Setter
+    public boolean maverick;
     @Getter
     @Setter
     private boolean ready;
+
     private boolean recoveryBlink;
 
     public Megaman(MegamanGame game) {
@@ -169,7 +172,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         putComponent(controllerComponent());
         putComponent(new SoundComponent());
         putComponent(new HealthComponent(this::getMaxHealth));
-        putComponent(new AnimationComponent(MegamanAnimator.getAnimator(this)));
+        putComponent(new AnimationComponent(new MegamanAnimator(this)));
         runOnDeath.add(new MegamanDeathEvent(this));
     }
 

@@ -121,7 +121,7 @@ public class MainScreen extends MenuScreen {
         subtitle.setSize(8f * WorldVals.PPM, 8f * WorldVals.PPM);
         subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
         pose.setRegion(atlas.findRegion("MegamanMaverick"));
-        pose.setBounds(8.5f * WorldVals.PPM, 0f, 6f * WorldVals.PPM, 6f * WorldVals.PPM);
+        pose.setBounds(8.5f * WorldVals.PPM, 0f, 7f * WorldVals.PPM, 7f * WorldVals.PPM);
     }
 
     @Override

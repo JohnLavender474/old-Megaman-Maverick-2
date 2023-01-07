@@ -179,8 +179,10 @@
             <key type="filename">../Frames/Faces/Microwave Man.png</key>
             <key type="filename">../Frames/Faces/Mister Man.png</key>
             <key type="filename">../Frames/Faces/Nuke Man.png</key>
+            <key type="filename">../Frames/Faces/Precious Man.png</key>
             <key type="filename">../Frames/Faces/Roaster Man.png</key>
             <key type="filename">../Frames/Faces/Timber Woman.png</key>
+            <key type="filename">../Frames/Faces/Wintry Man.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -195,6 +197,15 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../Frames/Faces/Maverick/BOTTOM_CENTER.png</key>
+            <key type="filename">../Frames/Faces/Maverick/BOTTOM_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Maverick/BOTTOM_RIGHT.png</key>
+            <key type="filename">../Frames/Faces/Maverick/CENTER.png</key>
+            <key type="filename">../Frames/Faces/Maverick/CENTER_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Maverick/CENTER_RIGHT.png</key>
+            <key type="filename">../Frames/Faces/Maverick/TOP_CENTER.png</key>
+            <key type="filename">../Frames/Faces/Maverick/TOP_LEFT.png</key>
+            <key type="filename">../Frames/Faces/Maverick/TOP_RIGHT.png</key>
             <key type="filename">../Frames/Faces/Megaman/BOTTOM_CENTER.png</key>
             <key type="filename">../Frames/Faces/Megaman/BOTTOM_LEFT.png</key>
             <key type="filename">../Frames/Faces/Megaman/BOTTOM_RIGHT.png</key>

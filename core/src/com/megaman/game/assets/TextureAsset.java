@@ -42,6 +42,7 @@ public enum TextureAsset implements Asset {
 
     // Megaman
     MEGAMAN("Megaman.txt"),
+    MEGAMAN_MAVERICK("MegamanMaverick.txt"),
     MEGAMAN_FIRE("MegamanFire.txt"),
 
     // Platforms

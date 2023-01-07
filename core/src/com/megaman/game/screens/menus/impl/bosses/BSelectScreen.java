@@ -84,8 +84,11 @@ public class BSelectScreen extends MenuScreen {
         TextureAtlas megamanFacesAtlas = assMan.getTextureAtlas(TextureAsset.FACES_1);
         Map<Position, TextureRegion> megamanFaces = new EnumMap<>(Position.class);
         for (Position position : Position.values()) {
-            TextureRegion faceRegion = megamanFacesAtlas.findRegion("Megaman/" + position.name());
+
+            // TODO: Maverick instead of Megaman faces?
+            TextureRegion faceRegion = megamanFacesAtlas.findRegion("Maverick/" + position.name());
             megamanFaces.put(position, faceRegion);
+
         }
         Supplier<TextureRegion> megamanFaceSupplier = () -> {
             BossEnum bossEnum = BossEnum.findByName(getCurrBtnKey());

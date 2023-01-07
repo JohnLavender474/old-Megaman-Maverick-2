@@ -60,8 +60,15 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         healthBar = new BitsBar(BAR_X, BAR_Y, megaman::getHealth, megaman::getMaxHealth, assMan, "Bit");
         Map<MegamanWeapon, BitsBar> weaponBars = new EnumMap<>(MegamanWeapon.class);
         for (MegamanWeapon weapon : MegamanWeapon.values()) {
+            if (weapon == MegamanWeapon.MEGA_BUSTER) {
+                continue;
+            }
+            String bitSrc = switch (weapon) {
+                case FLAME_TOSS -> "RedBit";
+                default -> throw new IllegalStateException();
+            };
             BitsBar weaponBar = new BitsBar(BAR_X + WorldVals.PPM, BAR_Y, megaman::getAmmo,
-                    () -> MegamanVals.MAX_WEAPON_AMMO, assMan, weapon.weaponBitSrc);
+                    () -> MegamanVals.MAX_WEAPON_AMMO, assMan, bitSrc);
             weaponBars.put(weapon, weaponBar);
         }
         MegamanWeapon curr = megaman.currWeapon;

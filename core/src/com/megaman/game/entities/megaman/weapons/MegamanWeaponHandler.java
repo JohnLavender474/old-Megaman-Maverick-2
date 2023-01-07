@@ -37,6 +37,9 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
 
         private final Timer cooldownTimer;
 
+        private Supplier<Integer> normalCost;
+        private Supplier<Integer> halfChargedCost;
+        private Supplier<Integer> fullyChargedCost;
         private Supplier<Boolean> chargeable;
         private Supplier<Boolean> canFireWeapon;
         private Array<Projectile> spawned;
@@ -51,11 +54,32 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         }
 
         private MegaWeaponEntry(float cooldownDur, Supplier<Boolean> chargeable, Supplier<Boolean> canFireWeapon) {
-            this.cooldownTimer = new Timer(cooldownDur, true);
+            this(cooldownDur, chargeable, canFireWeapon, () -> 0, () -> 0, () -> 0);
+        }
+
+        private MegaWeaponEntry(float cooldownDur, Supplier<Boolean> chargeable, Supplier<Boolean> canFireWeapon,
+                                Supplier<Integer> normalCost, Supplier<Integer> halfChargedCost,
+                                Supplier<Integer> fullyChargedCost) {
             this.canFireWeapon = canFireWeapon;
             this.chargeable = chargeable;
-            this.spawned = new Array<>();
-            this.ammo = MegamanVals.MAX_WEAPON_AMMO;
+            this.normalCost = normalCost;
+            this.halfChargedCost = halfChargedCost;
+            this.fullyChargedCost = fullyChargedCost;
+            cooldownTimer = new Timer(cooldownDur, true);
+            spawned = new Array<>();
+            ammo = MegamanVals.MAX_WEAPON_AMMO;
+        }
+
+        public int getNormalCost() {
+            return normalCost.get();
+        }
+
+        public int getHalfChargedCost() {
+            return halfChargedCost.get();
+        }
+
+        public int getFullyChargedCost() {
+            return fullyChargedCost.get();
         }
 
         private boolean isChargeable() {
@@ -116,6 +140,9 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
             case MEGA_BUSTER -> new MegaWeaponEntry(.01f);
             case FLAME_TOSS -> {
                 MegaWeaponEntry e = new MegaWeaponEntry(.5f);
+                e.normalCost = () -> 3;
+                e.halfChargedCost = () -> 5;
+                e.fullyChargedCost = () -> 7;
                 e.chargeable = () -> !megaman.is(BodySense.BODY_IN_WATER);
                 e.canFireWeapon = () -> !megaman.is(BodySense.BODY_IN_WATER) && e.spawned.size == 0;
                 yield e;
@@ -148,10 +175,10 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         }
         int cost = e.isChargeable() ?
                 (weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (stat) {
-                    case FULLY_CHARGED -> weapon.fullyChargedCost;
-                    case HALF_CHARGED -> weapon.halfChargedCost;
-                    case NOT_CHARGED -> weapon.cost;
-                }) : weapon.cost;
+                    case FULLY_CHARGED -> e.getFullyChargedCost();
+                    case HALF_CHARGED -> e.getHalfChargedCost();
+                    case NOT_CHARGED -> e.getNormalCost();
+                }) : e.getNormalCost();
         return cost <= e.ammo;
     }
 
@@ -202,10 +229,11 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         if (!isChargeable(weapon)) {
             stat = ChargeStatus.NOT_CHARGED;
         }
+        MegaWeaponEntry e = weapons.get(weapon);
         int cost = weapon == MegamanWeapon.MEGA_BUSTER ? 0 : switch (stat) {
-            case FULLY_CHARGED -> weapon.fullyChargedCost;
-            case HALF_CHARGED -> weapon.halfChargedCost;
-            case NOT_CHARGED -> weapon.cost;
+            case FULLY_CHARGED -> e.getFullyChargedCost();
+            case HALF_CHARGED -> e.getHalfChargedCost();
+            case NOT_CHARGED -> e.getNormalCost();
         };
         if (cost > getAmmo(weapon)) {
             return false;
@@ -214,7 +242,6 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
             case MEGA_BUSTER -> fireMegaBuster(stat);
             case FLAME_TOSS -> fireFlameToss(stat);
         };
-        MegaWeaponEntry e = weapons.get(weapon);
         if (p != null) {
             e.spawned.add(p);
         }
