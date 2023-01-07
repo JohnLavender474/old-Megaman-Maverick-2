@@ -1,6 +1,6 @@
 # MEGAMAN MAVERICK
 
-<img src="img/MainMenu.png" width="600px"/>
+<img src="img/MainScreen.png" width="600px"/>
 
 <hr/>
 
@@ -17,7 +17,7 @@ or does he set beside his emotions to perform his duty for the human race?... Th
 and sisters... "You're either with us or against us!" both sides cry. There is no right and wrong anymore.
 Megaman looks upon the destruction and chaos, and knows what he must do."
 
-<img src="img/BossSelectScreen.png" width="600px"/>
+<img src="img/BossScreen.png" width="600px"/>
 
 <hr/>
 
