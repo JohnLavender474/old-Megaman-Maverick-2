@@ -1,5 +1,5 @@
 Projectiles1.png
-size: 928, 32
+size: 480, 100
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
@@ -54,35 +54,49 @@ Fire/Fireball
   index: -1
 HalfChargedShot
   rotate: false
-  xy: 448, 0
+  xy: 0, 32
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 Joeball
   rotate: false
-  xy: 512, 0
+  xy: 64, 32
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 Picket
   rotate: false
-  xy: 640, 0
+  xy: 192, 32
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
+PreciousShot/Form
+  rotate: false
+  xy: 0, 64
+  size: 324, 36
+  orig: 324, 36
+  offset: 0, 0
+  index: -1
+PreciousShot/Shoot
+  rotate: false
+  xy: 324, 64
+  size: 108, 36
+  orig: 108, 36
+  offset: 0, 0
+  index: -1
 Snowball
   rotate: false
-  xy: 768, 0
+  xy: 320, 32
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 SnowJoeball
   rotate: false
-  xy: 800, 0
+  xy: 352, 32
   size: 128, 32
   orig: 128, 32
   offset: 0, 0

@@ -53,9 +53,9 @@ public class SniperJoe extends Enemy implements Faceable {
     private static final float DAMAGE_DUR = .15f;
     private static final float SHOOT_DUR = 1.5f;
 
+    private final Sprite sprite;
     private final Timer shieldTimer;
     private final Timer shootTimer;
-    private final Sprite sprite;
 
     private boolean shielded;
     @Getter
@@ -79,12 +79,12 @@ public class SniperJoe extends Enemy implements Faceable {
 
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
-        shieldTimer.setToEnd();
-        shootTimer.setToEnd();
-        shielded = true;
         Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
         ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
         type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
+        shieldTimer.setToEnd();
+        shootTimer.setToEnd();
+        shielded = true;
     }
 
     @Override
@@ -189,7 +189,7 @@ public class SniperJoe extends Enemy implements Faceable {
         sprite.setSize(1.35f * WorldVals.PPM, 1.35f * WorldVals.PPM);
         SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> {
-            h.setPosition(body.bounds, Position.CENTER);
+            h.setPosition(body.bounds, Position.BOTTOM_CENTER);
             sprite.setFlip(is(Facing.LEFT), false);
             h.hidden = dmgBlink;
         };

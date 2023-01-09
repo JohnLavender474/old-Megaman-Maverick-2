@@ -315,6 +315,7 @@
             <key type="filename">../Frames/Enemies1/IceSeal/SmallSnowballFormed.png</key>
             <key type="filename">../Frames/Enemies1/IceSeal/SnowballHalfFormed.png</key>
             <key type="filename">../Frames/Enemies1/IceSeal/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/PreciousJoe/Charge.png</key>
             <key type="filename">../Frames/Enemies1/Ratton/Jump.png</key>
             <key type="filename">../Frames/Enemies1/Ratton/Stand.png</key>
             <key type="filename">../Frames/Enemies1/WispyWasp/Fly.png</key>
@@ -360,6 +361,25 @@
                 <rect>96,16,192,32</rect>
                 <key>scale9Paddings</key>
                 <rect>96,16,192,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Enemies1/PreciousJoe/Shoot.png</key>
+            <key type="filename">../Frames/Enemies1/PreciousJoe/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/SwinginJoe/SnowThrowBall.png</key>
+            <key type="filename">../Frames/Enemies1/SwinginJoe/ThrowBall.png</key>
+            <key type="filename">../Frames/Enemies1/WispyWasp/Nest.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,12,24,24</rect>
+                <key>scale9Paddings</key>
+                <rect>12,12,24,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -409,23 +429,6 @@
                 <rect>48,12,96,24</rect>
                 <key>scale9Paddings</key>
                 <rect>48,12,96,24</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Enemies1/SwinginJoe/SnowThrowBall.png</key>
-            <key type="filename">../Frames/Enemies1/SwinginJoe/ThrowBall.png</key>
-            <key type="filename">../Frames/Enemies1/WispyWasp/Nest.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>12,12,24,24</rect>
-                <key>scale9Paddings</key>
-                <rect>12,12,24,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
