@@ -22,7 +22,8 @@ public class WorldSystem extends System {
                 FixtureType.DEATH,
                 FixtureType.DAMAGER));
         put(FixtureType.BODY, EnumSet.of(
-                FixtureType.FORCE));
+                FixtureType.FORCE,
+                FixtureType.UPSIDE_DOWN));
         put(FixtureType.WATER_LISTENER, EnumSet.of(
                 FixtureType.WATER));
         put(FixtureType.LADDER, EnumSet.of(

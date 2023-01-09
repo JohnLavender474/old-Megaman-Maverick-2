@@ -50,7 +50,8 @@ import lombok.Setter;
 
 import java.util.Set;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional, LevelCamFocusable, EventListener {
+public class Megaman extends Entity implements Damageable, Faceable, Positional, LevelCamFocusable,
+        EventListener, UpsideDownable {
 
     private static final Logger logger = new Logger(Megaman.class, MegamanGame.DEBUG && true);
 
@@ -70,10 +71,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float WATER_JUMP_VEL = 28f;
     public static final float WATER_WALL_JUMP_VEL = 38f;
     public static final float WALL_JUMP_VEL = 42f;
+
     public static final float WALL_JUMP_HORIZ = 10f;
     public static final float WALL_JUMP_IMPETUS_TIME = .1f;
 
-    public static final float GROUNDED_GRAVITY = -.0015f;
+    public static final float GROUND_GRAVITY = -.0015f;
     public static final float GRAVITY = -.375f;
     public static final float ICE_GRAVITY = -.5f;
     public static final float WATER_GRAVITY = -.25f;
@@ -122,6 +124,21 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public MegamanWeapon currWeapon;
     public AButtonTask aButtonTask;
 
+    private float jumpVel;
+    private float wallJumpVel;
+    private float waterJumpVel;
+    private float waterWallJumpVel;
+
+    private float gravity;
+    private float groundGravity;
+    private float iceGravity;
+    private float waterGravity;
+    private float waterIceGravity;
+    private float swimVelY;
+
+    @Getter
+    private boolean upsideDown;
+
     @Getter
     @Setter
     public int maxHealth;
@@ -141,6 +158,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         super(game, EntityType.MEGAMAN);
         sprite = new Sprite();
         body = new Body(BodyType.DYNAMIC, true);
+
+        // y vals
+        setUpsideDown(false);
+
+        // timers
         airDashTimer = new Timer(MAX_AIR_DASH_TIME);
         dmgTimer = new Timer(DAMAGE_DURATION, true);
         shootAnimTimer = new Timer(SHOOT_ANIM_TIME, true);
@@ -150,6 +172,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         dmgRecovBlinkTimer = new Timer(DAMAGE_RECOVERY_FLASH_DURATION);
         chargingTimer = new Timer(TIME_TO_FULLY_CHARGED, new TimeMarkedRunnable(TIME_TO_HALFWAY_CHARGED,
                 () -> request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, true)));
+
+        // weapons
         currWeapon = MegamanWeapon.MEGA_BUSTER;
         weaponHandler = new MegamanWeaponHandler(this);
 
@@ -158,6 +182,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         weaponHandler.putWeapon(MegamanWeapon.FLAME_TOSS);
 
 
+        // upgrades
         upgradeHandler = new MegaUpgradeHandler(this);
         // TODO: for now add all abilities
         upgradeHandler.add(MegaAbility.WALL_JUMP);
@@ -178,13 +203,21 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
+        // body
         body.labels.add(BodyLabel.PLAYER_BODY);
         body.velocity.setZero();
         body.bounds.setPosition(spawn);
+
+        // vals
+        setUpsideDown(false);
         facing = Facing.RIGHT;
         aButtonTask = AButtonTask.JUMP;
         currWeapon = MegamanWeapon.MEGA_BUSTER;
+
+        // weapon
         weaponHandler.reset();
+
+        // timers
         dmgRecovBlinkTimer.reset();
         shootAnimTimer.setToEnd();
         groundSlideTimer.reset();
@@ -193,7 +226,47 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         chargingTimer.reset();
         airDashTimer.reset();
         dmgTimer.setToEnd();
+
+        // add this as event listener
         game.getEventMan().add(this);
+    }
+
+    @Override
+    public void setUpsideDown(boolean upsideDown) {
+        this.upsideDown = upsideDown;
+        if (upsideDown) {
+            // jump
+            jumpVel = -JUMP_VEL;
+            wallJumpVel = -WALL_JUMP_VEL;
+            waterJumpVel = -WATER_JUMP_VEL;
+            waterWallJumpVel = -WATER_WALL_JUMP_VEL;
+
+            // gravity
+            gravity = -GRAVITY;
+            groundGravity = -GROUND_GRAVITY;
+            iceGravity = -ICE_GRAVITY;
+            waterGravity = -WATER_GRAVITY;
+            waterIceGravity = -WATER_ICE_GRAVITY;
+
+            // swim
+            swimVelY = -SWIM_VEL_Y;
+        } else {
+            // jump
+            jumpVel = JUMP_VEL;
+            wallJumpVel = WALL_JUMP_VEL;
+            waterJumpVel = WATER_JUMP_VEL;
+            waterWallJumpVel = WATER_WALL_JUMP_VEL;
+
+            // gravity
+            gravity = GRAVITY;
+            groundGravity = GROUND_GRAVITY;
+            iceGravity = ICE_GRAVITY;
+            waterGravity = WATER_GRAVITY;
+            waterIceGravity = WATER_ICE_GRAVITY;
+
+            // swim
+            swimVelY = SWIM_VEL_Y;
+        }
     }
 
     @Override
@@ -535,15 +608,14 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.55f * WorldVals.PPM, .25f * WorldVals.PPM));
+                new Rectangle().setSize(.55f * WorldVals.PPM, .3f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
 
         // head fixture
         Fixture headFixture = new Fixture(this, FixtureType.HEAD,
-                new Rectangle().setSize(.6f * WorldVals.PPM, .15f * WorldVals.PPM));
-        headFixture.offset.y = .45f * WorldVals.PPM;
+                new Rectangle().setSize(.6f * WorldVals.PPM, .2f * WorldVals.PPM));
         headFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(headFixture);
         h.add(new ShapeHandle(headFixture.shape, Color.ORANGE));
@@ -551,9 +623,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         // left fixture
         Fixture leftFixture = new Fixture(this, FixtureType.SIDE,
                 new Rectangle().setWidth(.2f * WorldVals.PPM));
-        // new Rectangle().setSize(.1f * WorldVals.PPM, .65f * WorldVals.PPM));
         leftFixture.offset.x = -.4f * WorldVals.PPM;
-        // leftFixture.offset.set(-.4f * WorldVals.PPM, .125f * WorldVals.PPM);
         leftFixture.putUserData(ConstKeys.RUN, onBounce);
         leftFixture.putUserData(ConstKeys.SIDE, ConstKeys.LEFT);
         body.add(leftFixture);
@@ -561,8 +631,8 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // right fixture
         Fixture rightFixture = new Fixture(this, FixtureType.SIDE,
-                new Rectangle().setSize(.1f * WorldVals.PPM, .35f * WorldVals.PPM));
-        rightFixture.offset.set(.4f * WorldVals.PPM, .125f * WorldVals.PPM);
+                new Rectangle().setWidth(.2f * WorldVals.PPM));
+        rightFixture.offset.x = .4f * WorldVals.PPM;
         rightFixture.putUserData(ConstKeys.RUN, onBounce);
         rightFixture.putUserData(ConstKeys.SIDE, ConstKeys.RIGHT);
         body.add(rightFixture);
@@ -582,19 +652,17 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // pre-process
         body.preProcess = delta -> {
+            headFixture.offset.y = (isUpsideDown() ? -.45f : .45f) * WorldVals.PPM;
             if (is(BehaviorType.GROUND_SLIDING)) {
                 body.bounds.height = .45f * WorldVals.PPM;
-                feetFixture.offset.y = -.25f * WorldVals.PPM;
-
-                // TODO: test
-                ((Rectangle) leftFixture.shape).setHeight(.25f * WorldVals.PPM);
-
+                feetFixture.offset.y = (isUpsideDown() ? .25f : -.25f) * WorldVals.PPM;
+                ((Rectangle) leftFixture.shape).setHeight(.2f * WorldVals.PPM);
+                ((Rectangle) rightFixture.shape).setHeight(.2f * WorldVals.PPM);
             } else {
                 body.bounds.height = .95f * WorldVals.PPM;
-                feetFixture.offset.y = -.45f * WorldVals.PPM;
-
-                // TODO: test
-                ((Rectangle) leftFixture.shape).setHeight(.65f * WorldVals.PPM);
+                feetFixture.offset.y = (isUpsideDown() ? .45f : -.45f) * WorldVals.PPM;
+                ((Rectangle) leftFixture.shape).setHeight(.6f * WorldVals.PPM);
+                ((Rectangle) rightFixture.shape).setHeight(.6f * WorldVals.PPM);
             }
             ((Rectangle) bodyFixture.shape).set(body.bounds);
             ((Rectangle) playerFixture.shape).set(body.bounds);
@@ -602,11 +670,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     (is(BodySense.SIDE_TOUCHING_ICE_LEFT) || is(BodySense.SIDE_TOUCHING_ICE_RIGHT));
             float gravityY;
             if (is(BodySense.BODY_IN_WATER)) {
-                gravityY = wallSlidingOnIce ? WATER_ICE_GRAVITY : WATER_GRAVITY;
+                gravityY = wallSlidingOnIce ? waterIceGravity : waterGravity;
             } else if (wallSlidingOnIce) {
-                gravityY = ICE_GRAVITY;
+                gravityY = iceGravity;
             } else {
-                gravityY = is(BodySense.FEET_ON_GROUND) ? GROUNDED_GRAVITY : GRAVITY;
+                gravityY = is(BodySense.FEET_ON_GROUND) ? groundGravity : gravity;
             }
             body.gravity.y = gravityY * WorldVals.PPM;
         };
@@ -671,7 +739,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
             @Override
             protected void init() {
-                body.velocity.y += SWIM_VEL_Y * WorldVals.PPM;
+                body.velocity.y += swimVelY * WorldVals.PPM;
                 if (is(BehaviorType.SWIMMING)) {
                     float x = WALL_JUMP_HORIZ * WorldVals.PPM;
                     if (is(Facing.LEFT)) {
@@ -699,10 +767,11 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             protected boolean evaluate(float delta) {
                 if (isDamaged() || isAny(BehaviorType.SWIMMING, BehaviorType.CLIMBING) ||
                         is(BodySense.HEAD_TOUCHING_BLOCK) || !ctrlMan.isPressed(CtrlBtn.A) ||
-                        ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                        ctrlMan.isPressed(isUpsideDown() ? CtrlBtn.DPAD_UP : CtrlBtn.DPAD_DOWN)) {
                     return false;
                 }
-                return is(BehaviorType.JUMPING) ? body.velocity.y >= 0f :
+                return is(BehaviorType.JUMPING) ?
+                        (isUpsideDown() ? body.velocity.y <= 0f : body.velocity.y >= 0f) :
                         aButtonTask == AButtonTask.JUMP && ctrlMan.isJustPressed(CtrlBtn.A) &&
                                 (is(BodySense.FEET_ON_GROUND) || is(BehaviorType.WALL_SLIDING));
             }
@@ -720,9 +789,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     v.x = body.velocity.x;
                 }
                 if (is(BodySense.BODY_IN_WATER)) {
-                    v.y = (is(BehaviorType.WALL_SLIDING) ? WATER_WALL_JUMP_VEL : WATER_JUMP_VEL) * WorldVals.PPM;
+                    v.y = (is(BehaviorType.WALL_SLIDING) ? waterWallJumpVel : waterJumpVel) * WorldVals.PPM;
                 } else {
-                    v.y = (is(BehaviorType.WALL_SLIDING) ? WALL_JUMP_VEL : JUMP_VEL) * WorldVals.PPM;
+                    v.y = (is(BehaviorType.WALL_SLIDING) ? wallJumpVel : jumpVel) * WorldVals.PPM;
                 }
                 body.velocity.set(v);
                 if (is(BehaviorType.WALL_SLIDING)) {
@@ -805,7 +874,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     return true;
                 }
                 if (isDamaged() || groundSlideTimer.isFinished() || !is(BodySense.FEET_ON_GROUND) ||
-                        !ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                        !ctrlMan.isPressed(isUpsideDown() ? CtrlBtn.DPAD_UP : CtrlBtn.DPAD_DOWN)) {
                     return false;
                 }
                 return is(BehaviorType.GROUND_SLIDING) ? ctrlMan.isPressed(CtrlBtn.A) :
@@ -815,6 +884,12 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
             @Override
             protected void init() {
                 c.set(BehaviorType.GROUND_SLIDING, true);
+
+                // in body pre-process, body height is reduced from .95f to .45f when ground sliding;
+                // when upside down, need to compensate, otherwise Megaman will be off ground
+                if (isUpsideDown()) {
+                    body.bounds.y += .5f * WorldVals.PPM;
+                }
             }
 
             @Override
@@ -854,24 +929,43 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                         (ladder = body.getUserData(SpecialFactory.LADDER, Ladder.class)) == null) {
                     return false;
                 }
+                float centerY = body.getCenter().y;
                 if (is(BehaviorType.CLIMBING)) {
-                    if (!is(BodySense.HEAD_TOUCHING_LADDER) &&
-                            (body.getCenter().y - .15f * WorldVals.PPM) > ladder.body.getMaxY()) {
-                        return false;
-                    } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
-                            (body.getCenter().y + .15f * WorldVals.PPM) < ladder.body.getY()) {
-                        return false;
-                    } else if (ctrlMan.isJustPressed(CtrlBtn.A)) {
+                    if (!is(BodySense.HEAD_TOUCHING_LADDER)) {
+                        if (isUpsideDown() && centerY + .15f * WorldVals.PPM < ladder.body.getY()) {
+                            return false;
+                        } else if (centerY - .15f * WorldVals.PPM > ladder.body.getMaxY()) {
+                            return false;
+                        }
+                    }
+                    if (!is(BodySense.FEET_TOUCHING_LADDER)) {
+                        if (isUpsideDown() && centerY - .15f * WorldVals.PPM > ladder.body.getMaxY()) {
+                            return false;
+                        } else if (centerY + .15f * WorldVals.PPM < ladder.body.getY()) {
+                            return false;
+                        }
+                    }
+                    if (ctrlMan.isJustPressed(CtrlBtn.A)) {
                         return false;
                     }
                     return true;
-                } else {
-                    if (is(BodySense.FEET_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
-                        return true;
-                    } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
-                        return true;
-                    }
                 }
+                // TODO: test
+                if (is(BodySense.FEET_TOUCHING_LADDER) &&
+                        ctrlMan.isPressed(isUpsideDown() ? CtrlBtn.DPAD_UP : CtrlBtn.DPAD_DOWN)) {
+                    return true;
+                }
+                if (is(BodySense.HEAD_TOUCHING_LADDER) &&
+                        ctrlMan.isPressed(isUpsideDown() ? CtrlBtn.DPAD_DOWN : CtrlBtn.DPAD_UP)) {
+                    return true;
+                }
+                /*
+                if (is(BodySense.FEET_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                    return true;
+                } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
+                    return true;
+                }
+                 */
                 return false;
             }
 
@@ -954,10 +1048,13 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         handle.priority = 3;
         handle.updatable = delta -> {
             handle.hidden = !ready;
-            handle.setPosition(body.bounds, Position.BOTTOM_CENTER);
+            handle.setPosition(body.bounds, isUpsideDown() ? Position.TOP_CENTER : Position.BOTTOM_CENTER);
             sprite.setAlpha(isInvincible() ? (recoveryBlink ? 0f : 1f) : 1f);
-            sprite.translateY(is(BehaviorType.GROUND_SLIDING) ? -.1f * WorldVals.PPM : 0f);
-            sprite.setFlip(is(Facing.LEFT), sprite.isFlipY());
+            if (is(BehaviorType.GROUND_SLIDING)) {
+                float translateY = (isUpsideDown() ? .1f : -.1f) * WorldVals.PPM;
+                sprite.translateY(translateY);
+            }
+            sprite.setFlip(is(Facing.LEFT), isUpsideDown());
         };
         return new SpriteComponent(handle);
     }

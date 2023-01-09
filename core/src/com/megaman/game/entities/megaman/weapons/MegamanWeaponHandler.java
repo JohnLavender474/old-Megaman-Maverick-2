@@ -278,7 +278,6 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         ObjectMap<String, Object> data = new ObjectMap<>();
         data.put(ConstKeys.OWNER, megaman);
         data.put(ConstKeys.TRAJECTORY, trajectory);
-        Vector2 s = getSpawnCenter();
         Projectile proj = switch (stat) {
             case NOT_CHARGED -> (Bullet) factories.fetch(EntityType.PROJECTILE, ProjectileFactory.BULLET);
             case HALF_CHARGED, FULLY_CHARGED -> {
@@ -291,6 +290,14 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         } else {
             megaman.request(SoundAsset.MEGA_BUSTER_CHARGED_SHOT_SOUND, true);
             megaman.request(SoundAsset.MEGA_BUSTER_CHARGING_SOUND, false);
+        }
+        Vector2 s = getSpawnCenter();
+        if (megaman.isUpsideDown()) {
+            if (megaman.is(BehaviorType.CLIMBING)) {
+                s.y -= .45f * WorldVals.PPM;
+            } else {
+                s.y -= .05f * WorldVals.PPM;
+            }
         }
         engine.spawn(proj, s, data);
         return proj;

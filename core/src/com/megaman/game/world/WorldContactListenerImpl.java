@@ -11,6 +11,7 @@ import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.entities.Damageable;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
+import com.megaman.game.entities.UpsideDownable;
 import com.megaman.game.entities.decorations.impl.Splash;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.items.Item;
@@ -209,6 +210,13 @@ public class WorldContactListenerImpl implements WorldContactListener {
             Vector2 force = forceFunc.apply(contact.mask.getFirst(), delta);
             contact.mask1stBody().velocity.add(force);
 
+        }
+
+        // body and upside-down
+        else if (contact.acceptMask(FixtureType.BODY, FixtureType.UPSIDE_DOWN) &&
+                contact.mask1stEntity() instanceof UpsideDownable u) {
+            logger.log("Upside downable set to true");
+            u.setUpsideDown(true);
         }
 
         // projectile and block. body, shield, or water
@@ -420,6 +428,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
         else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, false);
             if (contact.mask1stEntity() instanceof Megaman m) {
+                logger.log("Megaman feet off ground");
                 m.aButtonTask = m.is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
             }
         }
@@ -460,6 +469,13 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (!feetBody.is(BodySense.HEAD_TOUCHING_LADDER)) {
                 feetBody.removeUserData(SpecialFactory.LADDER);
             }
+        }
+
+        // body and upside-down
+        else if (contact.acceptMask(FixtureType.BODY, FixtureType.UPSIDE_DOWN) &&
+                contact.mask1stEntity() instanceof UpsideDownable u) {
+            logger.log("Upside downable set to false");
+            u.setUpsideDown(false);
         }
     }
 

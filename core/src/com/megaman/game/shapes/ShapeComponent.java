@@ -1,6 +1,6 @@
 package com.megaman.game.shapes;
 
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
 import lombok.NoArgsConstructor;
@@ -10,9 +10,9 @@ public class ShapeComponent implements Component {
 
     public Array<ShapeHandle> shapeHandles = new Array<>();
 
-    public ShapeComponent(Rectangle... rects) {
-        for (Rectangle rect : rects) {
-            shapeHandles.add(new ShapeHandle(rect));
+    public ShapeComponent(Shape2D... shapes) {
+        for (Shape2D shape : shapes) {
+            shapeHandles.add(new ShapeHandle(shape));
         }
     }
 

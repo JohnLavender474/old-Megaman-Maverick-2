@@ -23,4 +23,5 @@ public enum FixtureType {
     DAMAGEABLE,
     PROJECTILE,
     WATER_LISTENER,
+    UPSIDE_DOWN
 }

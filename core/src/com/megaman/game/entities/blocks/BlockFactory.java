@@ -25,7 +25,6 @@ public class BlockFactory implements EntityFactory {
             put(GEAR_TROLLEY, new EntityPool(5, () -> new GearTrolley(game)));
             put(CONVEYOR_BELT, new EntityPool(5, () -> new ConveyorBelt(game)));
             put(ROCKET_PLATFORM, new EntityPool(10, () -> new RocketPlatform(game)));
-            put(COLLIDE_DOWN_ONLY, new EntityPool(5, () -> new CollideDownOnlyBlock(game)));
         }};
     }
 

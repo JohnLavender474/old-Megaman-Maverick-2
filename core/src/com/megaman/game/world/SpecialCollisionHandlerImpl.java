@@ -29,6 +29,16 @@ public class SpecialCollisionHandlerImpl implements SpecialCollisionHandler {
                 return true;
             }
             return dynamicBody.getY() < staticBody.getMaxY();
+        } else if (staticBody.labels.contains(BodyLabel.COLLIDE_UP_ONLY)) {
+            if (dynamicBody == megaman.body && megaman.is(BehaviorType.CLIMBING)) {
+                return true;
+            }
+            if (dynamicBody.is(BodySense.FEET_ON_GROUND)) {
+                dynamicBody.setMaxY(staticBody.getY());
+                dynamicBody.resistance.x += staticBody.friction.x;
+                return true;
+            }
+            return dynamicBody.getMaxY() > staticBody.getY();
         }
         return false;
     }
