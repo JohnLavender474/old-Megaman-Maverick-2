@@ -855,7 +855,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     return false;
                 }
                 if (is(BehaviorType.CLIMBING)) {
-                    if (!is(BodySense.HEAD_TOUCHING_BLOCK) &&
+                    if (!is(BodySense.HEAD_TOUCHING_LADDER) &&
                             (body.getCenter().y - .15f * WorldVals.PPM) > ladder.body.getMaxY()) {
                         return false;
                     } else if (!is(BodySense.FEET_TOUCHING_LADDER) &&
@@ -866,8 +866,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     }
                     return true;
                 } else {
-                    if (is(BodySense.FEET_TOUCHING_LADDER) && !is(BodySense.FEET_ON_GROUND) &&
-                            ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
+                    if (is(BodySense.FEET_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_DOWN)) {
                         return true;
                     } else if (is(BodySense.HEAD_TOUCHING_LADDER) && ctrlMan.isPressed(CtrlBtn.DPAD_UP)) {
                         return true;

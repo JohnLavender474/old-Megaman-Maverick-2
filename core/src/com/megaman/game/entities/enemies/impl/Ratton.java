@@ -16,6 +16,12 @@ import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Faceable;
 import com.megaman.game.entities.Facing;
 import com.megaman.game.entities.enemies.Enemy;
+import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
+import com.megaman.game.entities.projectiles.impl.Bullet;
+import com.megaman.game.entities.projectiles.impl.ChargedShot;
+import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.health.HealthVals;
+import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.sprites.SpriteComponent;
@@ -64,7 +70,12 @@ public class Ratton extends Enemy implements Faceable {
     @Override
     protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
         return new HashMap<>() {{
-
+            put(Bullet.class, new DamageNegotiation(10));
+            put(Fireball.class, new DamageNegotiation(HealthVals.MAX_HEALTH));
+            put(ChargedShot.class, new DamageNegotiation(damager ->
+                    ((ChargedShot) damager).isFullyCharged() ? HealthVals.MAX_HEALTH : 10));
+            put(ChargedShotExplosion.class, new DamageNegotiation(damager ->
+                    ((ChargedShotExplosion) damager).isFullyCharged() ? 15 : 5));
         }};
     }
 
@@ -99,6 +110,10 @@ public class Ratton extends Enemy implements Faceable {
                 new Rectangle().setSize(WorldVals.PPM, WorldVals.PPM));
         h.add(new ShapeHandle(damagerFixture.shape, Color.RED));
         body.add(damagerFixture);
+
+        if (MegamanGame.DEBUG) {
+            putComponent(new ShapeComponent(h));
+        }
 
         // pre-process
         body.preProcess = delta -> body.gravity.y = ((is(BodySense.FEET_ON_GROUND)) ? G_GRAV : GRAV) * WorldVals.PPM;

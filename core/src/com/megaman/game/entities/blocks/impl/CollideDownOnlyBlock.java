@@ -17,7 +17,6 @@ public class CollideDownOnlyBlock extends Block {
         super.init(bounds, data);
         body.labels.add(BodyLabel.NO_TOUCHIE);
         body.labels.add(BodyLabel.COLLIDE_DOWN_ONLY);
-        body.labels.add(BodyLabel.PRESS_UP_FALL_THRU);
     }
 
 }

@@ -28,10 +28,11 @@ public class MegamanDamageNegs {
         put(Bat.class, new DamageNegotiation(2));
         put(Met.class, new DamageNegotiation(2));
         put(Screwie.class, new DamageNegotiation(1));
+        put(Bullet.class, new DamageNegotiation(2));
         put(Picket.class, new DamageNegotiation(2));
+        put(Ratton.class, new DamageNegotiation(2));
         put(MagFly.class, new DamageNegotiation(2));
         put(FlyBoy.class, new DamageNegotiation(4));
-        put(Bullet.class, new DamageNegotiation(2));
         put(Penguin.class, new DamageNegotiation(3));
         put(Snowball.class, new DamageNegotiation(1));
         put(ChargedShot.class, new DamageNegotiation(4));
@@ -42,7 +43,7 @@ public class MegamanDamageNegs {
         put(SpringHead.class, new DamageNegotiation(2));
         put(FloatingCan.class, new DamageNegotiation(2));
         put(LaserBeamer.class, new DamageNegotiation(3));
-        put(SuctionRoller.class, new DamageNegotiation(1));
+        put(SuctionRoller.class, new DamageNegotiation(2));
         put(ShieldAttacker.class, new DamageNegotiation(2));
         put(GapingFish.class, new DamageNegotiation(2));
     }};
