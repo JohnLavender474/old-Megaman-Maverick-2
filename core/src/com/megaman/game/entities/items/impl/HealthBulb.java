@@ -61,6 +61,7 @@ public class HealthBulb extends Entity implements Item {
     private Fixture bodyFixture;
 
     private boolean large;
+    private boolean timeCull;
     private boolean blink;
     private boolean warning;
 
@@ -86,6 +87,7 @@ public class HealthBulb extends Entity implements Item {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         large = (boolean) data.get(ConstKeys.LARGE);
+        timeCull = !data.containsKey(ConstKeys.TIMED) || (boolean) data.get(ConstKeys.TIMED);
         warning = false;
         blink = false;
         blinkTimer.setToEnd();
@@ -108,6 +110,9 @@ public class HealthBulb extends Entity implements Item {
 
     private UpdatableComponent updatableComponent() {
         return new UpdatableComponent(delta -> {
+            if (!timeCull) {
+                return;
+            }
             if (warning) {
                 blinkTimer.update(delta);
                 if (blinkTimer.isFinished()) {

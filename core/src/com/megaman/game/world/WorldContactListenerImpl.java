@@ -68,7 +68,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
         // side and block
         else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
-            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_SIDE_TOUCHIE)) {
                 return;
             }
             Body body = contact.mask1stBody();
@@ -376,7 +376,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
         // side and block
         else if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
-            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_SIDE_TOUCHIE)) {
                 return;
             }
             Body body = contact.mask1stBody();
@@ -393,7 +393,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
     public void endContact(Contact contact, float delta) {
         // side and block
         if (contact.acceptMask(FixtureType.SIDE, FixtureType.BLOCK)) {
-            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_TOUCHIE)) {
+            if (contact.mask2ndBody().labels.contains(BodyLabel.NO_SIDE_TOUCHIE)) {
                 return;
             }
             Body body = contact.mask1stBody();

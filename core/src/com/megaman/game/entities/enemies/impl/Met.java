@@ -117,7 +117,7 @@ public class Met extends Enemy implements Faceable {
 
         // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
-                new Rectangle().setSize(WorldVals.PPM, 1.5f * WorldVals.PPM));
+                new Rectangle().setSize(WorldVals.PPM, .5f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shieldFixture.active ? Color.BLUE : Color.GRAY));
         body.add(shieldFixture);

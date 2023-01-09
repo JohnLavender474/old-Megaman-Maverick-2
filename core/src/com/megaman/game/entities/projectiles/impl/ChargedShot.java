@@ -67,13 +67,12 @@ public class ChargedShot extends Projectile implements Faceable {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         fullyCharged = (boolean) data.get(ConstKeys.BOOL);
-        float bodyDim = WorldVals.PPM;
+        float bodyDim = .75f * WorldVals.PPM;
         float spriteDim = WorldVals.PPM;
         if (fullyCharged) {
-            spriteDim *= 1.75f;
+            spriteDim *= 1.5f;
         } else {
             bodyDim /= 2f;
-            spriteDim *= 1.25f;
         }
         sprite.setSize(spriteDim, spriteDim);
         body.bounds.setSize(bodyDim);
@@ -97,6 +96,7 @@ public class ChargedShot extends Projectile implements Faceable {
         game.getGameEngine().spawn(e, ShapeUtils.getCenterPoint(body.bounds), data);
     }
 
+    /*
     @Override
     public void hitBody(Fixture bodyFixture) {
         if (bodyFixture.entity.equals(owner) || bodyFixture.entity instanceof Projectile) {
@@ -104,6 +104,7 @@ public class ChargedShot extends Projectile implements Faceable {
         }
         explodeAndDie();
     }
+     */
 
     @Override
     public void hitBlock(Fixture blockFixture) {

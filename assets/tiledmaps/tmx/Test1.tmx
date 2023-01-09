@@ -6,6 +6,7 @@
   <object id="92" name="HealthBulb" x="3328" y="1504" width="32" height="32">
    <properties>
     <property name="Large" type="bool" value="true"/>
+    <property name="Timed" type="bool" value="false"/>
    </properties>
   </object>
   <object id="93" name="HeartTank" x="3840" y="1504" width="32" height="32">
@@ -189,7 +190,7 @@
   <object id="147" name="Ladder" x="360" y="1536" width="16" height="448"/>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
-  <object id="84" name="0" x="416" y="1952" width="32" height="32"/>
+  <object id="84" name="0" x="2688" y="1504" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="GameRooms" visible="0">
   <object id="8" name="Room2" x="1440" y="1152" width="2208" height="448"/>

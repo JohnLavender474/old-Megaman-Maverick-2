@@ -15,7 +15,7 @@ public class CollideDownOnlyBlock extends Block {
     @Override
     public void init(Rectangle bounds, ObjectMap<String, Object> data) {
         super.init(bounds, data);
-        body.labels.add(BodyLabel.NO_TOUCHIE);
+        body.labels.add(BodyLabel.NO_SIDE_TOUCHIE);
         body.labels.add(BodyLabel.COLLIDE_DOWN_ONLY);
     }
 

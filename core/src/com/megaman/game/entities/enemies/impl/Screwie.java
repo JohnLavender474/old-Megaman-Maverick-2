@@ -44,9 +44,9 @@ public class Screwie extends Enemy {
     private static final Logger logger = new Logger(Screwie.class, MegamanGame.DEBUG && true);
 
     private static final float SHOOT_DUR = 2f;
-    private static final float DOWN_DUR = 1.5f;
+    private static final float DOWN_DUR = 1f;
     private static final float RISE_DROP_DUR = .3f;
-    private static final float BULLET_VEL = 5f;
+    private static final float BULLET_VEL = 10f;
 
     private final Sprite sprite;
     private final Timer downTimer;
