@@ -14,7 +14,7 @@ import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.backgrounds.Stars;
-import com.megaman.game.entities.bosses.BossEnum;
+import com.megaman.game.entities.bosses.Boss;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.utils.TextHandle;
@@ -46,7 +46,7 @@ public class BIntroScreen extends ScreenAdapter {
     private final Array<Stars> stars;
     private final TextHandle bText;
 
-    private BossEnum b;
+    private Boss b;
     private Queue<Runnable> bLettersAnimQ;
     private KeyValuePair<Sprite, Queue<KeyValuePair<Animation, Timer>>> currBAnim;
 
@@ -80,7 +80,7 @@ public class BIntroScreen extends ScreenAdapter {
                 ViewVals.VIEW_HEIGHT * WorldVals.PPM / 3f));
     }
 
-    public void set(BossEnum b) {
+    public void set(Boss b) {
         this.b = b;
         Sprite s = new Sprite();
         Vector2 size = b.getSpriteSize();

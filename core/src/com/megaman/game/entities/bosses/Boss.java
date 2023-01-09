@@ -11,6 +11,7 @@ import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import lombok.RequiredArgsConstructor;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -19,15 +20,8 @@ import java.util.Queue;
 import static lombok.AccessLevel.PRIVATE;
 
 @RequiredArgsConstructor(access = PRIVATE)
-public enum BossEnum {
+public enum Boss {
     TIMBER_WOMAN("Timber Woman", Level.TEST5, Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN) {
-        @Override
-        public String getBio() {
-            return "Originally named \"Timbre Woman\", she was to be the best singer " +
-                    "in the world. However, one of the programmers messed up and put " +
-                    "\"Timber\" instead of \"Timbre\" in her code. So as a result, she " +
-                    "became the world's strongest lumberjack instead.";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -56,13 +50,6 @@ public enum BossEnum {
         }
     },
     DISTRIBUTOR_MAN("Distributor Man", Level.TEST5, Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN) {
-        @Override
-        public String getBio() {
-            return "Distributor Man is adept at energized distribution solutions, " +
-                    "or so says his LinkedIn bio anyways. He lives in the current, " +
-                    "dwelling not on the past or the future, calling this " +
-                    "philosophy \"living in constant happy shock!\".";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -94,14 +81,6 @@ public enum BossEnum {
         }
     },
     ROASTER_MAN("Roaster Man", Level.TEST5, Position.TOP_RIGHT, TextureAsset.ROASTER_MAN) {
-        @Override
-        public String getBio() {
-            return "Roaster Man is a world-renowned chicken chef. He believes strongly " +
-                    "that happy chickens make for the best cuisines. He dedicates his " +
-                    "time to engaging chickens, making them happy so that when they die, " +
-                    "they die in bliss and warmth. \"Their warm feelings of happiness,\" " +
-                    "he says, \"makes for the best roast!\"";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -135,12 +114,6 @@ public enum BossEnum {
         }
     },
     MISTER_MAN("Mister Man", Level.TEST5, Position.CENTER_LEFT, TextureAsset.MISTER_MAN) {
-        @Override
-        public String getBio() {
-            return "Mister Man waters delicate plants for a living and believes " +
-                    "strongly in having purpose in life. His favorite motto " +
-                    "for motivation is \"Don't say it. Spray it.\"";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -171,12 +144,6 @@ public enum BossEnum {
         }
     },
     BLUNT_MAN("Blunt Man", Level.TEST5, Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
-        @Override
-        public String getBio() {
-            return "A cannabis endorser, Blunt Man is not afraid of being blunt about " +
-                    "his opinions. He is also a savvy business man, having many joint ventures. " +
-                    "He loves traveling on profound trips around the galaxy.";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -210,12 +177,6 @@ public enum BossEnum {
 
     // TODO: change to precious man texture asset
     PRECIOUS_MAN("Precious Man", Level.TEST5, Position.BOTTOM_LEFT, TextureAsset.PRECIOUS_MAN) {
-        @Override
-        public String getBio() {
-            return "Precious Man is a mineral connoisseur. He owns the world's largest " +
-                    "quartz collection and loves to attend rock and mineral festivals. " +
-                    "He has a strong belief that everyone is precious.";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -246,32 +207,22 @@ public enum BossEnum {
             }};
         }
     },
-    FREEZER_MAN("Freezer Man", Level.FREEZER_MAN, Position.BOTTOM_CENTER, TextureAsset.FREEZER_MAN) {
-        @Override
-        public String getBio() {
-            return "Freezer man is good at freezing things. So much that he is " +
-                    "commissioned by the scientific community to refreeze the melting " +
-                    "ice caps in the arctic regions. He enjoys hot tea and believes leftover " +
-                    "spaghetti is superior to when it's fresh.";
-        }
+    RODENT_MAN("Rodent Man", Level.RODENT_MAN, Position.BOTTOM_CENTER, TextureAsset.RODENT_MAN) {
 
         @Override
         public Vector2 getSpriteSize() {
-            return new Vector2(3f, 2.5f);
+            return new Vector2(2.85f, 2.5f);
         }
 
         @Override
         public Map<String, Animation> getAnims(TextureAtlas textureAtlas) {
             return new HashMap<>() {{
-                put("GiveTheHand", new Animation(textureAtlas.findRegion("GiveTheHand")));
-                put("Jump", new Animation(textureAtlas.findRegion("Jump")));
-                put("JumpOpenFreezer", new Animation(textureAtlas.findRegion("JumpOpenFreezer")));
-                put("Opening", new Animation(textureAtlas.findRegion("Opening"), 3, .15f, false));
-                put("StandLookDown", new Animation(textureAtlas.findRegion("StandLookDown"),
-                        new float[]{1.5f, .15f}));
-                put("StandLookUp", new Animation(textureAtlas.findRegion("StandLookUp"),
-                        new float[]{1.5f, .15f}));
-                put("StandOpenFridge", new Animation(textureAtlas.findRegion("StandOpenFridge")));
+                put("Jump", new Animation(textureAtlas.findRegion("Jump"), 4, .15f));
+                put("Run", new Animation(textureAtlas.findRegion("Run"), 4, .15f));
+                put("Shoot", new Animation(textureAtlas.findRegion("Shoot"), 3, .15f, false));
+                put("Slash", new Animation(textureAtlas.findRegion("Slash"), 2, .15f, false));
+                put("Stand", new Animation(textureAtlas.findRegion("Stand"), 6, .15f));
+                put("WallSlide", new Animation(textureAtlas.findRegion("WallSlide"), 2, .15f));
             }};
         }
 
@@ -280,22 +231,13 @@ public enum BossEnum {
             Map<String, Animation> anims = getAnims(textureAtlas);
             return new LinkedList<>() {{
                 add(KeyValuePair.of(anims.get("Jump"), new Timer(MenuConstVals.BOSS_DROP_DOWN)));
-                add(KeyValuePair.of(anims.get("StandLookUp"), new Timer(.75f)));
-                add(KeyValuePair.of(anims.get("StandLookDown"), new Timer(.75f)));
-                add(KeyValuePair.of(anims.get("GiveTheHand"), new Timer(.25f)));
-                add(KeyValuePair.of(anims.get("Opening"), new Timer(.5f)));
-                add(KeyValuePair.of(anims.get("StandOpenFridge"), new Timer(5f)));
+                add(KeyValuePair.of(anims.get("Stand"), new Timer(2f)));
+                add(KeyValuePair.of(anims.get("Run"), new Timer(1.2f)));
+                add(KeyValuePair.of(anims.get("Slash"), new Timer(.45f)));
             }};
         }
     },
     MICROWAVE_MAN("Microwave Man", Level.TEST5, Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN) {
-        @Override
-        public String getBio() {
-            return "Microwave Man is a microwave. It's a fate that has lead him to question " +
-                    "his life. Although at first he was severely depressed about being a " +
-                    "microwave, he soon accepted it as a fact of life and now tours " +
-                    "giving motivational speeches.";
-        }
 
         @Override
         public Vector2 getSpriteSize() {
@@ -334,16 +276,14 @@ public enum BossEnum {
     public final Position position;
     public final TextureAsset ass;
 
-    public abstract String getBio();
-
     public abstract Vector2 getSpriteSize();
 
     public abstract Map<String, Animation> getAnims(TextureAtlas textureAtlas);
 
     public abstract Queue<KeyValuePair<Animation, Timer>> getIntroAnimsQ(TextureAtlas textureAtlas);
 
-    public static BossEnum findByName(String name) {
-        for (BossEnum boss : values()) {
+    public static Boss findByName(String name) {
+        for (Boss boss : values()) {
             if (name.equals(boss.name)) {
                 return boss;
             }
@@ -351,12 +291,12 @@ public enum BossEnum {
         return null;
     }
 
-    public static BossEnum findByPos(int x, int y) {
+    public static Boss findByPos(int x, int y) {
         return findByPos(Position.getByGridIndex(x, y));
     }
 
-    public static BossEnum findByPos(Position position) {
-        for (BossEnum boss : values()) {
+    public static Boss findByPos(Position position) {
+        for (Boss boss : values()) {
             if (boss.position.equals(position)) {
                 return boss;
             }

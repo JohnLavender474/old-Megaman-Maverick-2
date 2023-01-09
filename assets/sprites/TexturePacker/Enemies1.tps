@@ -315,6 +315,8 @@
             <key type="filename">../Frames/Enemies1/IceSeal/SmallSnowballFormed.png</key>
             <key type="filename">../Frames/Enemies1/IceSeal/SnowballHalfFormed.png</key>
             <key type="filename">../Frames/Enemies1/IceSeal/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/Ratton/Jump.png</key>
+            <key type="filename">../Frames/Enemies1/Ratton/Stand.png</key>
             <key type="filename">../Frames/Enemies1/WispyWasp/Fly.png</key>
             <key type="filename">../Frames/Enemies1/WispyWasp/FlyWithNest.png</key>
             <struct type="IndividualSpriteSettings">

@@ -39,12 +39,12 @@ import java.util.function.Supplier;
 public class Penguin extends Enemy implements Faceable {
 
     private static final float STAND_DUR = 1f;
-    private static final float SLIDING_DUR = .35f;
+    private static final float SLIDE_DUR = .35f;
     private static final float G_GRAV = -.0015f;
     private static final float GRAV = -.375f;
-    private static final float JUMP_IMPULSE_Y = 28f;
-    private static final float JUMP_IMPULSE_X = 8f;
-    private static final float SLIDE_VEL_X = 11f;
+    private static final float JUMP_X = 8f;
+    private static final float JUMP_Y = 28f;
+    private static final float SLIDE_X = 11f;
 
     private final Sprite sprite;
     private final Timer standTimer;
@@ -58,7 +58,7 @@ public class Penguin extends Enemy implements Faceable {
         super(game, BodyType.DYNAMIC);
         sprite = new Sprite();
         standTimer = new Timer(STAND_DUR);
-        slideTimer = new Timer(SLIDING_DUR);
+        slideTimer = new Timer(SLIDE_DUR);
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }
@@ -87,11 +87,11 @@ public class Penguin extends Enemy implements Faceable {
         standTimer.setToEnd();
         slideTimer.reset();
         Vector2 impulse = new Vector2();
-        impulse.x = JUMP_IMPULSE_X * WorldVals.PPM;
+        impulse.x = JUMP_X * WorldVals.PPM;
         if (is(Facing.LEFT)) {
             impulse.x *= -1f;
         }
-        impulse.y = JUMP_IMPULSE_Y * WorldVals.PPM;
+        impulse.y = JUMP_Y * WorldVals.PPM;
         body.velocity.add(impulse);
     }
 
@@ -163,7 +163,7 @@ public class Penguin extends Enemy implements Faceable {
             ((Rectangle) damagerFixture.shape).set(body.bounds);
             body.gravity.y = (is(BodySense.FEET_ON_GROUND) ? G_GRAV : GRAV) * WorldVals.PPM;
             if (isSliding()) {
-                body.velocity.x = SLIDE_VEL_X * WorldVals.PPM;
+                body.velocity.x = SLIDE_X * WorldVals.PPM;
                 if (is(Facing.LEFT)) {
                     body.velocity.x *= -1f;
                 }

@@ -70,7 +70,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float WATER_JUMP_VEL = 28f;
     public static final float WATER_WALL_JUMP_VEL = 38f;
     public static final float WALL_JUMP_VEL = 42f;
-    public static final float WALL_JUMP_HORIZ = 12.5f;
+    public static final float WALL_JUMP_HORIZ = 10f;
     public static final float WALL_JUMP_IMPETUS_TIME = .1f;
 
     public static final float GROUNDED_GRAVITY = -.0015f;

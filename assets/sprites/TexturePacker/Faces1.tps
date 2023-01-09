@@ -173,16 +173,16 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../Frames/Faces/Blunt Man.png</key>
-            <key type="filename">../Frames/Faces/Distributor Man.png</key>
-            <key type="filename">../Frames/Faces/Freezer Man.png</key>
-            <key type="filename">../Frames/Faces/Microwave Man.png</key>
-            <key type="filename">../Frames/Faces/Mister Man.png</key>
-            <key type="filename">../Frames/Faces/Nuke Man.png</key>
-            <key type="filename">../Frames/Faces/Precious Man.png</key>
-            <key type="filename">../Frames/Faces/Roaster Man.png</key>
-            <key type="filename">../Frames/Faces/Timber Woman.png</key>
-            <key type="filename">../Frames/Faces/Wintry Man.png</key>
+            <key type="filename">../Frames/Faces1/Blunt Man.png</key>
+            <key type="filename">../Frames/Faces1/Distributor Man.png</key>
+            <key type="filename">../Frames/Faces1/Freezer Man.png</key>
+            <key type="filename">../Frames/Faces1/Microwave Man.png</key>
+            <key type="filename">../Frames/Faces1/Mister Man.png</key>
+            <key type="filename">../Frames/Faces1/Nuke Man.png</key>
+            <key type="filename">../Frames/Faces1/Precious Man.png</key>
+            <key type="filename">../Frames/Faces1/Roaster Man.png</key>
+            <key type="filename">../Frames/Faces1/Timber Woman.png</key>
+            <key type="filename">../Frames/Faces1/Wintry Man.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -197,15 +197,24 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../Frames/Faces/Megaman/BOTTOM_CENTER.png</key>
-            <key type="filename">../Frames/Faces/Megaman/BOTTOM_LEFT.png</key>
-            <key type="filename">../Frames/Faces/Megaman/BOTTOM_RIGHT.png</key>
-            <key type="filename">../Frames/Faces/Megaman/CENTER.png</key>
-            <key type="filename">../Frames/Faces/Megaman/CENTER_LEFT.png</key>
-            <key type="filename">../Frames/Faces/Megaman/CENTER_RIGHT.png</key>
-            <key type="filename">../Frames/Faces/Megaman/TOP_CENTER.png</key>
-            <key type="filename">../Frames/Faces/Megaman/TOP_LEFT.png</key>
-            <key type="filename">../Frames/Faces/Megaman/TOP_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/BOTTOM_CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/BOTTOM_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/BOTTOM_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/CENTER_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/CENTER_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/TOP_CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/TOP_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Maverick/TOP_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/BOTTOM_CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/BOTTOM_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/BOTTOM_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/CENTER_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/CENTER_RIGHT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/TOP_CENTER.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/TOP_LEFT.png</key>
+            <key type="filename">../Frames/Faces1/Megaman/TOP_RIGHT.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -217,6 +226,21 @@
                 <rect>9,9,18,18</rect>
                 <key>scale9Paddings</key>
                 <rect>9,9,18,18</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Faces1/Rodent Man.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>12,12,24,24</rect>
+                <key>scale9Paddings</key>
+                <rect>12,12,24,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -227,7 +251,7 @@
             <struct type="SpriteSheet">
                 <key>files</key>
                 <array>
-                    <filename>../Frames/Faces</filename>
+                    <filename>../Frames/Faces1</filename>
                 </array>
             </struct>
         </map>

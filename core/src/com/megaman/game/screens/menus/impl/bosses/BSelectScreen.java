@@ -14,7 +14,7 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.bosses.BossEnum;
+import com.megaman.game.entities.bosses.Boss;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.menus.MenuButton;
 import com.megaman.game.screens.menus.MenuScreen;
@@ -56,13 +56,13 @@ public class BSelectScreen extends MenuScreen {
 
     private boolean outro;
     private boolean blink;
-    private BossEnum bSelect;
+    private Boss bSelect;
 
     public BSelectScreen(MegamanGame game) {
         super(game, MEGA_MAN);
         if (bNameSet == null) {
             bNameSet = new ObjectSet<>();
-            for (BossEnum b : BossEnum.values()) {
+            for (Boss b : Boss.values()) {
                 bNameSet.add(b.name);
             }
         }
@@ -91,15 +91,15 @@ public class BSelectScreen extends MenuScreen {
 
         }
         Supplier<TextureRegion> megamanFaceSupplier = () -> {
-            BossEnum bossEnum = BossEnum.findByName(getCurrBtnKey());
-            if (bossEnum == null) {
+            Boss boss = Boss.findByName(getCurrBtnKey());
+            if (boss == null) {
                 return megamanFaces.get(Position.CENTER);
             }
-            return megamanFaces.get(bossEnum.position);
+            return megamanFaces.get(boss.position);
         };
         BPane megamanPane = new BPane(game, megamanFaceSupplier, MEGA_MAN, Position.CENTER);
         bp.add(megamanPane);
-        for (BossEnum boss : BossEnum.values()) {
+        for (Boss boss : Boss.values()) {
             bp.add(new BPane(game, boss));
         }
         t.add(new TextHandle(new Vector2(5.35f * WorldVals.PPM, 13.85f * WorldVals.PPM), "PRESS START"));
@@ -230,10 +230,10 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP -> setMenuButton(BossEnum.findByPos(1, 2).name);
-                    case DOWN -> setMenuButton(BossEnum.findByPos(1, 0).name);
-                    case LEFT -> setMenuButton(BossEnum.findByPos(0, 1).name);
-                    case RIGHT -> setMenuButton(BossEnum.findByPos(2, 1).name);
+                    case UP -> setMenuButton(Boss.findByPos(1, 2).name);
+                    case DOWN -> setMenuButton(Boss.findByPos(1, 0).name);
+                    case LEFT -> setMenuButton(Boss.findByPos(0, 1).name);
+                    case RIGHT -> setMenuButton(Boss.findByPos(2, 1).name);
                 }
             }
         });
@@ -247,26 +247,26 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP, LEFT, RIGHT -> setMenuButton(BossEnum.findByPos(2, 0).name);
-                    case DOWN -> setMenuButton(BossEnum.findByPos(2, 2).name);
+                    case UP, LEFT, RIGHT -> setMenuButton(Boss.findByPos(2, 0).name);
+                    case DOWN -> setMenuButton(Boss.findByPos(2, 2).name);
                 }
             }
         });
-        for (BossEnum bossEnum : BossEnum.values()) {
-            menuButtons.put(bossEnum.name, new MenuButton() {
+        for (Boss boss : Boss.values()) {
+            menuButtons.put(boss.name, new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
                     audioMan.play(SoundAsset.BEAM_OUT_SOUND);
                     audioMan.stopMusic();
-                    bSelect = bossEnum;
+                    bSelect = boss;
                     outro = true;
                     return true;
                 }
 
                 @Override
                 public void onNavigate(Direction direction, float delta) {
-                    int x = bossEnum.position.getX();
-                    int y = bossEnum.position.getY();
+                    int x = boss.position.getX();
+                    int y = boss.position.getY();
                     switch (direction) {
                         case UP -> y += 1;
                         case DOWN -> y -= 1;
@@ -289,7 +289,7 @@ public class BSelectScreen extends MenuScreen {
                     } else if (position.equals(Position.CENTER)) {
                         setMenuButton(MEGA_MAN);
                     } else {
-                        setMenuButton(BossEnum.findByPos(x, y).name);
+                        setMenuButton(Boss.findByPos(x, y).name);
                     }
                 }
             });

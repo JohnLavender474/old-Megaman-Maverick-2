@@ -31,6 +31,7 @@ import com.megaman.game.movement.rotatingline.RotatingLineSystem;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.ScreenEnum;
+import com.megaman.game.screens.levels.Level;
 import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.menus.impl.bosses.BSelectScreen;
 import com.megaman.game.screens.menus.impl.main.MainScreen;
@@ -46,7 +47,6 @@ import com.megaman.game.world.WorldContactListenerImpl;
 import com.megaman.game.world.WorldSystem;
 import com.megaman.game.world.WorldVals;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -55,7 +55,7 @@ import java.util.function.Consumer;
 @Getter
 public class MegamanGame implements ApplicationListener {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private static final Logger logger = new Logger(MegamanGame.class, DEBUG);
 
@@ -131,11 +131,11 @@ public class MegamanGame implements ApplicationListener {
         screens.put(ScreenEnum.BOSS_SELECT, new BSelectScreen(this));
         screens.put(ScreenEnum.BOSS_INTRO, new BIntroScreen(this));
 
-        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.FREEZER_MAN));
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.RODENT_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
-        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
-        setScreen(getScreen(ScreenEnum.MAIN));
+        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
+        // setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
         fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),
                 () -> "FPS: " + Gdx.graphics.getFramesPerSecond());
