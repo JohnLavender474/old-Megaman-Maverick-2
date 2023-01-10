@@ -116,7 +116,8 @@ public class ChargedShot extends Projectile implements Faceable {
         owner = shieldFixture.entity;
         swapFacing();
         traj.x *= -1f;
-        String reflectDir = shieldFixture.getUserData(ConstKeys.REFLECT, String.class);
+        String reflectDir = shieldFixture.hasUserData(ConstKeys.REFLECT) ?
+                shieldFixture.getUserData(ConstKeys.REFLECT, String.class) : ConstKeys.STRAIGHT;
         if (reflectDir.equals(ConstKeys.UP)) {
             traj.y = 5f * WorldVals.PPM;
         } else if (reflectDir.equals(ConstKeys.DOWN)) {

@@ -16,7 +16,7 @@ public class ConstKeys {
     public static final String RUN = "Run";
     public static final String VAL = "Val";
     public static final String NAME = "Name";
-    public static final String STAT = "Stat";
+    public static final String STATE = "State";
     public static final String TIMED = "Timed";
     public static final String REFLECT = "Reflect";
     public static final String FUNCTION = "Function";

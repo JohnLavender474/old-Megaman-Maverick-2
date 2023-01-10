@@ -31,16 +31,23 @@ HalfChargedShot
   orig: 96, 32
   offset: 0, 0
   index: -1
-SmokePuff
+PreciousExplosion
   rotate: false
   xy: 192, 0
+  size: 96, 32
+  orig: 96, 32
+  offset: 0, 0
+  index: -1
+SmokePuff
+  rotate: false
+  xy: 288, 0
   size: 224, 32
   orig: 224, 32
   offset: 0, 0
   index: -1
 SnowballExplode
   rotate: false
-  xy: 416, 0
+  xy: 512, 0
   size: 96, 32
   orig: 96, 32
   offset: 0, 0

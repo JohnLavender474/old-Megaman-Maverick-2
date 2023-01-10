@@ -175,6 +175,7 @@
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../Frames/Explosions1/Disintegration.png</key>
             <key type="filename">../Frames/Explosions1/HalfChargedShot.png</key>
+            <key type="filename">../Frames/Explosions1/PreciousExplosion.png</key>
             <key type="filename">../Frames/Explosions1/SnowballExplode.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>

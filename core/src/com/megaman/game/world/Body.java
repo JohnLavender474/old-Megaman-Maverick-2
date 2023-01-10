@@ -151,6 +151,14 @@ public class Body implements Updatable, Resettable {
         return overlaps(body.bounds);
     }
 
+    public void setSize(float sizeXY) {
+        setSize(sizeXY, sizeXY);
+    }
+
+    public void setSize(float width, float height) {
+        bounds.setSize(width, height);
+    }
+
     public void setX(float x) {
         bounds.x = x;
     }
@@ -193,6 +201,15 @@ public class Body implements Updatable, Resettable {
 
     public Vector2 getPos() {
         return new Vector2(getX(), getY());
+    }
+
+    public void setCenter(Vector2 center) {
+        setCenter(center.x, center.y);
+    }
+
+    public void setCenter(float x, float y) {
+        setCenterX(x);
+        setCenterY(y);
     }
 
     public void setCenterX(float x) {

@@ -53,7 +53,6 @@ public class WorldContactListenerImpl implements WorldContactListener {
 
         // death and damageable
         else if (contact.acceptMask(FixtureType.DEATH, FixtureType.DAMAGEABLE)) {
-            logger.log("Death and damageable begin contact");
             contact.mask2ndEntity().getComponent(HealthComponent.class).setDead();
         }
 
@@ -215,7 +214,6 @@ public class WorldContactListenerImpl implements WorldContactListener {
         // body and upside-down
         else if (contact.acceptMask(FixtureType.BODY, FixtureType.UPSIDE_DOWN) &&
                 contact.mask1stEntity() instanceof UpsideDownable u) {
-            logger.log("Upside downable set to true");
             u.setUpsideDown(true);
         }
 
@@ -428,7 +426,6 @@ public class WorldContactListenerImpl implements WorldContactListener {
         else if (contact.acceptMask(FixtureType.FEET, FixtureType.BLOCK)) {
             contact.mask1stBody().set(BodySense.FEET_ON_GROUND, false);
             if (contact.mask1stEntity() instanceof Megaman m) {
-                logger.log("Megaman feet off ground");
                 m.aButtonTask = m.is(BodySense.BODY_IN_WATER) ? AButtonTask.SWIM : AButtonTask.AIR_DASH;
             }
         }
@@ -474,7 +471,6 @@ public class WorldContactListenerImpl implements WorldContactListener {
         // body and upside-down
         else if (contact.acceptMask(FixtureType.BODY, FixtureType.UPSIDE_DOWN) &&
                 contact.mask1stEntity() instanceof UpsideDownable u) {
-            logger.log("Upside downable set to false");
             u.setUpsideDown(false);
         }
     }

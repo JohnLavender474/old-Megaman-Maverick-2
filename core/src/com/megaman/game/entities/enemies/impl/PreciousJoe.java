@@ -7,19 +7,19 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.DamageNegotiation;
-import com.megaman.game.entities.Damager;
-import com.megaman.game.entities.Faceable;
-import com.megaman.game.entities.Facing;
+import com.megaman.game.entities.*;
 import com.megaman.game.entities.enemies.Enemy;
 import com.megaman.game.entities.explosions.impl.ChargedShotExplosion;
+import com.megaman.game.entities.projectiles.ProjectileFactory;
 import com.megaman.game.entities.projectiles.impl.Bullet;
 import com.megaman.game.entities.projectiles.impl.ChargedShot;
 import com.megaman.game.entities.projectiles.impl.Fireball;
+import com.megaman.game.entities.projectiles.impl.PreciousShot;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -38,17 +38,9 @@ import java.util.function.Supplier;
 
 public class PreciousJoe extends Enemy implements Faceable {
 
-    /*
-    TODO:
-    - Stand
-    - Form PreciousShot, using it as shield
-    - Shoot PreciousShot
-     */
-
-    private static final float STAND_DUR = 1f;
-    private static final float FORM_DUR = 1f;
-    private static final float SHOOT_DUR = .15f;
-    private static final float PRECIOUS_X = 15f;
+    private static final float STAND_DUR = .75f;
+    private static final float FORM_DUR = .85f;
+    private static final float SHOOT_DUR = 1f;
 
     private final Sprite sprite;
     private final Timer standTimer;
@@ -75,10 +67,6 @@ public class PreciousJoe extends Enemy implements Faceable {
 
     public boolean isFormingThePrecious() {
         return !formTimer.isFinished();
-    }
-
-    public boolean isShooting() {
-        return !shootTimer.isFinished();
     }
 
     @Override
@@ -128,22 +116,27 @@ public class PreciousJoe extends Enemy implements Faceable {
     protected void defineUpdateComponent(UpdatableComponent c) {
         super.defineUpdateComponent(c);
         c.add(delta -> {
-            setFacing(game.getMegaman().body.isRightOf(body) ? Facing.RIGHT : Facing.LEFT);
             if (isStanding()) {
+                setFacing(game.getMegaman().body.isRightOf(body) ? Facing.RIGHT : Facing.LEFT);
                 standTimer.update(delta);
                 if (standTimer.isFinished()) {
-
-                    // TODO: create crystal, set crystal to "forming"
-
                     formTimer.reset();
                 }
             } else if (isFormingThePrecious()) {
+                shootTimer.reset();
                 formTimer.update(delta);
                 if (formTimer.isFinished()) {
-
-                    // TODO: shoot crystal
-
-                    shootTimer.reset();
+                    PreciousShot s = (PreciousShot) game.getEntityFactories().fetch(EntityType.PROJECTILE,
+                            ProjectileFactory.PRECIOUS_SHOT);
+                    Vector2 spawn = body.getCenter();
+                    spawn.x += (is(Facing.LEFT) ? -.75f : .75f) * WorldVals.PPM;
+                    spawn.y += .05f * WorldVals.PPM;
+                    game.getGameEngine().spawn(s, spawn, new ObjectMap<>() {{
+                        put(ConstKeys.OWNER, PreciousJoe.this);
+                        put(ConstKeys.DIR, ConstKeys.STRAIGHT);
+                        put(ConstKeys.LEFT, is(Facing.LEFT));
+                        put(ConstKeys.BOOL, false);
+                    }});
                 }
             } else {
                 shootTimer.update(delta);
@@ -155,7 +148,7 @@ public class PreciousJoe extends Enemy implements Faceable {
     }
 
     private SpriteComponent spriteComponent() {
-        sprite.setSize(1.35f * WorldVals.PPM, 1.35f * WorldVals.PPM);
+        sprite.setSize(2.025f * WorldVals.PPM, 2.025f * WorldVals.PPM);
         SpriteHandle h = new SpriteHandle(sprite, 4);
         h.updatable = delta -> {
             h.setPosition(body.bounds, Position.BOTTOM_CENTER);
@@ -177,9 +170,9 @@ public class PreciousJoe extends Enemy implements Faceable {
         };
         TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.ENEMIES_1);
         return new AnimationComponent(sprite, keySupplier, new ObjectMap<>() {{
-            put("Stand", new Animation(atlas.findRegion("Stand")));
-            put("Charge", new Animation(atlas.findRegion("Charge"), 2, .15f));
-            put("Shoot", new Animation(atlas.findRegion("Shoot")));
+            put("Stand", new Animation(atlas.findRegion("PreciousJoe/Stand")));
+            put("Charge", new Animation(atlas.findRegion("PreciousJoe/Charge"), 2, .15f));
+            put("Shoot", new Animation(atlas.findRegion("PreciousJoe/Shoot")));
         }});
     }
 

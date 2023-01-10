@@ -45,7 +45,8 @@ public class MegamanAnimator extends Animator {
         // Flame Toss
         TextureAtlas flameTossAtlas = assMan.getTextureAtlas(TextureAsset.MEGAMAN_FIRE);
         for (String key : keySet) {
-            if (UtilMethods.equalsAny(key, "SwimAttack", "SwimCharging", "SwimHalfCharging", "SwimShoot")) {
+            if (UtilMethods.equalsAny(key, "GroundSlideShoot", "SwimAttack", "SwimCharging",
+                    "SwimHalfCharging", "SwimShoot")) {
                 continue;
             }
             anims.put(FLAME_TOSS + key, getAnimation(key, flameTossAtlas));
@@ -89,6 +90,7 @@ public class MegamanAnimator extends Animator {
             add("WallSlideHalfCharging");
             add("WallSlideShoot");
             add("GroundSlide");
+            add("GroundSlideShoot");
             add("GroundSlideCharging");
             add("GroundSlideHalfCharging");
             add("AirDash");
@@ -148,6 +150,7 @@ public class MegamanAnimator extends Animator {
                     t.findRegion("WallSlideHalfCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "WallSlideShoot" -> new Animation(t.findRegion("WallSlideShoot"));
             case "GroundSlide" -> new Animation(t.findRegion("GroundSlide"));
+            case "GroundSlideShoot" -> new Animation(t.findRegion("GroundSlideShoot"));
             case "GroundSlideCharging" -> new Animation(
                     t.findRegion("GroundSlideCharging"), 2, Megaman.CHARGING_ANIM_TIME);
             case "GroundSlideHalfCharging" -> new Animation(
@@ -213,7 +216,9 @@ public class MegamanAnimator extends Animator {
                     key = "AirDash";
                 }
             } else if (megaman.is(BehaviorType.GROUND_SLIDING)) {
-                if (megaman.isChargingFully()) {
+                if (megaman.isShooting()) {
+                    key = "GroundSlideShoot";
+                } else if (megaman.isChargingFully()) {
                     key = "GroundSlideCharging";
                 } else if (megaman.isCharging()) {
                     key = "GroundSlideHalfCharging";

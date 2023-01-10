@@ -184,7 +184,6 @@
             <key type="filename">../Frames/Megaman/InitRunHalfCharging.png</key>
             <key type="filename">../Frames/Megaman/Jump.png</key>
             <key type="filename">../Frames/Megaman/JumpShoot.png</key>
-            <key type="filename">../Frames/Megaman/LayDownDamaged.png</key>
             <key type="filename">../Frames/Megaman/SlipSlide.png</key>
             <key type="filename">../Frames/Megaman/SlipSlideShoot.png</key>
             <key type="filename">../Frames/Megaman/StandShoot.png</key>
@@ -246,6 +245,7 @@
                 <false/>
             </struct>
             <key type="filename">../Frames/Megaman/Frozen.png</key>
+            <key type="filename">../Frames/Megaman/GroundSlideShoot.png</key>
             <key type="filename">../Frames/Megaman/StandThrow.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>

@@ -1,6 +1,7 @@
 package com.megaman.game.entities.explosions.impl;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
@@ -25,17 +26,20 @@ import static com.megaman.game.assets.TextureAsset.EXPLOSIONS_1;
 @Setter
 public class Disintegration extends Entity {
 
-    public static final float CULL_DUR = .1f;
+    private static final float CULL_DUR = .1f;
 
-    private final Body body;
+    private static TextureRegion disReg;
+
     private final Sprite sprite;
     private final Timer cullTimer;
 
     public Disintegration(MegamanGame game) {
         super(game, EntityType.EXPLOSION);
+        if (disReg == null) {
+            disReg = game.getAssMan().getTextureRegion(EXPLOSIONS_1, "Disintegration");
+        }
         sprite = new Sprite();
         cullTimer = new Timer(CULL_DUR);
-        body = new Body(BodyType.ABSTRACT);
         putComponent(spriteComponent());
         putComponent(updatableComponent());
         putComponent(animationComponent());
@@ -53,7 +57,7 @@ public class Disintegration extends Entity {
     }
 
     private AnimationComponent animationComponent() {
-        Animation anim = new Animation(game.getAssMan().getTextureRegion(EXPLOSIONS_1, "Disintegration"), 3, 0.005f);
+        Animation anim = new Animation(disReg, 3, 0.005f);
         Animator animator = new Animator(sprite, anim);
         return new AnimationComponent(animator);
     }

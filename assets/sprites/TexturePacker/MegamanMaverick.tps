@@ -179,6 +179,7 @@
             <key type="filename">../Frames/MegamanMaverick/FinishClimb.png</key>
             <key type="filename">../Frames/MegamanMaverick/Frozen.png</key>
             <key type="filename">../Frames/MegamanMaverick/GroundSlide.png</key>
+            <key type="filename">../Frames/MegamanMaverick/GroundSlideShoot.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRun.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRunCharging.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRunHalfCharging.png</key>

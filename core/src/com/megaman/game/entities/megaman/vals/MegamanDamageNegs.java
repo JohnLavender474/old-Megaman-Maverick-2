@@ -3,6 +3,7 @@ package com.megaman.game.entities.megaman.vals;
 import com.megaman.game.entities.DamageNegotiation;
 import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.enemies.impl.*;
+import com.megaman.game.entities.explosions.impl.PreciousExplosion;
 import com.megaman.game.entities.hazards.impl.LaserBeamer;
 import com.megaman.game.entities.projectiles.impl.*;
 
@@ -37,6 +38,8 @@ public class MegamanDamageNegs {
         put(Snowball.class, new DamageNegotiation(1));
         put(ChargedShot.class, new DamageNegotiation(4));
         put(Fireball.class, new DamageNegotiation(2));
+        put(PreciousShot.class, new DamageNegotiation(2));
+        put(PreciousExplosion.class, new DamageNegotiation(1));
         put(Dragonfly.class, new DamageNegotiation(3));
         put(Matasaburo.class, new DamageNegotiation(2));
         put(SniperJoe.class, new DamageNegotiation(3));

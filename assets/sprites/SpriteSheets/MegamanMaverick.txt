@@ -122,58 +122,65 @@ GroundSlideHalfCharging
   orig: 96, 48
   offset: 0, 0
   index: -1
-InitRun
+GroundSlideShoot
   rotate: false
   xy: 96, 288
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-InitRunCharging
+InitRun
   rotate: false
   xy: 144, 288
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-InitRunHalfCharging
+InitRunCharging
   rotate: false
   xy: 192, 288
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-Jump
+InitRunHalfCharging
   rotate: false
   xy: 0, 336
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
-JumpCharging
+Jump
   rotate: false
   xy: 48, 336
+  size: 48, 48
+  orig: 48, 48
+  offset: 0, 0
+  index: -1
+JumpCharging
+  rotate: false
+  xy: 96, 336
   size: 96, 48
   orig: 96, 48
   offset: 0, 0
   index: -1
 JumpHalfCharging
   rotate: false
-  xy: 144, 336
+  xy: 0, 384
   size: 96, 48
   orig: 96, 48
   offset: 0, 0
   index: -1
 JumpShoot
   rotate: false
-  xy: 0, 384
+  xy: 96, 384
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 OnFire
   rotate: false
-  xy: 48, 384
+  xy: 144, 384
   size: 96, 48
   orig: 96, 48
   offset: 0, 0
