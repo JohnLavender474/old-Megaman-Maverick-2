@@ -11,7 +11,6 @@ import com.megaman.game.utils.objs.KeyValuePair;
 import com.megaman.game.utils.objs.Timer;
 import lombok.RequiredArgsConstructor;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -22,7 +21,6 @@ import static lombok.AccessLevel.PRIVATE;
 @RequiredArgsConstructor(access = PRIVATE)
 public enum Boss {
     TIMBER_WOMAN("Timber Woman", Level.TEST5, Position.TOP_LEFT, TextureAsset.TIMBER_WOMAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(4.25f, 3.5f);
@@ -50,7 +48,6 @@ public enum Boss {
         }
     },
     DISTRIBUTOR_MAN("Distributor Man", Level.TEST5, Position.TOP_CENTER, TextureAsset.DISTRIBUTOR_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(1.85f, 1.5f);
@@ -81,7 +78,6 @@ public enum Boss {
         }
     },
     ROASTER_MAN("Roaster Man", Level.TEST5, Position.TOP_RIGHT, TextureAsset.ROASTER_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(3f, 2.5f);
@@ -114,7 +110,6 @@ public enum Boss {
         }
     },
     MISTER_MAN("Mister Man", Level.TEST5, Position.CENTER_LEFT, TextureAsset.MISTER_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(3.25f, 2.85f);
@@ -144,7 +139,6 @@ public enum Boss {
         }
     },
     BLUNT_MAN("Blunt Man", Level.TEST5, Position.CENTER_RIGHT, TextureAsset.BLUNT_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(1.65f, 1.5f);
@@ -177,7 +171,6 @@ public enum Boss {
 
     // TODO: change to precious man texture asset
     PRECIOUS_MAN("Precious Man", Level.TEST5, Position.BOTTOM_LEFT, TextureAsset.PRECIOUS_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(2.85f, 2.5f);
@@ -208,7 +201,6 @@ public enum Boss {
         }
     },
     RODENT_MAN("Rodent Man", Level.RODENT_MAN, Position.BOTTOM_CENTER, TextureAsset.RODENT_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(2.85f, 2.5f);
@@ -238,7 +230,6 @@ public enum Boss {
         }
     },
     MICROWAVE_MAN("Microwave Man", Level.TEST5, Position.BOTTOM_RIGHT, TextureAsset.MICROWAVE_MAN) {
-
         @Override
         public Vector2 getSpriteSize() {
             return new Vector2(2.85f, 2.5f);

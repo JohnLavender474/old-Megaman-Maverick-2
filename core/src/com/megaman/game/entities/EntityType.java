@@ -5,6 +5,7 @@ public enum EntityType {
     DECORATION,
     EXPLOSION,
     ENEMY,
+    BOSS,
     HAZARD,
     ITEM,
     TEST,

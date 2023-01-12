@@ -37,11 +37,9 @@ public class Block extends Entity {
         blockFixture = new Fixture(this, FixtureType.BLOCK, new Rectangle());
         body.add(blockFixture);
         putComponent(new BodyComponent(body));
-
         if (MegamanGame.DEBUG) {
             putComponent(shapeComponent());
         }
-
         if (cullOnBodyOOB) {
             putComponent(new CullOutOfBoundsComponent(() -> body.bounds));
         }

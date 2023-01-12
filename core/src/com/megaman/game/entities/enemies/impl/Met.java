@@ -63,6 +63,7 @@ public class Met extends Enemy implements Faceable {
     @Setter
     private Facing facing;
     private String type;
+    private boolean runningAllowed;
 
     public Met(MegamanGame game) {
         super(game, BodyType.DYNAMIC);
@@ -83,6 +84,7 @@ public class Met extends Enemy implements Faceable {
         Vector2 spawn = ShapeUtils.getBottomCenterPoint(bounds);
         ShapeUtils.setBottomCenterToPoint(body.bounds, spawn);
         type = data.containsKey(ConstKeys.TYPE) ? (String) data.get(ConstKeys.TYPE) : "";
+        runningAllowed = !data.containsKey(ConstKeys.RUN) || (boolean) data.get(ConstKeys.RUN);
     }
 
     @Override
@@ -117,7 +119,7 @@ public class Met extends Enemy implements Faceable {
 
         // shield fixture
         Fixture shieldFixture = new Fixture(this, FixtureType.SHIELD,
-                new Rectangle().setSize(WorldVals.PPM, .5f * WorldVals.PPM));
+                new Rectangle().setSize(.75f * WorldVals.PPM, .5f * WorldVals.PPM));
         shieldFixture.putUserData(ConstKeys.REFLECT, ConstKeys.UP);
         h.add(new ShapeHandle(shieldFixture.shape, () -> shieldFixture.active ? Color.BLUE : Color.GRAY));
         body.add(shieldFixture);
@@ -137,7 +139,7 @@ public class Met extends Enemy implements Faceable {
         body.preProcess = delta -> {
             body.gravity.y = is(BodySense.FEET_ON_GROUND) ? 0f : GRAVITY_Y * WorldVals.PPM;
             shieldFixture.active = behav == MetBehavior.SHIELDING;
-            damageableFixture.active = !shieldFixture.active;
+            damageableFixture.active = behav != MetBehavior.SHIELDING;
         };
 
         if (MegamanGame.DEBUG) {
@@ -170,7 +172,7 @@ public class Met extends Enemy implements Faceable {
                     }
                     popupTimer.update(delta);
                     if (popupTimer.isFinished()) {
-                        setBehav(MetBehavior.RUNNING);
+                        setBehav(runningAllowed ? MetBehavior.RUNNING : MetBehavior.SHIELDING);
                     }
                 }
                 case RUNNING -> {

@@ -135,22 +135,6 @@ public class WorldSystem extends System {
             priorContacts = currContacts;
             currContacts = new OrderedSet<>();
         }
-        /*
-        for (Contact c : currContacts) {
-            if (priorContacts.contains(c)) {
-                contactListener.continueContact(c, delta);
-            } else {
-                contactListener.beginContact(c, delta);
-            }
-        }
-        for (Contact c : priorContacts) {
-            if (!currContacts.contains(c)) {
-                contactListener.endContact(c, delta);
-            }
-        }
-        priorContacts = currContacts;
-        currContacts = new OrderedSet<>();
-         */
         updating = false;
     }
 
@@ -199,10 +183,10 @@ public class WorldSystem extends System {
 
     private void resolve(Body body) {
         for (Fixture f : body.fixtures) {
-            if (!masks.containsKey(f.fixtureType)) {
+            if (!f.active || !masks.containsKey(f.fixtureType)) {
                 continue;
             }
-            Array<Fixture> overlapping = worldGraph.getFixturesOverlapping(f, o -> filter(f, o));
+            Array<Fixture> overlapping = worldGraph.getFixturesOverlapping(f, o -> o.active && filter(f, o));
             for (Fixture o : overlapping) {
                 currContacts.add(new Contact(f, o));
             }
