@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
-import com.megaman.game.entities.megaman.vals.MegamanDamageNegs;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.enums.Direction;
 

@@ -8,20 +8,23 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.controllers.CtrlBtn;
-import com.megaman.game.entities.Damageable;
-import com.megaman.game.entities.Damager;
 import com.megaman.game.entities.Entity;
-import com.megaman.game.entities.UpsideDownable;
-import com.megaman.game.entities.decorations.impl.Splash;
-import com.megaman.game.entities.enemies.Enemy;
-import com.megaman.game.entities.items.Item;
-import com.megaman.game.entities.megaman.Megaman;
-import com.megaman.game.entities.megaman.upgrades.MegaAbility;
-import com.megaman.game.entities.megaman.vals.AButtonTask;
-import com.megaman.game.entities.projectiles.Projectile;
-import com.megaman.game.entities.sensors.impl.Gate;
-import com.megaman.game.entities.special.SpecialFactory;
-import com.megaman.game.entities.special.impl.SpringBouncer;
+import com.megaman.game.entities.bounce.BounceAction;
+import com.megaman.game.entities.bounce.BounceDef;
+import com.megaman.game.entities.damage.Damageable;
+import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.impl.decorations.impl.Splash;
+import com.megaman.game.entities.impl.enemies.Enemy;
+import com.megaman.game.entities.impl.items.Item;
+import com.megaman.game.entities.impl.megaman.Megaman;
+import com.megaman.game.entities.impl.megaman.upgrades.MegaAbility;
+import com.megaman.game.entities.impl.megaman.vals.AButtonTask;
+import com.megaman.game.entities.impl.projectiles.Projectile;
+import com.megaman.game.entities.impl.sensors.impl.Gate;
+import com.megaman.game.entities.impl.special.SpecialFactory;
+import com.megaman.game.entities.impl.special.impl.SpringBouncer;
+import com.megaman.game.entities.bounce.Bouncer;
+import com.megaman.game.entities.special.UpsideDownable;
 import com.megaman.game.health.HealthComponent;
 import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
@@ -30,10 +33,10 @@ import com.megaman.game.utils.interfaces.UpdateFunc;
 import com.megaman.game.utils.objs.Wrapper;
 import lombok.RequiredArgsConstructor;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @RequiredArgsConstructor
 public class WorldContactListenerImpl implements WorldContactListener {
@@ -133,21 +136,24 @@ public class WorldContactListenerImpl implements WorldContactListener {
         else if (contact.acceptMask(FixtureType.BOUNCER, w,
                 FixtureType.FEET,
                 FixtureType.HEAD,
-                FixtureType.SIDE)) {
-            Vector2 bounce = ((Function<Fixture, Vector2>) contact.mask1stData(ConstKeys.FUNCTION))
-                    .apply(contact.mask.getSecond());
-            if (contact.mask1stEntity() instanceof SpringBouncer s && contact.mask2ndEntity() instanceof Megaman m) {
-                if (!m.is(BodySense.BODY_IN_WATER) && m.has(MegaAbility.AIR_DASH)) {
-                    m.aButtonTask = AButtonTask.AIR_DASH;
-                }
-                if (s.getDir() == Direction.UP && game.getCtrlMan().isPressed(CtrlBtn.DPAD_UP)) {
-                    bounce.y *= 2f;
-                }
+                FixtureType.SIDE) &&
+                contact.mask1stEntity() instanceof Bouncer b) {
+            BounceDef bounceDef = b.bounce(contact.mask.getSecond());
+            Vector2 bounce = bounceDef.bounce;
+            Body bounceableBody = contact.mask2ndBody();
+            if (bounceDef.xAction == BounceAction.SET) {
+                bounceableBody.velocity.x = bounce.x;
+            } else {
+                bounceableBody.velocity.x += bounce.x;
             }
-            contact.mask2ndBody().velocity.set(bounce);
-            Runnable r = contact.mask1stData(ConstKeys.RUN, Runnable.class);
-            if (r != null) {
-                r.run();
+            if (bounceDef.yAction == BounceAction.SET) {
+                bounceableBody.velocity.y = bounce.y;
+            } else {
+                bounceableBody.velocity.y += bounce.y;
+            }
+            Runnable onBounce = contact.mask2ndData(ConstKeys.RUN, Runnable.class);
+            if (onBounce != null) {
+                onBounce.run();
             }
         }
 

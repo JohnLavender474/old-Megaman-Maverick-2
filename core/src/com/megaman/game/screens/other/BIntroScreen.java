@@ -14,7 +14,7 @@ import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.backgrounds.Stars;
-import com.megaman.game.entities.bosses.Boss;
+import com.megaman.game.entities.impl.bosses.Boss;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.utils.TextHandle;

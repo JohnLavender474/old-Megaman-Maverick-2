@@ -5,7 +5,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.controllers.ControllerSystem;
-import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.impl.megaman.Megaman;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;

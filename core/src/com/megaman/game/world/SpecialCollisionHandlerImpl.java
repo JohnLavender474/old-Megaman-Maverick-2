@@ -3,7 +3,7 @@ package com.megaman.game.world;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.behaviors.BehaviorType;
 import com.megaman.game.controllers.CtrlBtn;
-import com.megaman.game.entities.megaman.Megaman;
+import com.megaman.game.entities.impl.megaman.Megaman;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
