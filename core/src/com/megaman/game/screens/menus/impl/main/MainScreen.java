@@ -94,7 +94,7 @@ public class MainScreen extends MenuScreen {
             blinkArrs.put(sBtn.name(), new BlinkingArrow(assMan, arrCenter));
             row -= WorldVals.PPM * .025f;
         }
-        fonts.add(new TextHandle(new Vector2(.25f * WorldVals.PPM, .5f * WorldVals.PPM), "© OLD LAVY GENES, 20XX"));
+        fonts.add(new TextHandle(new Vector2(.15f * WorldVals.PPM, .5f * WorldVals.PPM), "© OLD LAVY GENES, 20XX"));
         fonts.add(new TextHandle(new Vector2(21f * WorldVals.PPM, 12f * WorldVals.PPM),
                 () -> "" + game.getAudioMan().getMusicVolume()));
         fonts.add(new TextHandle(new Vector2(21f * WorldVals.PPM, 11.2f * WorldVals.PPM),
@@ -116,12 +116,12 @@ public class MainScreen extends MenuScreen {
         }
         TextureAtlas atlas = game.getAssMan().getTextureAtlas(TextureAsset.UI_1);
         title.setRegion(atlas.findRegion("MegamanTitle"));
-        title.setBounds(WorldVals.PPM, 8f * WorldVals.PPM, 14f * WorldVals.PPM, 5f * WorldVals.PPM);
+        title.setBounds(WorldVals.PPM, 8.25f * WorldVals.PPM, 13.25f * WorldVals.PPM, 5f * WorldVals.PPM);
         subtitle.setRegion(atlas.findRegion("Subtitle8bit"));
         subtitle.setSize(8f * WorldVals.PPM, 8f * WorldVals.PPM);
-        subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, ViewVals.VIEW_HEIGHT * WorldVals.PPM / 2f);
+        subtitle.setCenter(ViewVals.VIEW_WIDTH * WorldVals.PPM / 2f, (ViewVals.VIEW_HEIGHT + 1) * WorldVals.PPM / 2f);
         pose.setRegion(atlas.findRegion("MegamanMaverick"));
-        pose.setBounds(7.5f * WorldVals.PPM, 0f, 7f * WorldVals.PPM, 7f * WorldVals.PPM);
+        pose.setBounds(8f * WorldVals.PPM, 0f, 8f * WorldVals.PPM, 8f * WorldVals.PPM);
     }
 
     @Override
