@@ -15,6 +15,7 @@ public enum LevelMapLayer {
     GAME_ROOMS("GameRooms"),
     BACKGROUNDS("Backgrounds"),
     ENEMY_SPAWNS("EnemySpawns"),
+    BOSS_SPAWNS("BossSpawns"),
     PLAYER_SPAWNS("PlayerSpawns");
 
     public final String name;

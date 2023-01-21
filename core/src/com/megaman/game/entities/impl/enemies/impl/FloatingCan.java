@@ -9,8 +9,8 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.impl.Bullet;
@@ -42,6 +42,7 @@ public class FloatingCan extends Enemy {
         if (floatingCanReg == null) {
             floatingCanReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "FloatingCan");
         }
+        defineBody();
         sprite = new Sprite();
         putComponent(spriteComponent());
         putComponent(animationComponent());
@@ -64,8 +65,7 @@ public class FloatingCan extends Enemy {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setSize(.75f * WorldVals.PPM);
         Fixture damageableFixture = new Fixture(this, FixtureType.DAMAGEABLE,
                 new Rectangle().setSize(.75f * WorldVals.PPM));

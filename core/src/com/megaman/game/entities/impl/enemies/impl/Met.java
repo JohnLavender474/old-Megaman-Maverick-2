@@ -13,10 +13,10 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.entities.*;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.ProjectileFactory;
@@ -82,6 +82,7 @@ public class Met extends Enemy implements Faceable {
             put(MetBehavior.POP_UP, new Timer(POP_UP_DUR));
         }};
         type = "";
+        defineBody();
         sprite = new Sprite();
         putComponent(spriteComponent());
         putComponent(animationComponent());
@@ -109,8 +110,7 @@ public class Met extends Enemy implements Faceable {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.gravityOn = true;
         body.bounds.setSize(.75f * WorldVals.PPM);
         body.velClamp.set(VEL_CLAMP_X * WorldVals.PPM, VEL_CLAMP_Y * WorldVals.PPM);

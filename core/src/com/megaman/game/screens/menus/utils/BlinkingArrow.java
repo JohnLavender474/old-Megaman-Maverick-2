@@ -17,19 +17,18 @@ public class BlinkingArrow implements Updatable, Drawable {
 
     private static final float ARROW_BLINK_DURATION = .2f;
 
-    private final Sprite arrowSprite = new Sprite();
-    private final Timer arrowBlinkTimer = new Timer();
-
     public final Vector2 center;
+    private final Sprite arrowSprite;
+    private final Timer arrowBlinkTimer;
 
     private boolean arrowVisible;
 
     public BlinkingArrow(AssetsManager assMan, Vector2 center) {
         this.center = center;
-        arrowSprite.setRegion(assMan.getTextureRegion(TextureAsset.UI_1, "Arrow"));
+        arrowSprite = new Sprite(assMan.getTextureRegion(TextureAsset.UI_1, "Arrow"));
         arrowSprite.setSize(WorldVals.PPM / 2f, WorldVals.PPM / 2f);
         arrowSprite.setCenter(center.x, center.y);
-        arrowBlinkTimer.setDuration(ARROW_BLINK_DURATION);
+        arrowBlinkTimer = new Timer(ARROW_BLINK_DURATION);
     }
 
     @Override

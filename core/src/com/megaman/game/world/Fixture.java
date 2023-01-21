@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.entities.Entity;
+import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.shapes.ShapeUtils;
 
 public class Fixture {
@@ -22,12 +23,24 @@ public class Fixture {
         this(entity, fixtureType, new Rectangle());
     }
 
+    public Fixture(Entity entity, FixtureType fixtureType, Body body) {
+        this(entity, fixtureType, body, true);
+    }
+
+    public Fixture(Entity entity, FixtureType fixtureType, Body body, boolean attached) {
+        this(entity, fixtureType, body.bounds, attached);
+    }
+
     public Fixture(Entity entity, FixtureType fixtureType, Shape2D shape) {
+        this(entity, fixtureType, shape, true);
+    }
+
+    public Fixture(Entity entity, FixtureType fixtureType, Shape2D shape, boolean attached) {
         this.shape = shape;
         this.entity = entity;
         this.fixtureType = fixtureType;
+        this.attached = attached;
         active = true;
-        attached = true;
         offset = new Vector2();
         userData = new ObjectMap<>();
     }

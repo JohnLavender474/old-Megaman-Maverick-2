@@ -49,7 +49,7 @@ public enum TextureAsset implements Asset {
     GATES("Gates.txt"),
     PLATFORMS_1("Platforms1.txt"),
 
-    // Bosses
+    // Main bosses
     TIMBER_WOMAN("TimberWoman.txt"),
     WINTRY_MAN("WintryMan.txt"),
     DISTRIBUTOR_MAN("DistributorMan.txt"),
@@ -60,7 +60,10 @@ public enum TextureAsset implements Asset {
     FREEZER_MAN("FreezerMan.txt"),
     RODENT_MAN("RodentMan.txt"),
     PRECIOUS_MAN("PreciousMan.txt"),
-    MICROWAVE_MAN("MicrowaveMan.txt");
+    MICROWAVE_MAN("MicrowaveMan.txt"),
+
+    // Other bosses
+    GUTS_TANK("GutsTank.txt");
 
     public static final String PREFIX = "sprites/SpriteSheets/";
 

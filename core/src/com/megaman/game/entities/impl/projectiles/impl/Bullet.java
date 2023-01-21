@@ -9,7 +9,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
-import com.megaman.game.entities.damage.Damageable;
+import com.megaman.game.entities.utils.damage.Damageable;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.impl.explosions.ExplosionFactory;
 import com.megaman.game.entities.impl.projectiles.Projectile;

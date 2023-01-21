@@ -11,10 +11,10 @@ import com.megaman.game.ViewVals;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.megaman.Megaman;
@@ -66,13 +66,12 @@ public class MagFly extends Enemy implements Faceable {
         if (magFlyReg == null) {
             magFlyReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "MagFly");
         }
+        defineBody();
         sprite = new Sprite();
         forceFlashTimer = new Timer(FORCE_FLASH_DURATION);
-
         if (MegamanGame.DEBUG) {
             putComponent(shapeComponent());
         }
-
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }
@@ -93,8 +92,7 @@ public class MagFly extends Enemy implements Faceable {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setSize(WorldVals.PPM);
         Fixture bodyFixture = new Fixture(this, FixtureType.BODY, new Rectangle().setSize(WorldVals.PPM));
         body.add(bodyFixture);

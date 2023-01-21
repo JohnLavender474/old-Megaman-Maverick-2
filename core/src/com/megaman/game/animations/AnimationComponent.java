@@ -24,6 +24,10 @@ public class AnimationComponent implements Component {
         this.animators.add(animator);
     }
 
+    public AnimationComponent(Animator... animators) {
+        this(new Array<>(animators));
+    }
+
     public AnimationComponent(Array<Animator> animators) {
         this.animators = animators;
     }

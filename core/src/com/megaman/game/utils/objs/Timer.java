@@ -1,6 +1,8 @@
 package com.megaman.game.utils.objs;
 
 import com.badlogic.gdx.utils.Array;
+import com.megaman.game.utils.interfaces.Resettable;
+import com.megaman.game.utils.interfaces.Updatable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 @Getter
-public class Timer {
+public class Timer implements Updatable, Resettable {
 
     private final Array<TimeMarkedRunnable> tmRunnables;
     private final Queue<TimeMarkedRunnable> tmrQ;
@@ -22,7 +24,7 @@ public class Timer {
     public Runnable runOnEnd;
 
     public Timer() {
-        this(1f);
+        this(0f);
     }
 
     public Timer(Timer timer) {
@@ -70,11 +72,12 @@ public class Timer {
         }
     }
 
-    public void setDuration(float duration) {
+    public Timer setDuration(float duration) {
         if (duration < 0f) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Timer duration cannot be less than zero");
         }
         this.duration = duration;
+        return this;
     }
 
     public float getRatio() {
@@ -93,11 +96,13 @@ public class Timer {
         return justFinished;
     }
 
-    public void setToEnd() {
+    public Timer setToEnd() {
         time = duration;
+        return this;
     }
 
-    public boolean update(float delta) {
+    @Override
+    public void update(float delta) {
         boolean finishedBefore = isFinished();
         time = Math.min(duration, time + delta);
         while (!tmrQ.isEmpty() && tmrQ.peek().time() <= time) {
@@ -111,17 +116,15 @@ public class Timer {
         if (runOnEnd != null && justFinished) {
             runOnEnd.run();
         }
-        return isFinished();
     }
 
-    public boolean reset() {
-        boolean finished = isFinished();
+    @Override
+    public void reset() {
         time = 0f;
         tmrQ.clear();
         for (TimeMarkedRunnable tmr : tmRunnables) {
             tmrQ.add(tmr);
         }
-        return finished;
     }
 
 }

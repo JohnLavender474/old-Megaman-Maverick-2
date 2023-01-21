@@ -151,12 +151,21 @@ public class Body implements Updatable, Resettable {
         return overlaps(body.bounds);
     }
 
+    public void setWidth(float width) {
+        bounds.setWidth(width);
+    }
+
+    public void setHeight(float height) {
+        bounds.setHeight(height);
+    }
+
     public void setSize(float sizeXY) {
         setSize(sizeXY, sizeXY);
     }
 
     public void setSize(float width, float height) {
-        bounds.setSize(width, height);
+        setWidth(width);
+        setHeight(height);
     }
 
     public void setX(float x) {

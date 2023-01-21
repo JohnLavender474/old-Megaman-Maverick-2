@@ -12,10 +12,10 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.Projectile;
@@ -56,6 +56,7 @@ public class Matasaburo extends Enemy implements Faceable {
         if (matasaburoReg == null) {
             matasaburoReg = game.getAssMan().getTextureRegion(TextureAsset.ENEMIES_1, "Matasaburo");
         }
+        defineBody();
         sprite = new Sprite();
         putComponent(spriteComponent());
         putComponent(animationComponent());
@@ -79,8 +80,7 @@ public class Matasaburo extends Enemy implements Faceable {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setSize(WorldVals.PPM);
         Array<ShapeHandle> h = new Array<>();
 

@@ -11,7 +11,7 @@ import com.megaman.game.GameEngine;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.backgrounds.Background;
-import com.megaman.game.entities.factories.EntityFactories;
+import com.megaman.game.entities.utils.factories.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.impl.items.ItemFactory;
 import com.megaman.game.entities.impl.megaman.upgrades.MegaHeartTank;
@@ -71,9 +71,10 @@ public class LevelBuilder implements Disposable {
                         engine.spawn(factories.fetch(EntityType.SENSOR, SensorFactory.DEATH), o.getRectangle());
                     }
                 }
-                case ENEMY_SPAWNS, BLOCKS, HAZARDS, SPECIAL, ITEMS -> {
+                case ENEMY_SPAWNS, BOSS_SPAWNS, BLOCKS, HAZARDS, SPECIAL, ITEMS -> {
                     EntityType entityType = switch (e.getKey()) {
                         case ENEMY_SPAWNS -> EntityType.ENEMY;
+                        case BOSS_SPAWNS -> EntityType.BOSS;
                         case BLOCKS -> EntityType.BLOCK;
                         case HAZARDS -> EntityType.HAZARD;
                         case SPECIAL -> EntityType.SPECIAL;

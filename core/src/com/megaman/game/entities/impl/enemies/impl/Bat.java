@@ -11,8 +11,8 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.animations.Animator;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.impl.Bullet;
@@ -74,6 +74,7 @@ public class Bat extends Enemy {
         sprite = new Sprite();
         hangTimer = new Timer(HANG_DUR);
         releasePerchTimer = new Timer(RELEASE_FROM_PERCH_DUR);
+        defineBody();
         putComponent(spriteComponent());
         putComponent(animationComponent());
         putComponent(pathfindingComponent());
@@ -99,8 +100,7 @@ public class Bat extends Enemy {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setSize(.5f * WorldVals.PPM, .25f * WorldVals.PPM);
 
         // head fixture

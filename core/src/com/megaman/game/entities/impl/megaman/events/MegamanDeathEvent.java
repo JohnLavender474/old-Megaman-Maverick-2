@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.ConstKeys;
 import com.megaman.game.GameEngine;
 import com.megaman.game.assets.SoundAsset;
-import com.megaman.game.entities.factories.EntityFactories;
+import com.megaman.game.entities.utils.factories.EntityFactories;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.impl.explosions.ExplosionFactory;
 import com.megaman.game.entities.impl.megaman.Megaman;

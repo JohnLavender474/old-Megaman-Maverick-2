@@ -12,8 +12,8 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
@@ -69,6 +69,7 @@ public class Screwie extends Enemy {
             add(new TimeMarkedRunnable(1.5f, () -> shoot()));
         }});
         dropTimer = new Timer(RISE_DROP_DUR);
+        defineBody();
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }
@@ -98,8 +99,7 @@ public class Screwie extends Enemy {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setWidth(.5f * WorldVals.PPM);
         Array<ShapeHandle> h = new Array<>();
         h.add(new ShapeHandle(body.bounds, Color.GREEN));

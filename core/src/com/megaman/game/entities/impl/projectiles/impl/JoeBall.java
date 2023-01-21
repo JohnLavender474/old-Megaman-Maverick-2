@@ -13,7 +13,7 @@ import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.entities.*;
-import com.megaman.game.entities.damage.Damageable;
+import com.megaman.game.entities.utils.damage.Damageable;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.ExplosionFactory;
 import com.megaman.game.entities.impl.megaman.Megaman;

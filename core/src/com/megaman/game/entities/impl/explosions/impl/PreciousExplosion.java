@@ -11,7 +11,7 @@ import com.megaman.game.ConstKeys;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
-import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.utils.damage.Damager;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.shapes.ShapeComponent;

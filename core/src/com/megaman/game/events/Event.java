@@ -13,8 +13,16 @@ public class Event {
         this(type, new ObjectMap<>());
     }
 
+    public boolean hasInfo(String key) {
+        return info.containsKey(key);
+    }
+
+    public Object getInfo(String key) {
+        return info.get(key);
+    }
+
     public <T> T getInfo(String key, Class<T> tClass) {
-        return tClass.cast(info.get(key));
+        return tClass.cast(getInfo(key));
     }
 
 }

@@ -11,10 +11,10 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.impl.Bullet;
@@ -59,6 +59,7 @@ public class Penguin extends Enemy implements Faceable {
         sprite = new Sprite();
         standTimer = new Timer(STAND_DUR);
         slideTimer = new Timer(SLIDE_DUR);
+        defineBody();
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }
@@ -122,8 +123,7 @@ public class Penguin extends Enemy implements Faceable {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.gravityOn = true;
         body.affectedByResistance = true;
         Array<ShapeHandle> h = new Array<>();

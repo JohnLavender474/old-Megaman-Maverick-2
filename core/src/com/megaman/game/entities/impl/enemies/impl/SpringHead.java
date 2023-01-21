@@ -14,13 +14,13 @@ import com.megaman.game.ViewVals;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.bounce.BounceAction;
-import com.megaman.game.entities.bounce.BounceDef;
-import com.megaman.game.entities.bounce.Bouncer;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.bounce.BounceAction;
+import com.megaman.game.entities.utils.bounce.BounceDef;
+import com.megaman.game.entities.utils.bounce.Bouncer;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.entities.impl.explosions.impl.ChargedShotExplosion;
 import com.megaman.game.entities.impl.projectiles.impl.ChargedShot;
@@ -46,7 +46,7 @@ public class SpringHead extends Enemy implements Faceable, Bouncer {
     private static final float SPEED_NORMAL = 2.5f;
     private static final float SPEED_SUPER = 7f;
 
-    private static final float BOUNCE_DUR = 1.5f;
+    private static final float BOUNCE_DUR = 2f;
 
     private static final float DAMAGE_DUR = .5f;
     private static final float TURN_DELAY = .25f;
@@ -69,6 +69,7 @@ public class SpringHead extends Enemy implements Faceable, Bouncer {
         turnTimer = new Timer(TURN_DELAY);
         bounceTimer = new Timer(BOUNCE_DUR, true);
         speedUpScanner = new Rectangle().setSize(ViewVals.VIEW_WIDTH * WorldVals.PPM, WorldVals.PPM / 4f);
+        defineBody();
         putComponent(spriteComponent());
         putComponent(animationComponent());
     }
@@ -101,8 +102,7 @@ public class SpringHead extends Enemy implements Faceable, Bouncer {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
         body.bounds.setSize(WorldVals.PPM / 4f, WorldVals.PPM / 4f);
         Array<ShapeHandle> h = new Array<>();
 

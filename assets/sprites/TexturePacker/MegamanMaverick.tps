@@ -174,28 +174,48 @@
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
             <key type="filename">../Frames/MegamanMaverick/AirDash.png</key>
+            <key type="filename">../Frames/MegamanMaverick/AirDash_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Beam.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Beam_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/ClimbShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/ClimbShoot_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/FinishClimb.png</key>
+            <key type="filename">../Frames/MegamanMaverick/FinishClimb_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Frozen.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Frozen_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/GroundSlide.png</key>
             <key type="filename">../Frames/MegamanMaverick/GroundSlideShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/GroundSlideShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/GroundSlide_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRun.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRunCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/InitRunCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/InitRunHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/InitRunHalfCharging_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/InitRun_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Jump.png</key>
             <key type="filename">../Frames/MegamanMaverick/JumpShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/JumpShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Jump_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SlipSlide.png</key>
             <key type="filename">../Frames/MegamanMaverick/SlipSlideShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SlipSlideShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SlipSlide_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/StandShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StandShoot_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/StandThrow.png</key>
             <key type="filename">../Frames/MegamanMaverick/StillClimb.png</key>
-            <key type="filename">../Frames/MegamanMaverick/StillClimbShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StillClimb_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Swim.png</key>
             <key type="filename">../Frames/MegamanMaverick/SwimAttack.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SwimAttack_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SwimShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SwimShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Swim_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/WallSlide.png</key>
             <key type="filename">../Frames/MegamanMaverick/WallSlideShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/WallSlideShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/WallSlide_Left.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -211,29 +231,53 @@
                 <false/>
             </struct>
             <key type="filename">../Frames/MegamanMaverick/AirDashCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/AirDashCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/AirDashHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/AirDashHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/BeamLand.png</key>
+            <key type="filename">../Frames/MegamanMaverick/BeamLand_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Climb.png</key>
             <key type="filename">../Frames/MegamanMaverick/ClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/ClimbCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/ClimbHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/ClimbHalfCharging_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Climb_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/FinishClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/FinishClimbCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/FinishClimbHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/FinishClimbHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/GroundSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/GroundSlideCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/GroundSlideHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/GroundSlideHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/JumpCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/JumpCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/JumpHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/JumpHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/OnFire.png</key>
+            <key type="filename">../Frames/MegamanMaverick/OnFire_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SlipSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SlipSlideCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SlipSlideHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SlipSlideHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/Stand.png</key>
             <key type="filename">../Frames/MegamanMaverick/StandCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StandCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/StandHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StandHalfCharging_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Stand_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/StillClimbCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StillClimbCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/StillClimbHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/StillClimbHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SwimCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SwimCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/SwimHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/SwimHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/WallSlideCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/WallSlideCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/WallSlideHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/WallSlideHalfCharging_Left.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -263,10 +307,29 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../Frames/MegamanMaverick/Damaged_Left.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9Paddings</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../Frames/MegamanMaverick/Run.png</key>
             <key type="filename">../Frames/MegamanMaverick/RunCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/RunCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/RunHalfCharging.png</key>
+            <key type="filename">../Frames/MegamanMaverick/RunHalfCharging_Left.png</key>
             <key type="filename">../Frames/MegamanMaverick/RunShoot.png</key>
+            <key type="filename">../Frames/MegamanMaverick/RunShoot_Left.png</key>
+            <key type="filename">../Frames/MegamanMaverick/Run_Left.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>

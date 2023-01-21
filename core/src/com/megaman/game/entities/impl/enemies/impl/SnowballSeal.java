@@ -1,10 +1,10 @@
 package com.megaman.game.entities.impl.enemies.impl;
 
 import com.megaman.game.MegamanGame;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.Enemy;
 import com.megaman.game.world.Body;
 import com.megaman.game.world.BodyType;
@@ -25,6 +25,7 @@ public class SnowballSeal extends Enemy implements Faceable {
 
     public SnowballSeal(MegamanGame game) {
         super(game, BodyType.DYNAMIC);
+        defineBody();
     }
 
     @Override
@@ -34,8 +35,7 @@ public class SnowballSeal extends Enemy implements Faceable {
         }};
     }
 
-    @Override
-    protected void defineBody(Body body) {
+    protected void defineBody() {
 
     }
 

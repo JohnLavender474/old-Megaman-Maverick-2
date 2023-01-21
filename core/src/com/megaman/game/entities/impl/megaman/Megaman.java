@@ -21,11 +21,11 @@ import com.megaman.game.controllers.ControllerManager;
 import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damageable;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Faceable;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damageable;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Faceable;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.enemies.impl.SpringHead;
 import com.megaman.game.entities.impl.megaman.animations.MegamanAnimator;
 import com.megaman.game.entities.impl.megaman.events.MegamanDeathEvent;
@@ -37,11 +37,11 @@ import com.megaman.game.entities.impl.megaman.weapons.MegamanWeaponHandler;
 import com.megaman.game.entities.impl.projectiles.ChargeStatus;
 import com.megaman.game.entities.impl.special.SpecialFactory;
 import com.megaman.game.entities.impl.special.impl.Ladder;
-import com.megaman.game.entities.special.UpsideDownable;
+import com.megaman.game.entities.utils.special.UpsideDownable;
 import com.megaman.game.events.Event;
 import com.megaman.game.events.EventListener;
 import com.megaman.game.health.HealthComponent;
-import com.megaman.game.screens.levels.camera.LevelCamFocusable;
+import com.megaman.game.screens.levels.camera.CamFocusable;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
 import com.megaman.game.shapes.ShapeUtils;
@@ -59,7 +59,7 @@ import lombok.Setter;
 
 import java.util.Set;
 
-public class Megaman extends Entity implements Damageable, Faceable, Positional, LevelCamFocusable,
+public class Megaman extends Entity implements Damageable, Faceable, Positional, CamFocusable,
         EventListener, UpsideDownable {
 
     private static final Logger logger = new Logger(Megaman.class, MegamanGame.DEBUG && true);
@@ -110,7 +110,6 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     public static final float TIME_TO_FULLY_CHARGED = 1.25f;
 
     public static final float SHOOT_ANIM_TIME = .3f;
-    public static final float CHARGING_ANIM_TIME = .125f;
 
     private static final float DMG_X = 8f;
     private static final float DMG_Y = 5f;
@@ -162,7 +161,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     @Getter
     @Setter
     private boolean ready;
-
+    @Getter
+    @Setter
+    private boolean damageable;
     private boolean recoveryBlink;
 
     public Megaman(MegamanGame game) {
@@ -218,7 +219,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     }
 
     @Override
-    public void init(Vector2 spawn, ObjectMap<String, Object> spawnData) {
+    public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         // body
         body.labels.add(BodyLabel.PLAYER_BODY);
         body.velocity.setZero();
@@ -242,6 +243,9 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
         chargingTimer.reset();
         airDashTimer.reset();
         dmgTimer.setToEnd();
+
+        // damageable
+        damageable = !data.containsKey(ConstKeys.DAMAGEABLE) || (boolean) data.get(ConstKeys.DAMAGEABLE);
 
         // add this as event listener
         game.getEventMan().add(this);
@@ -348,7 +352,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
     @Override
     public boolean isInvincible() {
-        return !dmgTimer.isFinished() || !dmgRecovTimer.isFinished();
+        return !damageable || isDamaged() || !dmgRecovTimer.isFinished();
     }
 
     public boolean isDamaged() {
@@ -1074,7 +1078,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                 float translateY = (isUpsideDown() ? .1f : -.1f) * WorldVals.PPM;
                 sprite.translateY(translateY);
             }
-            sprite.setFlip(is(Facing.LEFT), isUpsideDown());
+            sprite.setFlip(false, isUpsideDown());
         };
         return new SpriteComponent(handle);
     }

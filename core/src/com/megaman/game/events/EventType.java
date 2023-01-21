@@ -26,7 +26,9 @@ public enum EventType {
     GATE_FINISH_CLOSING,
 
     ENTER_BOSS_ROOM,
-    BOSS_DROP_DOWN;
+    BOSS_DROP_DOWN,
+
+    REQ_SHAKE_CAM;
 
     private static final ObjectMap<String, EventType> strToEvents = new ObjectMap<>() {{
         put("PlayerReady", PLAYER_READY);

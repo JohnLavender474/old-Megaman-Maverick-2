@@ -22,7 +22,7 @@ import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.cull.CullOnEventSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
-import com.megaman.game.entities.factories.EntityFactories;
+import com.megaman.game.entities.utils.factories.EntityFactories;
 import com.megaman.game.entities.impl.megaman.Megaman;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.health.HealthSystem;
@@ -134,8 +134,8 @@ public class MegamanGame implements ApplicationListener {
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.RODENT_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
-        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
-        setScreen(getScreen(ScreenEnum.MAIN));
+        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
+        // setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
         fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),
                 () -> "FPS: " + Gdx.graphics.getFramesPerSecond());

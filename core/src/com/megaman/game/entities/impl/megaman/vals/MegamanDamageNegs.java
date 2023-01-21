@@ -1,7 +1,7 @@
 package com.megaman.game.entities.impl.megaman.vals;
 
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damager;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damager;
 import com.megaman.game.entities.impl.enemies.impl.*;
 import com.megaman.game.entities.impl.explosions.impl.PreciousExplosion;
 import com.megaman.game.entities.impl.hazards.impl.LaserBeamer;

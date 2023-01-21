@@ -1,5 +1,7 @@
 package com.megaman.game.screens.levels;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,7 +31,8 @@ import com.megaman.game.events.EventManager;
 import com.megaman.game.events.EventType;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.pathfinding.PathfindingSystem;
-import com.megaman.game.screens.levels.camera.LevelCamManager;
+import com.megaman.game.screens.levels.camera.CamManager;
+import com.megaman.game.screens.levels.camera.CamShaker;
 import com.megaman.game.screens.levels.handlers.player.PlayerDeathEventHandler;
 import com.megaman.game.screens.levels.handlers.player.PlayerSpawnEventHandler;
 import com.megaman.game.screens.levels.handlers.player.PlayerStatsHandler;
@@ -50,6 +53,7 @@ import com.megaman.game.utils.Logger;
 import com.megaman.game.world.BodyComponent;
 import com.megaman.game.world.WorldGraph;
 import com.megaman.game.world.WorldSystem;
+import com.megaman.game.world.WorldVals;
 import lombok.Setter;
 
 import java.util.Map;
@@ -73,7 +77,8 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
     private final ShapeRenderer shapeRenderer;
 
     private final LevelMapManager levelMapMan;
-    private final LevelCamManager levelCamMan;
+    private final CamManager levelCamMan;
+    private final CamShaker camShaker;
 
     private final Array<Background> backgrounds;
     private final PriorityQueue<SpriteHandle> gameSpritesQ;
@@ -112,7 +117,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
         playerStatsHandler = new PlayerStatsHandler(game);
         playerSpawnEventHandler = new PlayerSpawnEventHandler(game);
         playerDeathEventHandler = new PlayerDeathEventHandler(game);
-        levelCamMan = new LevelCamManager(gameCam);
+        levelCamMan = new CamManager(gameCam);
         levelCamMan.setRunOnBeginTrans(() -> {
             engine.set(false,
                     AnimationSystem.class,
@@ -153,6 +158,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 eventMan.submit(new Event(EventType.ENTER_BOSS_ROOM));
             }
         });
+        camShaker = new CamShaker(gameCam);
         levelMapMan = new LevelMapManager(gameCam, game.getBatch());
         spawnMan = new SpawnManager();
     }
@@ -227,6 +233,13 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                     TrajectorySystem.class,
                     BehaviorSystem.class,
                     WorldSystem.class);
+            case REQ_SHAKE_CAM -> {
+                float dur = e.getInfo(ConstKeys.DUR, Float.class);
+                float interval = e.getInfo(ConstKeys.INTERVAL, Float.class);
+                float shakeX = e.hasInfo(ConstKeys.X) ? e.getInfo(ConstKeys.X, Float.class) : 0f;
+                float shakeY = e.hasInfo(ConstKeys.Y) ? e.getInfo(ConstKeys.Y, Float.class) : 0f;
+                camShaker.startShake(dur, interval, shakeX, shakeY);
+            }
         }
     }
 
@@ -241,6 +254,15 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
 
     @Override
     public void render(float delta) {
+        // TODO: test cam shaker
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+            eventMan.submit(new Event(EventType.REQ_SHAKE_CAM, new ObjectMap<>() {{
+                put(ConstKeys.DUR, 1f);
+                put(ConstKeys.INTERVAL, .1f);
+                put(ConstKeys.Y, .1f * WorldVals.PPM);
+            }}));
+        }
+
         // game can only be paused if neither spawn nor death events are occurring
         if (ctrlMan.isJustPressed(CtrlBtn.START) &&
                 playerSpawnEventHandler.isFinished() &&
@@ -252,12 +274,14 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 game.pause();
             }
         }
+
         // illegal for game to be paused when a handler is not finished, force resume
         if (game.isPaused() && (!playerDeathEventHandler.isFinished() ||
                 !playerSpawnEventHandler.isFinished() ||
                 !playerStatsHandler.isFinished())) {
             game.resume();
         }
+
         // update only if game is not paused
         if (!game.isPaused()) {
             for (Background b : backgrounds) {
@@ -278,8 +302,10 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 playerStatsHandler.update(delta);
             }
         }
+
         // update engine
         engine.update(delta);
+
         // render game sprites
         batch.setProjectionMatrix(gameCam.combined);
         batch.begin();
@@ -291,6 +317,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             gameSpritesQ.poll().draw(batch);
         }
         batch.end();
+
         // render ui
         batch.setProjectionMatrix(uiCam.combined);
         batch.begin();
@@ -299,6 +326,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             playerSpawnEventHandler.draw(batch);
         }
         batch.end();
+
         // render shapes
         shapeRenderer.setProjectionMatrix(gameCam.combined);
         shapeRenderer.begin();
@@ -306,6 +334,11 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
             gameShapesQ.poll().render(shapeRenderer);
         }
         shapeRenderer.end();
+
+        // shake cam if shaking
+        if (!camShaker.isFinished()) {
+            camShaker.update(delta);
+        }
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.animations.AnimationComponent;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.damage.Damageable;
+import com.megaman.game.entities.utils.damage.Damageable;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.entities.impl.enemies.Enemy;

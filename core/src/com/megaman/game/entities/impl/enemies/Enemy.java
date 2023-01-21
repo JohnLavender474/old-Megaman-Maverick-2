@@ -9,10 +9,10 @@ import com.megaman.game.audio.SoundComponent;
 import com.megaman.game.cull.CullOnEventComponent;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.*;
-import com.megaman.game.entities.damage.DamageNegotiation;
-import com.megaman.game.entities.damage.Damageable;
-import com.megaman.game.entities.damage.Damager;
-import com.megaman.game.entities.faceable.Facing;
+import com.megaman.game.entities.utils.damage.DamageNegotiation;
+import com.megaman.game.entities.utils.damage.Damageable;
+import com.megaman.game.entities.utils.damage.Damager;
+import com.megaman.game.entities.utils.faceable.Facing;
 import com.megaman.game.entities.impl.explosions.ExplosionFactory;
 import com.megaman.game.entities.impl.items.ItemFactory;
 import com.megaman.game.entities.impl.megaman.Megaman;
@@ -57,11 +57,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     public Enemy(MegamanGame game, float dmgDur, float dmgBlinkDur, float cullDur, BodyType bodyType) {
         super(game, EntityType.ENEMY);
-        body = new Body(bodyType);
         dmgTimer = new Timer(dmgDur, true);
         dmgBlinkTimer = new Timer(dmgBlinkDur, true);
         dmgNegs = defineDamageNegotiations();
-        defineBody(body);
+        body = new Body(bodyType);
         putComponent(new BodyComponent(body));
         UpdatableComponent u = new UpdatableComponent();
         defineUpdateComponent(u);
@@ -90,8 +89,6 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations();
-
-    protected abstract void defineBody(Body body);
 
     protected void request(SoundAsset ass, boolean play) {
         SoundComponent c = getComponent(SoundComponent.class);

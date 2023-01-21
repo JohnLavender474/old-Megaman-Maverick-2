@@ -2,6 +2,8 @@ package com.megaman.game;
 
 public class ConstKeys {
 
+    public static final String DUR = "Dur";
+    public static final String INTERVAL = "Interval";
     public static final String ROWS = "Rows";
     public static final String COLS = "Cols";
     public static final String LARGE = "Large";
@@ -11,6 +13,7 @@ public class ConstKeys {
     public static final String COLLECTION = "Collection";
     public static final String TYPE = "Type";
     public static final String DEFAULT = "Default";
+    public static final String DAMAGEABLE = "Damageable";
     public static final String BOOL = "Bool";
     public static final String OWNER = "Owner";
     public static final String RUN = "Run";

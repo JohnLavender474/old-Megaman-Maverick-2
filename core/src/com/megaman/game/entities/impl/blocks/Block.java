@@ -1,6 +1,7 @@
 package com.megaman.game.entities.impl.blocks;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
@@ -9,26 +10,36 @@ import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.shapes.ShapeComponent;
 import com.megaman.game.shapes.ShapeHandle;
+import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.world.*;
 
 public class Block extends Entity {
 
-    private static final Logger logger = new Logger(Block.class, MegamanGame.DEBUG && true);
+    protected static final Logger logger = new Logger(Block.class, MegamanGame.DEBUG && true);
 
-    public static final String RESIST_ON = "ResistOn";
-    public static final String GRAVITY_ON = "GravityOn";
-    public static final String FRICTION_X = "FrictionX";
-    public static final String FRICTION_Y = "FrictionY";
+    protected static final String RESIST_ON = "ResistOn";
+    protected static final String GRAVITY_ON = "GravityOn";
+    protected static final String FRICTION_X = "FrictionX";
+    protected static final String FRICTION_Y = "FrictionY";
 
-    public static final float STANDARD_FRIC_X = .035f;
-    public static final float STANDARD_FRIC_Y = 0f;
+    protected static final float STANDARD_FRIC_X = .035f;
+    protected static final float STANDARD_FRIC_Y = 0f;
 
     public final Body body;
     public final Fixture blockFixture;
 
     public Block(MegamanGame game, boolean cullOnBodyOOB) {
         this(game, BodyType.STATIC, cullOnBodyOOB);
+    }
+
+    public Block(MegamanGame game, boolean cullOnBodyOOB, float width, float height) {
+        this(game, BodyType.STATIC, cullOnBodyOOB, width, height);
+    }
+
+    public Block(MegamanGame game, BodyType bodyType, boolean cullOnBodyOOB, float width, float height) {
+        this(game, bodyType, cullOnBodyOOB);
+        body.setSize(width, height);
     }
 
     public Block(MegamanGame game, BodyType bodyType, boolean cullOnBodyOOB) {
@@ -45,16 +56,9 @@ public class Block extends Entity {
         }
     }
 
-    protected ShapeComponent shapeComponent() {
-        Array<ShapeHandle> h = new Array<>();
-        h.add(new ShapeHandle(body.bounds));
-        return new ShapeComponent(h);
-    }
-
     @Override
-    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
-        body.bounds.set(bounds);
-        ((Rectangle) blockFixture.shape).set(body.bounds);
+    public void init(Vector2 spawn, ObjectMap<String, Object> data) {
+        setPos(spawn);
         if (data.containsKey(FRICTION_X)) {
             body.friction.x = (float) data.get(FRICTION_X);
         } else {
@@ -77,6 +81,65 @@ public class Block extends Entity {
                 body.labels.add(label);
             }
         }
+    }
+
+    @Override
+    public void init(Rectangle bounds, ObjectMap<String, Object> data) {
+        setSize(bounds.width, bounds.height);
+        Vector2 pos = new Vector2();
+        bounds.getPosition(pos);
+        init(pos, data);
+    }
+    
+    public void setX(float x) {
+        body.setX(x);
+    }
+    
+    public void setY(float y) {
+        body.setY(y);
+    }
+    
+    public void setPos(Vector2 pos) {
+        setPos(pos.x, pos.y);   
+    }
+    
+    public void setPos(float x, float y) {
+        setX(x);
+        setY(y);
+    }
+    
+    public void setWidth(float width) {
+        body.setWidth(width);
+        ((Rectangle) blockFixture.shape).setWidth(width);
+    }
+    
+    public void setHeight(float height) {
+        body.setHeight(height);
+        ((Rectangle) blockFixture.shape).setHeight(height);
+    }
+    
+    public void setSize(float width, float height) {
+        setWidth(width);
+        setHeight(height);
+    }
+
+    public void setBounds(Rectangle bounds) {
+        setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+    }
+
+    public void setBounds(float x, float y, float width, float height) {
+        setPos(x, y);
+        setSize(width, height);
+    }
+
+    public void addBodyLabels(String... labels) {
+        body.labels.addAll(labels);
+    }
+
+    protected ShapeComponent shapeComponent() {
+        Array<ShapeHandle> h = new Array<>();
+        h.add(new ShapeHandle(body.bounds));
+        return new ShapeComponent(h);
     }
 
 }
