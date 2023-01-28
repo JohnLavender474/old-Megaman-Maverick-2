@@ -42,13 +42,14 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     protected final Map<Class<? extends Damager>, DamageNegotiation> dmgNegs;
 
     protected boolean dmgBlink;
+    protected boolean doDropItem;
 
     public Enemy(MegamanGame game, BodyType bodyType) {
         this(game, DEFAULT_DMG_DUR, bodyType);
     }
 
-    public Enemy(MegamanGame game, float damageDuration, BodyType bodyType) {
-        this(game, damageDuration, DEFAULT_CULL_DUR, bodyType);
+    public Enemy(MegamanGame game, float dmgDur, BodyType bodyType) {
+        this(game, dmgDur, DEFAULT_CULL_DUR, bodyType);
     }
 
     public Enemy(MegamanGame game, float dmgDur, float cullDur, BodyType bodyType) {
@@ -57,9 +58,10 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     public Enemy(MegamanGame game, float dmgDur, float dmgBlinkDur, float cullDur, BodyType bodyType) {
         super(game, EntityType.ENEMY);
+        doDropItem = true;
         dmgTimer = new Timer(dmgDur, true);
         dmgBlinkTimer = new Timer(dmgBlinkDur, true);
-        dmgNegs = defineDamageNegotiations();
+        dmgNegs = defineDmgNegs();
         body = new Body(bodyType);
         putComponent(new BodyComponent(body));
         UpdatableComponent u = new UpdatableComponent();
@@ -70,25 +72,29 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
         putComponent(c);
         putComponent(new SoundComponent());
         putComponent(new HealthComponent());
-        putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
+        if (cullDur >= 0f) {
+            putComponent(new CullOutOfBoundsComponent(() -> body.bounds, cullDur));
+        }
         runOnDeath.add(() -> {
             if (hasHealth(0)) {
                 disintegrate();
-                UtilMethods.doIfRandMatch(0, 10, new Array<>() {{
-                    add(1);
-                    add(3);
-                    add(9);
-                }}, r -> {
-                    Entity e = game.getEntityFactories().fetch(EntityType.ITEM, ItemFactory.HEALTH_BULB);
-                    game.getGameEngine().spawn(e, body.bounds, new ObjectMap<>() {{
-                        put(ConstKeys.LARGE, r == 1);
-                    }});
-                });
+                if (doDropItem) {
+                    UtilMethods.doIfRandMatch(0, 10, new Array<>() {{
+                        add(1);
+                        add(3);
+                        add(9);
+                    }}, r -> {
+                        Entity e = game.getEntityFactories().fetch(EntityType.ITEM, ItemFactory.HEALTH_BULB);
+                        game.getGameEngine().spawn(e, body.bounds, new ObjectMap<>() {{
+                            put(ConstKeys.LARGE, r == 1);
+                        }});
+                    });
+                }
             }
         });
     }
 
-    protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations();
+    protected abstract Map<Class<? extends Damager>, DamageNegotiation> defineDmgNegs();
 
     protected void request(SoundAsset ass, boolean play) {
         SoundComponent c = getComponent(SoundComponent.class);
@@ -117,6 +123,7 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
 
     protected void defineCullOnEventComponent(CullOnEventComponent c) {
         Set<EventType> s = EnumSet.of(
+                EventType.GAME_OVER,
                 EventType.PLAYER_SPAWN,
                 EventType.BEGIN_ROOM_TRANS,
                 EventType.GATE_INIT_OPENING);
@@ -162,13 +169,13 @@ public abstract class Enemy extends Entity implements Damager, Damageable {
     }
 
     protected void disintegrate() {
-        game.getAudioMan().play(SoundAsset.ENEMY_DAMAGE_SOUND);
+        game.getAudioMan().playMusic(SoundAsset.ENEMY_DAMAGE_SOUND);
         game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION), body.getCenter());
     }
 
     protected void explode() {
-        game.getAudioMan().play(SoundAsset.EXPLOSION_SOUND);
+        game.getAudioMan().playMusic(SoundAsset.EXPLOSION_SOUND);
         game.getGameEngine().spawn(game.getEntityFactories()
                 .fetch(EntityType.EXPLOSION, ExplosionFactory.EXPLOSION), body.getCenter());
     }

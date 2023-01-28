@@ -243,6 +243,11 @@ public class Body implements Updatable, Resettable {
         return getPos().sub(prevPos);
     }
 
+    public void translate(float x, float y) {
+        bounds.x += x;
+        bounds.y += y;
+    }
+
     @Override
     public void update(float delta) {
         if (Math.abs(velocity.x) <= MIN_VEL * WorldVals.PPM) {

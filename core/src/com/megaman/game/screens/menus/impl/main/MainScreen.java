@@ -128,7 +128,7 @@ public class MainScreen extends MenuScreen {
     public void show() {
         super.show();
         uiCam.position.set(ConstFuncs.getCamInitPos());
-        game.getAudioMan().play(MusicAsset.MM11_WILY_STAGE_MUSIC, true);
+        game.getAudioMan().playMusic(MusicAsset.MM11_WILY_STAGE_MUSIC, true);
     }
 
     @Override
@@ -165,14 +165,14 @@ public class MainScreen extends MenuScreen {
 
     @Override
     protected void onAnyMovement() {
-        audioMan.play(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
+        audioMan.playMusic(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
     }
 
     @Override
     protected boolean onAnySelection() {
         boolean allow = screenSlide.isFinished();
         if (allow) {
-            audioMan.play(SoundAsset.SELECT_PING_SOUND);
+            audioMan.playMusic(SoundAsset.SELECT_PING_SOUND);
         }
         return allow;
     }

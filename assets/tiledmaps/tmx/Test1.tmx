@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" width="250" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="160">
+<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" width="250" height="75" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="161">
  <tileset firstgid="1" source="../tsx/Tileset1.tsx"/>
  <tileset firstgid="1025" source="../tsx/Blizzardman.tsx"/>
  <objectgroup id="11" name="Items">
@@ -206,7 +206,7 @@
   <object id="156" name="UpsideDown" x="2048" y="1664" width="256" height="320"/>
  </objectgroup>
  <objectgroup id="4" name="PlayerSpawns">
-  <object id="84" name="0" x="128" y="1504" width="32" height="32"/>
+  <object id="84" name="0" x="480" y="1952" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="5" name="GameRooms" visible="0">
   <object id="8" name="Room2" x="1440" y="1152" width="2208" height="448"/>
@@ -255,7 +255,9 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="14" name="BossSpawns"/>
+ <objectgroup id="14" name="BossSpawns">
+  <object id="160" name="GutsTank" x="896" y="1952" width="32" height="32"/>
+ </objectgroup>
  <layer id="13" name="BG" width="250" height="75">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

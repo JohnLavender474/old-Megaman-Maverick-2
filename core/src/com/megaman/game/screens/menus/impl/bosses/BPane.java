@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.impl.bosses.Boss;
+import com.megaman.game.entities.impl.bosses.BossType;
 import com.megaman.game.sprites.SpriteDrawer;
 import com.megaman.game.utils.enums.Position;
 import com.megaman.game.utils.interfaces.Drawable;
@@ -40,7 +40,7 @@ class BPane implements Updatable, Drawable {
 
     private BPaneStat bPaneStat = BPaneStat.UNHIGHLIGHTED;
 
-    public BPane(MegamanGame game, Boss boss) {
+    public BPane(MegamanGame game, BossType boss) {
         this(game, game.getAssMan().getTextureRegion(TextureAsset.FACES_1, boss.name),
                 boss.name, boss.position);
     }

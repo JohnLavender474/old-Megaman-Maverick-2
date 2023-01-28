@@ -100,7 +100,7 @@ public class Gate extends Entity implements EventListener, Resettable {
     public void trigger() {
         logger.log("Set gate state OPENING");
         state = GateState.OPENING;
-        game.getAudioMan().play(SoundAsset.BOSS_DOOR);
+        game.getAudioMan().playMusic(SoundAsset.BOSS_DOOR);
         game.getEventMan().submit(new Event(EventType.GATE_INIT_OPENING));
     }
 
@@ -130,7 +130,7 @@ public class Gate extends Entity implements EventListener, Resettable {
                 logger.log("Set gate state CLOSING");
                 transFinished = false;
                 state = GateState.CLOSING;
-                game.getAudioMan().play(SoundAsset.BOSS_DOOR);
+                game.getAudioMan().playMusic(SoundAsset.BOSS_DOOR);
                 game.getEventMan().submit(new Event(EventType.GATE_INIT_CLOSING));
             }
         }, () -> state == GateState.OPEN);

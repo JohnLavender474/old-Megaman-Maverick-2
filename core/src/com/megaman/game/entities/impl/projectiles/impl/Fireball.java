@@ -104,7 +104,7 @@ public class Fireball extends Projectile {
         Rectangle r = ShapeUtils.getBoundingRect(waterFixture.shape);
         Vector2 pos = new Vector2(body.getCenter().x, r.y + r.height);
         game.getGameEngine().spawn(puff, pos);
-        game.getAudioMan().play(SoundAsset.WHOOSH_SOUND);
+        game.getAudioMan().playMusic(SoundAsset.WHOOSH_SOUND);
     }
 
     @Override

@@ -4,16 +4,24 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.animations.AnimationSystem;
 import com.megaman.game.assets.AssetsManager;
+import com.megaman.game.assets.MusicAsset;
+import com.megaman.game.assets.SoundAsset;
+import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.behaviors.BehaviorSystem;
@@ -216,10 +224,6 @@ public class MegamanGame implements ApplicationListener {
         if (paused) {
             this.overlayScreen.pause();
         }
-    }
-
-    public void removeOverlayScreen() {
-        overlayScreen = null;
     }
 
     @Override

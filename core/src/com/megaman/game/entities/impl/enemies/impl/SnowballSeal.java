@@ -29,7 +29,7 @@ public class SnowballSeal extends Enemy implements Faceable {
     }
 
     @Override
-    protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
+    protected Map<Class<? extends Damager>, DamageNegotiation> defineDmgNegs() {
         return new HashMap<>() {{
 
         }};

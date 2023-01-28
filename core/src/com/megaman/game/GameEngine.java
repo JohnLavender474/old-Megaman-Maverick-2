@@ -73,6 +73,14 @@ public class GameEngine implements Updatable, Resettable {
         return sClass.cast(systems.get(sClass));
     }
 
+    public void spawn(Entity e) {
+        spawn(e, new Vector2());
+    }
+
+    public void spawn(Entity e, ObjectMap<String, Object> data) {
+        spawn(e, new Vector2(), data);
+    }
+
     public void spawn(Entity e, Vector2 spawn) {
         spawn(e, spawn, new ObjectMap<>());
     }

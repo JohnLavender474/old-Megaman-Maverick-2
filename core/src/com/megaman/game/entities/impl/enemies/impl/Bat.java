@@ -91,7 +91,7 @@ public class Bat extends Enemy {
     }
 
     @Override
-    protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
+    protected Map<Class<? extends Damager>, DamageNegotiation> defineDmgNegs() {
         return new HashMap<>() {{
             put(Bullet.class, new DamageNegotiation(10));
             put(Fireball.class, new DamageNegotiation(HealthVals.MAX_HEALTH));

@@ -84,7 +84,7 @@ public class PreciousJoe extends Enemy implements Faceable {
     }
 
     @Override
-    protected Map<Class<? extends Damager>, DamageNegotiation> defineDamageNegotiations() {
+    protected Map<Class<? extends Damager>, DamageNegotiation> defineDmgNegs() {
         return new HashMap<>() {{
             put(Bullet.class, new DamageNegotiation(5));
             put(Fireball.class, new DamageNegotiation(15));

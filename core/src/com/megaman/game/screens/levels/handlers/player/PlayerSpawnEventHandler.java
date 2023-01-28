@@ -89,7 +89,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
         beamTransTimer.reset();
         beamLandAnim.reset();
         beamSprite.setPosition(-WorldVals.PPM, -WorldVals.PPM);
-        audioMan.play();
+        audioMan.playMusic();
         megaman.body.gravityOn = false;
         engine.set(false, ControllerSystem.class);
         eventMan.submit(new Event(EventType.PLAYER_SPAWN));
@@ -135,7 +135,7 @@ public class PlayerSpawnEventHandler implements Initializable, Updatable, Drawab
             megaman.body.gravityOn = true;
             megaman.setReady(true);
             eventMan.submit(new Event(EventType.PLAYER_READY));
-            audioMan.play(SoundAsset.BEAM_IN_SOUND);
+            audioMan.playMusic(SoundAsset.BEAM_IN_SOUND);
         }
     }
 

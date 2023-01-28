@@ -6,6 +6,7 @@ public enum EventType {
 
     GAME_PAUSE,
     GAME_RESUME,
+    GAME_OVER,
 
     PLAYER_SPAWN,
     PLAYER_JUST_DIED,
@@ -26,7 +27,8 @@ public enum EventType {
     GATE_FINISH_CLOSING,
 
     ENTER_BOSS_ROOM,
-    BOSS_DROP_DOWN,
+    BOSS_SPAWN,
+    BOSS_DEAD,
 
     REQ_SHAKE_CAM;
 

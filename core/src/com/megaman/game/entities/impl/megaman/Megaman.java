@@ -632,7 +632,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
 
         // feet fixture
         Fixture feetFixture = new Fixture(this, FixtureType.FEET,
-                new Rectangle().setSize(.55f * WorldVals.PPM, .15f * WorldVals.PPM));
+                new Rectangle().setSize(.6f * WorldVals.PPM, .15f * WorldVals.PPM));
         feetFixture.putUserData(ConstKeys.RUN, onBounce);
         body.add(feetFixture);
         h.add(new ShapeHandle(feetFixture.shape, Color.GREEN));
@@ -772,7 +772,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
                     body.velocity.x = x;
                 }
                 c.set(BehaviorType.SWIMMING, true);
-                game.getAudioMan().play(SoundAsset.SWIM_SOUND);
+                game.getAudioMan().playMusic(SoundAsset.SWIM_SOUND);
             }
 
             @Override
@@ -1069,7 +1069,7 @@ public class Megaman extends Entity implements Damageable, Faceable, Positional,
     private SpriteComponent spriteComponent() {
         sprite.setSize(2.475f * WorldVals.PPM, 1.875f * WorldVals.PPM);
         SpriteHandle handle = new SpriteHandle(sprite);
-        handle.priority = 3;
+        handle.priority = 4;
         handle.updatable = delta -> {
             handle.hidden = !ready;
             handle.setPosition(body.bounds, isUpsideDown() ? Position.TOP_CENTER : Position.BOTTOM_CENTER);

@@ -325,7 +325,7 @@ public class MegamanWeaponHandler implements Updatable, Resettable {
         };
         engine.spawn(proj, getSpawnCenter(), data);
 
-        // TODO: play different sounds
+        // TODO: playMusic different sounds
         megaman.request(SoundAsset.CRASH_BOMBER_SOUND, true);
 
         return proj;

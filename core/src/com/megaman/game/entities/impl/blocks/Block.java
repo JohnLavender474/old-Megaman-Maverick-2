@@ -2,15 +2,12 @@ package com.megaman.game.entities.impl.blocks;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.megaman.game.MegamanGame;
 import com.megaman.game.cull.CullOutOfBoundsComponent;
 import com.megaman.game.entities.Entity;
 import com.megaman.game.entities.EntityType;
 import com.megaman.game.shapes.ShapeComponent;
-import com.megaman.game.shapes.ShapeHandle;
-import com.megaman.game.shapes.ShapeUtils;
 import com.megaman.game.utils.Logger;
 import com.megaman.game.world.*;
 
@@ -39,7 +36,7 @@ public class Block extends Entity {
 
     public Block(MegamanGame game, BodyType bodyType, boolean cullOnBodyOOB, float width, float height) {
         this(game, bodyType, cullOnBodyOOB);
-        body.setSize(width, height);
+        setSize(width, height);
     }
 
     public Block(MegamanGame game, BodyType bodyType, boolean cullOnBodyOOB) {
@@ -90,34 +87,46 @@ public class Block extends Entity {
         bounds.getPosition(pos);
         init(pos, data);
     }
-    
+
+    protected ShapeComponent shapeComponent() {
+        return new ShapeComponent(body.bounds);
+    }
+
     public void setX(float x) {
         body.setX(x);
     }
-    
+
+    public void setMaxX(float x) {
+        body.setMaxX(x);
+    }
+
     public void setY(float y) {
         body.setY(y);
     }
-    
-    public void setPos(Vector2 pos) {
-        setPos(pos.x, pos.y);   
+
+    public void setMaxY(float y) {
+        body.setMaxY(y);
     }
-    
+
+    public void setPos(Vector2 pos) {
+        setPos(pos.x, pos.y);
+    }
+
     public void setPos(float x, float y) {
         setX(x);
         setY(y);
     }
-    
+
     public void setWidth(float width) {
         body.setWidth(width);
         ((Rectangle) blockFixture.shape).setWidth(width);
     }
-    
+
     public void setHeight(float height) {
         body.setHeight(height);
         ((Rectangle) blockFixture.shape).setHeight(height);
     }
-    
+
     public void setSize(float width, float height) {
         setWidth(width);
         setHeight(height);
@@ -132,14 +141,8 @@ public class Block extends Entity {
         setSize(width, height);
     }
 
-    public void addBodyLabels(String... labels) {
-        body.labels.addAll(labels);
-    }
-
-    protected ShapeComponent shapeComponent() {
-        Array<ShapeHandle> h = new Array<>();
-        h.add(new ShapeHandle(body.bounds));
-        return new ShapeComponent(h);
+    public void translate(float x, float y) {
+        body.translate(x, y);
     }
 
 }

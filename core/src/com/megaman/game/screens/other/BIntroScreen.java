@@ -14,7 +14,7 @@ import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.backgrounds.Stars;
-import com.megaman.game.entities.impl.bosses.Boss;
+import com.megaman.game.entities.impl.bosses.BossType;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.utils.TextHandle;
@@ -46,7 +46,7 @@ public class BIntroScreen extends ScreenAdapter {
     private final Array<Stars> stars;
     private final TextHandle bText;
 
-    private Boss b;
+    private BossType b;
     private Queue<Runnable> bLettersAnimQ;
     private KeyValuePair<Sprite, Queue<KeyValuePair<Animation, Timer>>> currBAnim;
 
@@ -80,7 +80,7 @@ public class BIntroScreen extends ScreenAdapter {
                 ViewVals.VIEW_HEIGHT * WorldVals.PPM / 3f));
     }
 
-    public void set(Boss b) {
+    public void set(BossType b) {
         this.b = b;
         Sprite s = new Sprite();
         Vector2 size = b.getSpriteSize();
@@ -94,7 +94,7 @@ public class BIntroScreen extends ScreenAdapter {
                 if (Character.isWhitespace(b.name.charAt(finalI))) {
                     return;
                 }
-                game.getAudioMan().play(SoundAsset.THUMP_SOUND);
+                game.getAudioMan().playMusic(SoundAsset.THUMP_SOUND);
             });
         }
     }
@@ -116,7 +116,7 @@ public class BIntroScreen extends ScreenAdapter {
             e.value().reset();
         }
         uiCam.position.set(ConstFuncs.getCamInitPos());
-        game.getAudioMan().play(MusicAsset.MM2_BOSS_INTRO_MUSIC, false);
+        game.getAudioMan().playMusic(MusicAsset.MM2_BOSS_INTRO_MUSIC, false);
     }
 
     @Override
@@ -154,6 +154,7 @@ public class BIntroScreen extends ScreenAdapter {
             Queue<KeyValuePair<Animation, Timer>> bAnimQ = currBAnim.value();
             Timer t = bAnimQ.peek().value();
             if (bAnimQ.size() > 1 && t.isFinished()) {
+                bAnimQ.peek().key().reset();
                 bAnimQ.poll();
             }
             t.update(delta);

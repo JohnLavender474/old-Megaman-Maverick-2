@@ -111,7 +111,7 @@ public class JoeBall extends Projectile {
                 add(owner == game.getMegaman() ? Enemy.class : Megaman.class);
             }});
         }});
-        game.getAudioMan().play(sound);
+        game.getAudioMan().playMusic(sound);
     }
 
     private void defineBody() {

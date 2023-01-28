@@ -13,6 +13,7 @@ public class ConstKeys {
     public static final String COLLECTION = "Collection";
     public static final String TYPE = "Type";
     public static final String DEFAULT = "Default";
+    public static final String ENTITY = "Entity";
     public static final String DAMAGEABLE = "Damageable";
     public static final String BOOL = "Bool";
     public static final String OWNER = "Owner";

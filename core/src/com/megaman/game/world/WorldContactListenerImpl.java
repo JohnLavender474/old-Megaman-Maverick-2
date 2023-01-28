@@ -170,7 +170,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             }
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
             if (e instanceof Megaman || e instanceof Enemy) {
-                game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
+                game.getAudioMan().playMusic(SoundAsset.SPLASH_SOUND);
             }
         }
 
@@ -447,7 +447,7 @@ public class WorldContactListenerImpl implements WorldContactListener {
             if (contact.mask1stEntity() instanceof Megaman m) {
                 m.aButtonTask = AButtonTask.AIR_DASH;
             }
-            game.getAudioMan().play(SoundAsset.SPLASH_SOUND);
+            game.getAudioMan().playMusic(SoundAsset.SPLASH_SOUND);
             Splash.generate(game, contact.mask1stBody(), contact.mask2ndBody());
         }
 

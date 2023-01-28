@@ -80,7 +80,7 @@ public class Bullet extends Projectile {
         game.getGameEngine().spawn(
                 game.getEntityFactories().fetch(EntityType.EXPLOSION, ExplosionFactory.DISINTEGRATION),
                 ShapeUtils.getCenterPoint(body.bounds));
-        game.getAudioMan().play(SoundAsset.THUMP_SOUND);
+        game.getAudioMan().playMusic(SoundAsset.THUMP_SOUND);
     }
 
     private void defineBody() {

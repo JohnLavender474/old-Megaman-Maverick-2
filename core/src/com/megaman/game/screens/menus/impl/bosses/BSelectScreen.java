@@ -14,7 +14,7 @@ import com.megaman.game.animations.Animation;
 import com.megaman.game.assets.MusicAsset;
 import com.megaman.game.assets.SoundAsset;
 import com.megaman.game.assets.TextureAsset;
-import com.megaman.game.entities.impl.bosses.Boss;
+import com.megaman.game.entities.impl.bosses.BossType;
 import com.megaman.game.screens.ScreenEnum;
 import com.megaman.game.screens.menus.MenuButton;
 import com.megaman.game.screens.menus.MenuScreen;
@@ -56,13 +56,13 @@ public class BSelectScreen extends MenuScreen {
 
     private boolean outro;
     private boolean blink;
-    private Boss bSelect;
+    private BossType bSelect;
 
     public BSelectScreen(MegamanGame game) {
         super(game, MEGA_MAN);
         if (bNameSet == null) {
             bNameSet = new ObjectSet<>();
-            for (Boss b : Boss.values()) {
+            for (BossType b : BossType.values()) {
                 bNameSet.add(b.name);
             }
         }
@@ -91,7 +91,7 @@ public class BSelectScreen extends MenuScreen {
 
         }
         Supplier<TextureRegion> megamanFaceSupplier = () -> {
-            Boss boss = Boss.findByName(getCurrBtnKey());
+            BossType boss = BossType.findByName(getCurrBtnKey());
             if (boss == null) {
                 return megamanFaces.get(Position.CENTER);
             }
@@ -99,7 +99,7 @@ public class BSelectScreen extends MenuScreen {
         };
         BPane megamanPane = new BPane(game, megamanFaceSupplier, MEGA_MAN, Position.CENTER);
         bp.add(megamanPane);
-        for (Boss boss : Boss.values()) {
+        for (BossType boss : BossType.values()) {
             bp.add(new BPane(game, boss));
         }
         t.add(new TextHandle(new Vector2(5.35f * WorldVals.PPM, 13.85f * WorldVals.PPM), "PRESS START"));
@@ -153,12 +153,12 @@ public class BSelectScreen extends MenuScreen {
         slide.init();
         outro = false;
         outTimer.reset();
-        game.getAudioMan().play(MusicAsset.STAGE_SELECT_MM3_MUSIC, true);
+        game.getAudioMan().playMusic(MusicAsset.STAGE_SELECT_MM3_MUSIC, true);
     }
 
     @Override
     protected void onAnyMovement() {
-        audioMan.play(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
+        audioMan.playMusic(SoundAsset.CURSOR_MOVE_BLOOP_SOUND);
     }
 
     @Override
@@ -230,10 +230,10 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP -> setMenuButton(Boss.findByPos(1, 2).name);
-                    case DOWN -> setMenuButton(Boss.findByPos(1, 0).name);
-                    case LEFT -> setMenuButton(Boss.findByPos(0, 1).name);
-                    case RIGHT -> setMenuButton(Boss.findByPos(2, 1).name);
+                    case UP -> setMenuButton(BossType.findByPos(1, 2).name);
+                    case DOWN -> setMenuButton(BossType.findByPos(1, 0).name);
+                    case LEFT -> setMenuButton(BossType.findByPos(0, 1).name);
+                    case RIGHT -> setMenuButton(BossType.findByPos(2, 1).name);
                 }
             }
         });
@@ -247,16 +247,16 @@ public class BSelectScreen extends MenuScreen {
             @Override
             public void onNavigate(Direction direction, float delta) {
                 switch (direction) {
-                    case UP, LEFT, RIGHT -> setMenuButton(Boss.findByPos(2, 0).name);
-                    case DOWN -> setMenuButton(Boss.findByPos(2, 2).name);
+                    case UP, LEFT, RIGHT -> setMenuButton(BossType.findByPos(2, 0).name);
+                    case DOWN -> setMenuButton(BossType.findByPos(2, 2).name);
                 }
             }
         });
-        for (Boss boss : Boss.values()) {
+        for (BossType boss : BossType.values()) {
             menuButtons.put(boss.name, new MenuButton() {
                 @Override
                 public boolean onSelect(float delta) {
-                    audioMan.play(SoundAsset.BEAM_OUT_SOUND);
+                    audioMan.playMusic(SoundAsset.BEAM_OUT_SOUND);
                     audioMan.stopMusic();
                     bSelect = boss;
                     outro = true;
@@ -289,7 +289,7 @@ public class BSelectScreen extends MenuScreen {
                     } else if (position.equals(Position.CENTER)) {
                         setMenuButton(MEGA_MAN);
                     } else {
-                        setMenuButton(Boss.findByPos(x, y).name);
+                        setMenuButton(BossType.findByPos(x, y).name);
                     }
                 }
             });

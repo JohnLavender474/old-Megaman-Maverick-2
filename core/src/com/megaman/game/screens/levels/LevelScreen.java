@@ -202,7 +202,7 @@ public class LevelScreen extends ScreenAdapter implements EventListener {
                 playerDeathEventHandler.init();
             }
             case PLAYER_DONE_DYIN -> {
-                audioMan.play(music, true);
+                audioMan.playMusic(music, true);
                 playerSpawnEventHandler.init();
             }
             case ADD_PLAYER_HEALTH -> {

@@ -92,7 +92,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         if (megaman.has(armorPiece)) {
             return;
         }
-        audioMan.play(SoundAsset.LIFE_SOUND);
+        audioMan.playMusic(SoundAsset.LIFE_SOUND);
         timer = new Timer(SPECIAL_ITEM_DUR, () -> megaman.add(armorPiece));
     }
 
@@ -103,7 +103,7 @@ public class PlayerStatsHandler implements Updatable, Drawable {
         if (megaman.has(heartTank)) {
             return;
         }
-        audioMan.play(SoundAsset.LIFE_SOUND);
+        audioMan.playMusic(SoundAsset.LIFE_SOUND);
         timer = new Timer(SPECIAL_ITEM_DUR, () -> {
             megaman.add(heartTank);
             eventMan.submit(new Event(EventType.ADD_PLAYER_HEALTH, new ObjectMap<>() {{
@@ -153,12 +153,12 @@ public class PlayerStatsHandler implements Updatable, Drawable {
             for (int i = 0; i < healthToAdd; i++) {
                 add(new TimeMarkedRunnable(i * DUR_PER_BIT, () -> {
                     megaman.addHealth(1);
-                    audioMan.play(SoundAsset.ENERGY_FILL_SOUND);
+                    audioMan.playMusic(SoundAsset.ENERGY_FILL_SOUND);
                 }));
             }
             if (addToTanks) {
                 add(new TimeMarkedRunnable((healthToAdd + 1) * DUR_PER_BIT,
-                        () -> audioMan.play(SoundAsset.LIFE_SOUND)));
+                        () -> audioMan.playMusic(SoundAsset.LIFE_SOUND)));
             }
         }});
         sysStates = engine.getStates();
