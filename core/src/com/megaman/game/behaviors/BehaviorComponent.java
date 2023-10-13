@@ -2,7 +2,6 @@ package com.megaman.game.behaviors;
 
 import com.badlogic.gdx.utils.Array;
 import com.megaman.game.Component;
-import com.megaman.game.utils.interfaces.Updatable;
 import lombok.Getter;
 
 import java.util.EnumSet;
@@ -44,7 +43,6 @@ public class BehaviorComponent implements Component {
         }
         return true;
     }
-
 
     public void set(BehaviorType type, boolean is) {
         if (is) {

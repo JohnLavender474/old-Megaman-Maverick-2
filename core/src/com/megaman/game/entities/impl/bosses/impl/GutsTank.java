@@ -47,8 +47,8 @@ public class GutsTank extends Boss {
     private static final float FIST_UP_Y_OFFSET = 1f;
     private static final float FIST_DOWN_Y_OFFSET = 1f;
 
-    private static final float TEMP_MOVE_DUR = 1f;
-    private static final float TEMP_MOVE_DIST = 1f;
+    private static final float TEMP_MOVE_DUR = 2f;
+    private static final float TEMP_MOVE_DIST = .5f;
 
     private final Sprite sprite;
     private final Timer shootTimer;

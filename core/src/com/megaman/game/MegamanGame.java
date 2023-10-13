@@ -4,24 +4,16 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.megaman.game.animations.AnimationSystem;
 import com.megaman.game.assets.AssetsManager;
-import com.megaman.game.assets.MusicAsset;
-import com.megaman.game.assets.SoundAsset;
-import com.megaman.game.assets.TextureAsset;
 import com.megaman.game.audio.AudioManager;
 import com.megaman.game.audio.SoundSystem;
 import com.megaman.game.behaviors.BehaviorSystem;
@@ -30,8 +22,8 @@ import com.megaman.game.controllers.ControllerSystem;
 import com.megaman.game.controllers.CtrlBtn;
 import com.megaman.game.cull.CullOnEventSystem;
 import com.megaman.game.cull.CullOnOutOfBoundsSystem;
-import com.megaman.game.entities.utils.factories.EntityFactories;
 import com.megaman.game.entities.impl.megaman.Megaman;
+import com.megaman.game.entities.utils.factories.EntityFactories;
 import com.megaman.game.events.EventManager;
 import com.megaman.game.health.HealthSystem;
 import com.megaman.game.movement.pendulum.PendulumSystem;
@@ -39,7 +31,6 @@ import com.megaman.game.movement.rotatingline.RotatingLineSystem;
 import com.megaman.game.movement.trajectory.TrajectorySystem;
 import com.megaman.game.pathfinding.PathfindingSystem;
 import com.megaman.game.screens.ScreenEnum;
-import com.megaman.game.screens.levels.Level;
 import com.megaman.game.screens.levels.LevelScreen;
 import com.megaman.game.screens.menus.impl.bosses.BSelectScreen;
 import com.megaman.game.screens.menus.impl.main.MainScreen;
@@ -142,8 +133,8 @@ public class MegamanGame implements ApplicationListener {
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.RODENT_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.CREW_MAN));
         // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST5));
-        setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
-        // setScreen(getScreen(ScreenEnum.MAIN));
+        // setScreen(ScreenEnum.LEVEL, LevelScreen.class, s -> s.set(Level.TEST1));
+        setScreen(getScreen(ScreenEnum.MAIN));
         // setScreen(getScreen(ScreenEnum.BOSS_SELECT));
         fpsText = new TextHandle(new Vector2(WorldVals.PPM, (ViewVals.VIEW_HEIGHT - 1) * WorldVals.PPM),
                 () -> "FPS: " + Gdx.graphics.getFramesPerSecond());
@@ -161,9 +152,6 @@ public class MegamanGame implements ApplicationListener {
             logger.log("R2: " + m.buttonR2);
             logger.log("Start: " + m.buttonStart);
         }
-        ctrlMan.setCtrlCode(CtrlBtn.X, 3);
-        ctrlMan.setCtrlCode(CtrlBtn.A, 1);
-        ctrlMan.setCtrlCode(CtrlBtn.SELECT, 0);
     }
 
     public boolean isMegamanMaverick() {

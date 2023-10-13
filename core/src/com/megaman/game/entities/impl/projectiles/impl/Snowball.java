@@ -30,6 +30,9 @@ public class Snowball extends Projectile {
 
     private static TextureRegion snowBallReg;
 
+    private boolean formFirst;
+    private Vector2 trajToSet;
+
     public Snowball(MegamanGame game) {
         super(game);
         if (snowBallReg == null) {
@@ -48,10 +51,17 @@ public class Snowball extends Projectile {
     @Override
     public void init(Vector2 spawn, ObjectMap<String, Object> data) {
         super.init(spawn, data);
+        formFirst = data.containsKey(ConstKeys.FORM) && (boolean) data.get(ConstKeys.FORM);
         if (data.containsKey(ConstKeys.TRAJECTORY)) {
-            body.velocity.set((Vector2) data.get(ConstKeys.TRAJECTORY));
+            Vector2 traj = (Vector2) data.get(ConstKeys.TRAJECTORY);
+            if (formFirst) {
+                trajToSet = traj;
+            } else {
+                setTraj(traj);
+            }
         } else {
-            body.velocity.setZero();
+            setTraj(Vector2.Zero);
+            trajToSet = Vector2.Zero;
         }
     }
 
@@ -73,6 +83,14 @@ public class Snowball extends Projectile {
     @Override
     public void hitBody(Fixture bodyFixture) {
         explode();
+    }
+
+    public void setTraj(Vector2 traj) {
+        setTraj(traj.x, traj.y);
+    }
+
+    public void setTraj(float x, float y) {
+        body.velocity.set(x, y);
     }
 
     public void explode() {

@@ -19,7 +19,7 @@ public class ControllerManager implements Runnable {
         put(CtrlBtn.A, () -> getController().getMapping().buttonA);
         put(CtrlBtn.X, () -> getController().getMapping().buttonX);
         put(CtrlBtn.START, () -> getController().getMapping().buttonStart);
-        put(CtrlBtn.SELECT, () -> getController().getMapping().buttonB);
+        put(CtrlBtn.SELECT, () -> getController().getMapping().buttonL1);
     }};
     private static final Map<CtrlBtn, Integer> defaultKeyboardCodes = new EnumMap<>(CtrlBtn.class) {{
         put(CtrlBtn.DPAD_LEFT, Input.Keys.LEFT);

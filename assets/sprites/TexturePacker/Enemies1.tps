@@ -311,13 +311,26 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../Frames/Enemies1/IceSeal/BigSnowballFormed.png</key>
-            <key type="filename">../Frames/Enemies1/IceSeal/SmallSnowballFormed.png</key>
-            <key type="filename">../Frames/Enemies1/IceSeal/SnowballHalfFormed.png</key>
-            <key type="filename">../Frames/Enemies1/IceSeal/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/Matasaburo.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>96,16,192,32</rect>
+                <key>scale9Paddings</key>
+                <rect>96,16,192,32</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../Frames/Enemies1/PreciousJoe/Charge.png</key>
             <key type="filename">../Frames/Enemies1/Ratton/Jump.png</key>
             <key type="filename">../Frames/Enemies1/Ratton/Stand.png</key>
+            <key type="filename">../Frames/Enemies1/SnowSeal/FormSnowball.png</key>
+            <key type="filename">../Frames/Enemies1/SnowSeal/Stand.png</key>
             <key type="filename">../Frames/Enemies1/WispyWasp/Fly.png</key>
             <key type="filename">../Frames/Enemies1/WispyWasp/FlyWithNest.png</key>
             <struct type="IndividualSpriteSettings">
@@ -331,36 +344,6 @@
                 <rect>24,12,48,24</rect>
                 <key>scale9Paddings</key>
                 <rect>24,12,48,24</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Enemies1/IceSeal/SlapTail.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>36,12,72,24</rect>
-                <key>scale9Paddings</key>
-                <rect>36,12,72,24</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../Frames/Enemies1/Matasaburo.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>96,16,192,32</rect>
-                <key>scale9Paddings</key>
-                <rect>96,16,192,32</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -380,6 +363,21 @@
                 <rect>12,12,24,24</rect>
                 <key>scale9Paddings</key>
                 <rect>12,12,24,24</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../Frames/Enemies1/SnowSeal/SlapTail.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>36,12,72,24</rect>
+                <key>scale9Paddings</key>
+                <rect>36,12,72,24</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>

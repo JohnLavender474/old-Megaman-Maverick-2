@@ -3,6 +3,7 @@ package com.megaman.game;
 public class ConstKeys {
 
     public static final String DUR = "Dur";
+    public static final String FORM = "Form";
     public static final String INTERVAL = "Interval";
     public static final String ROWS = "Rows";
     public static final String COLS = "Cols";

@@ -17,8 +17,8 @@ public class AudioManager implements Updatable {
 
     private static final int MIN_VOLUME = 0;
     private static final int MAX_VOLUME = 10;
-    // private static final int DEFAULT_VOLUME = 5;
-    private static final int DEFAULT_VOLUME = 0;
+    private static final int DEFAULT_VOLUME = 5;
+    // private static final int DEFAULT_VOLUME = 0;
 
     @RequiredArgsConstructor
     private static final class SoundEntry {
